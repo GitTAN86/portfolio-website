@@ -58,6 +58,22 @@ document.addEventListener("DOMContentLoaded", () => {
     
     let width, height;
     let particles = [];
+    
+    // Mouse tracking for interactive galaxy
+    let mouse = {
+        x: null,
+        y: null
+    };
+
+    window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+    
+    window.addEventListener('mouseout', () => {
+        mouse.x = null;
+        mouse.y = null;
+    });
 
     function resize() {
         width = canvas.width = window.innerWidth;
@@ -69,35 +85,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
     class Particle {
         constructor() {
-            this.baseX = Math.random() * width;
-            this.y = Math.random() * height;
-            this.size = Math.random() * 6 + 4; // length of dash
-            this.speedY = Math.random() * -0.5 - 0.2; // drifting slowly upwards
-            this.width = Math.random() * 1.5 + 0.5; // width of dash
+            // Original starting anchor points
+            this.defaultX = Math.random() * width;
+            this.defaultY = Math.random() * height;
             
-            // Harmonic motion properties
+            // Current center of orbit (starts at default)
+            this.centerX = this.defaultX;
+            this.centerY = this.defaultY;
+            
+            // Orbit properties
             this.angle = Math.random() * Math.PI * 2;
-            this.angleSpeed = Math.random() * 0.015 + 0.005;
-            this.amplitude = Math.random() * 30 + 15;
+            this.radius = Math.random() * 250 + 50; // How far it orbits from the center
+            this.velocity = (Math.random() - 0.5) * 0.03; // Speed and direction of orbit
+            
+            // Visuals
+            this.size = Math.random() * 10 + 4; // Length of the dash
+            this.width = Math.random() * 2.5 + 1; // Width
             
             // Antigravity Google colors
-            const colors = ['rgba(66, 133, 244, 0.7)', 'rgba(177, 0, 255, 0.7)', 'rgba(234, 67, 53, 0.7)'];
+            const colors = ['rgba(66, 133, 244, 0.8)', 'rgba(177, 0, 255, 0.8)', 'rgba(234, 67, 53, 0.8)'];
             this.color = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Easing factor for the "milky/smooth" transition to the mouse
+            this.easing = Math.random() * 0.03 + 0.01; 
         }
 
         update() {
-            this.y += this.speedY;
-            this.angle += this.angleSpeed;
-            // Oscillate around baseX using a sine wave
-            this.x = this.baseX + Math.sin(this.angle) * this.amplitude;
+            this.angle += this.velocity;
+            
+            // Target is the mouse, or its default floating point if mouse is away
+            let targetX = mouse.x !== null ? mouse.x : this.defaultX;
+            let targetY = mouse.y !== null ? mouse.y : this.defaultY;
 
-            // Wrap around edges smoothly
-            if (this.y < -20) {
-                this.y = height + 20;
-                this.baseX = Math.random() * width;
-            } else if (this.y > height + 20) {
-                this.y = -20;
-                this.baseX = Math.random() * width;
+            // Fluidly ease the center of the orbit towards the target
+            this.centerX += (targetX - this.centerX) * this.easing;
+            this.centerY += (targetY - this.centerY) * this.easing;
+
+            // Dynamic "breathing" radius
+            let currentRadius = this.radius + Math.sin(this.angle * 4) * 20;
+            
+            // Calculate final X and Y based on the orbit
+            this.x = this.centerX + Math.cos(this.angle) * currentRadius;
+            this.y = this.centerY + Math.sin(this.angle) * currentRadius;
+
+            // If mouse is inactive, let the default anchor slowly drift around screen
+            if (mouse.x === null) {
+                this.defaultX += Math.cos(this.angle) * 0.5;
+                this.defaultY += Math.sin(this.angle) * 0.5;
+                
+                if (this.defaultX < -100) this.defaultX = width + 100;
+                if (this.defaultX > width + 100) this.defaultX = -100;
+                if (this.defaultY < -100) this.defaultY = height + 100;
+                if (this.defaultY > height + 100) this.defaultY = -100;
             }
         }
 
@@ -105,12 +144,21 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.save();
             ctx.translate(this.x, this.y);
             
-            // Elegant tilt based on horizontal velocity (cosine of angle)
-            let tilt = Math.cos(this.angle) * this.angleSpeed * 15; 
-            ctx.rotate(tilt);
+            // Rotate the dash so it always points along its circular orbit
+            ctx.rotate(this.angle + Math.PI / 2);
             
             ctx.fillStyle = this.color;
-            ctx.fillRect(-this.width / 2, -this.size / 2, this.width, this.size);
+            ctx.shadowBlur = 12; // Milky glowing aura
+            ctx.shadowColor = this.color;
+            
+            // Draw rounded dashes for a smoother look
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(-this.width / 2, -this.size / 2, this.width, this.size, 5);
+            } else {
+                ctx.fillRect(-this.width / 2, -this.size / 2, this.width, this.size);
+            }
+            ctx.fill();
             ctx.restore();
         }
     }
