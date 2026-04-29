@@ -68,11 +68,17 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('mousemove', (e) => {
         mouse.x = e.clientX;
         mouse.y = e.clientY;
+        
+        // Update CSS variables for the flashlight reveal pattern
+        document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+        document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+        document.body.classList.remove('mouse-inactive');
     });
     
     window.addEventListener('mouseout', () => {
         mouse.x = null;
         mouse.y = null;
+        document.body.classList.add('mouse-inactive');
     });
 
     function resize() {

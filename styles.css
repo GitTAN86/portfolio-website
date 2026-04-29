@@ -19,7 +19,7 @@ body.theme-1 {
 
 body.theme-2 {
     /* About */
-    --color-bg: #D4DFEB; 
+    --color-bg: #D4DFEB;
     --glass-bg: rgba(255, 255, 255, 0.4);
 }
 
@@ -61,7 +61,14 @@ body {
     transition: background-color 1.5s ease, color 1.5s ease;
 }
 
-.glass-card, .section-title, p, h1, h2, h3, h4, .timeline-dot {
+.glass-card,
+.section-title,
+p,
+h1,
+h2,
+h3,
+h4,
+.timeline-dot {
     transition: background-color 1.5s ease, color 1.5s ease, border-color 1.5s ease, background 1.5s ease;
 }
 
@@ -75,6 +82,39 @@ body::after {
     box-shadow: inset 0 0 100px rgba(66, 133, 244, 0.15);
     pointer-events: none;
     z-index: 0;
+}
+
+/* Flashlight Reveal Pattern */
+.hidden-pattern {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: -2;
+
+    /* Futuristic CSS Blueprint Grid */
+    background-image:
+        linear-gradient(rgba(66, 133, 244, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(66, 133, 244, 0.2) 1px, transparent 1px),
+        linear-gradient(rgba(177, 0, 255, 0.1) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(177, 0, 255, 0.1) 2px, transparent 2px);
+    background-size: 40px 40px, 40px 40px, 200px 200px, 200px 200px;
+    background-position: center center;
+    opacity: 0.6;
+    /* Higher opacity since the mask will hide most of it */
+
+    /* Dynamic Flashlight Mask tracking CSS variables */
+    -webkit-mask-image: radial-gradient(circle 350px at var(--mouse-x, -500px) var(--mouse-y, -500px), black 0%, transparent 100%);
+    mask-image: radial-gradient(circle 350px at var(--mouse-x, -500px) var(--mouse-y, -500px), black 0%, transparent 100%);
+
+    transition: opacity 1.5s ease;
+}
+
+/* Hide entirely when mouse is off-screen */
+body.mouse-inactive .hidden-pattern {
+    opacity: 0;
 }
 
 /* Background Canvas */
@@ -135,7 +175,8 @@ h4 {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
-    perspective: 1200px; /* Enables 3D space for children */
+    perspective: 1200px;
+    /* Enables 3D space for children */
 }
 
 .section-padding {
@@ -326,7 +367,8 @@ h4 {
 }
 
 .gallery-item:hover {
-    flex: 5; /* Expands smoothly to reveal full image */
+    flex: 5;
+    /* Expands smoothly to reveal full image */
 }
 
 .gallery-item img {
@@ -338,7 +380,8 @@ h4 {
 }
 
 .gallery-item:hover img {
-    transform: scale(1.05); /* Slight zoom effect when focused */
+    transform: scale(1.05);
+    /* Slight zoom effect when focused */
 }
 
 .about-text p {
