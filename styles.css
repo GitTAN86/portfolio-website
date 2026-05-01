@@ -760,6 +760,24 @@ h4 {
     .timeline-item {
         padding-left: 45px;
     }
+    
+    .floating-btn {
+        bottom: 15px;
+        right: 15px;
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .admin-link-btn {
+        bottom: 15px !important;
+        left: 15px !important;
+        width: 35px !important;
+        height: 35px !important;
+    }
+    
+    #dashboardScreen {
+        padding: 15px !important;
+    }
 }
 
 /* Admin Link Button */
@@ -804,4 +822,15 @@ body:not(.theme-3):not(.theme-4) .admin-link-btn:hover {
     color: var(--color-primary);
     border-color: rgba(0, 0, 0, 0.3);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Admin Portal Inputs Box Sizing Fix */
+#contentView input,
+#contentView textarea,
+.skill-row input,
+.skill-row textarea,
+.exp-row input,
+.exp-row textarea {
+    width: 100%;
+    box-sizing: border-box;
 }
