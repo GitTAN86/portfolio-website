@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     // === 1. FIREBASE & TRACKING CONFIGURATION ===
@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             trackVisit();
+            fetchContent();
         } else {
             console.warn("Firebase not configured yet. Skipping tracking.");
         }
@@ -38,6 +39,61 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Visit tracked securely.");
         } catch (e) {
             console.error("Error tracking visit:", e);
+        }
+    }
+
+    async function fetchContent() {
+        try {
+            const docRef = doc(db, "content", "main");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if(data.heroName) document.getElementById('heroName').textContent = data.heroName;
+                if(data.heroTagline) document.getElementById('heroTagline').textContent = data.heroTagline;
+                if(data.heroHeadline) document.getElementById('heroHeadline').textContent = data.heroHeadline;
+                if(data.aboutText) document.getElementById('aboutTextContainer').innerHTML = data.aboutText;
+                
+                if(data.skills && Array.isArray(data.skills) && data.skills.length > 0) {
+                    const skillsGrid = document.getElementById('skillsGrid');
+                    if(skillsGrid) {
+                        skillsGrid.innerHTML = '';
+                        data.skills.forEach(skill => {
+                            skillsGrid.innerHTML += `
+                                <div class="glass-card skill-card">
+                                    <i class="${skill.icon || 'fa-solid fa-star'} skill-icon"></i>
+                                    <h3>${skill.title}</h3>
+                                    <p>${skill.description}</p>
+                                </div>
+                            `;
+                        });
+                    }
+                }
+
+                if(data.experience && Array.isArray(data.experience) && data.experience.length > 0) {
+                    const expTimeline = document.getElementById('experienceTimeline');
+                    if(expTimeline) {
+                        expTimeline.innerHTML = '';
+                        data.experience.forEach(exp => {
+                            let liHTML = (exp.bullets || []).map(b => `<li>${b}</li>`).join('');
+                            expTimeline.innerHTML += `
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="glass-card timeline-content">
+                                        <h3>${exp.title}</h3>
+                                        <h4>${exp.company}</h4>
+                                        <span class="timeline-date">${exp.date}</span>
+                                        <ul>${liHTML}</ul>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                }
+            } else {
+                console.log("No CMS content found, rendering default hardcoded HTML.");
+            }
+        } catch(e) {
+            console.error("Error fetching CMS content:", e);
         }
     }
 
