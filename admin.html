@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bahman Portfolio - Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #05050A; color: white; display: flex; flex-direction: column; min-height: 100vh; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px; }
+        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body class="theme-4">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="modal active" style="position: relative; display: flex; height: 100vh; background: transparent;">
+        <div class="modal-content glass-card">
+            <h2 style="margin-bottom: 20px;">Admin Secure Login</h2>
+            <form id="adminLoginForm">
+                <input type="email" id="adminEmail" placeholder="Firebase Admin Email" required style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white;">
+                <input type="password" id="adminPassword" placeholder="Password" required style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white;">
+                <button type="submit" class="submit-btn" style="width: 100%;">Access Analytics</button>
+            </form>
+            <p id="loginError" style="color: #EA4335; display: none; margin-top: 15px;"></p>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen (Hidden until authenticated) -->
+    <div id="dashboardScreen" style="display: none; padding: 40px; width: 100%; max-width: 1200px; margin: 0 auto; flex-grow: 1;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 class="section-title" style="margin: 0;">Portfolio Analytics</h1>
+            <button id="logoutBtn" class="submit-btn" style="width: auto;">Logout</button>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Traffic Chart -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 20px;">Visitor Traffic (Last 100 Visits)</h3>
+                <canvas id="visitsChart"></canvas>
+            </div>
+            
+            <!-- Feedback List -->
+            <div class="glass-card" style="max-height: 500px; overflow-y: auto;">
+                <h3 style="margin-bottom: 20px;">Direct Feedback</h3>
+                <div id="feedbackList">
+                    <p style="color: #a0a0a0;">Loading feedback...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>

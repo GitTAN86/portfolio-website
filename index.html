@@ -15,6 +15,15 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Font Awesome for Social Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // YOU MUST PASTE YOUR EMAILJS PUBLIC KEY HERE
+            emailjs.init("ic3wP678PlaFs5XEg");
+        })();
+    </script>
 </head>
 
 <body>
@@ -220,7 +229,24 @@
 
     </main>
 
-    <script src="script.js"></script>
+    <!-- Floating Feedback Button & Modal -->
+    <button id="feedbackBtn" class="floating-btn"><i class="fa-solid fa-comment-dots"></i> Feedback</button>
+    
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content glass-card">
+            <span id="closeModal" class="close-btn">&times;</span>
+            <h2>Leave Feedback</h2>
+            <form id="feedbackForm">
+                <input type="text" id="fbName" placeholder="Your Name" required>
+                <input type="email" id="fbEmail" placeholder="Your Email" required>
+                <textarea id="fbMessage" placeholder="Your thoughts..." rows="4" required></textarea>
+                <button type="submit" class="submit-btn">Send to Bahman</button>
+            </form>
+            <p id="feedbackStatus" style="display: none; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
