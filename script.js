@@ -53,6 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(data.heroHeadline) document.getElementById('heroHeadline').textContent = data.heroHeadline;
                 if(data.aboutText) document.getElementById('aboutTextContainer').innerHTML = data.aboutText;
                 
+                if(data.linkedin) document.getElementById('linkLinkedin').href = data.linkedin;
+                if(data.email) document.getElementById('linkEmail').href = `mailto:${data.email}`;
+                if(data.whatsapp) document.getElementById('linkWhatsapp').href = `https://wa.me/${data.whatsapp}`;
+                
                 if(data.skills && Array.isArray(data.skills) && data.skills.length > 0) {
                     const skillsGrid = document.getElementById('skillsGrid');
                     if(skillsGrid) {

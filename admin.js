@@ -221,6 +221,9 @@ async function loadCMSData() {
             document.getElementById('cmsTagline').value = data.heroTagline || '';
             document.getElementById('cmsHeadline').value = data.heroHeadline || '';
             document.getElementById('cmsAbout').value = data.aboutText || '';
+            document.getElementById('cmsLinkedin').value = data.linkedin || '';
+            document.getElementById('cmsEmail').value = data.email || '';
+            document.getElementById('cmsWhatsapp').value = data.whatsapp || '';
             
             renderSkills(data.skills || []);
             renderExperience(data.experience || []);
@@ -275,6 +278,9 @@ async function loadCMSData() {
             document.getElementById('cmsTagline').value = 'Tech Leader & Developer';
             document.getElementById('cmsHeadline').value = 'Bridging the Gap Between Operational Excellence and Technical Innovation.';
             document.getElementById('cmsAbout').value = "Originally from Iran and currently based in Kuala Lumpur, I am a tech leader and developer with a deep passion for solving complex enterprise challenges. With a Bachelor's in Computer Science and a Master's in Software Engineering, my career has been built at the intersection of hands-on software development and strategic B2B SaaS operations.\\n\\n<strong>Building for the Web</strong>\\nBeyond managing global customer success teams, I am a builder at heart. I specialize in web development and content management, utilizing a robust technical stack that includes HTML, CSS, JavaScript, Node.js, and Java.\\n\\n<strong>Scaling Enterprise Solutions</strong>\\nOver the last decade, I have led cross-functional teams and driven digital transformation within the global SAP ecosystem. By leveraging process automation tools like SAP iRPA and Power Automate, I have a proven track record of eliminating manual workflows, accelerating SLA resolutions, and boosting customer satisfaction.";
+            document.getElementById('cmsLinkedin').value = 'https://linkedin.com/in/bahman-noushabadi';
+            document.getElementById('cmsEmail').value = 'bahman.noushabadii@gmail.com';
+            document.getElementById('cmsWhatsapp').value = '60194909004';
             
             renderSkills(defaultSkills);
             renderExperience(defaultExperience);
@@ -314,6 +320,9 @@ if(cmsForm) {
                 heroTagline: document.getElementById('cmsTagline').value,
                 heroHeadline: document.getElementById('cmsHeadline').value,
                 aboutText: document.getElementById('cmsAbout').value,
+                linkedin: document.getElementById('cmsLinkedin').value,
+                email: document.getElementById('cmsEmail').value,
+                whatsapp: document.getElementById('cmsWhatsapp').value,
                 skills: skillsParsed,
                 experience: experienceParsed
             };
