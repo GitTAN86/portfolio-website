@@ -60,12 +60,13 @@ export default function ScrollThemeManager() {
 
         // Global mouse move for flashlight pattern
         const handleBodyMouseMove = (e) => {
-            document.documentElement.style.setProperty('--cursor-x', e.clientX + 'px');
-            document.documentElement.style.setProperty('--cursor-y', e.clientY + 'px');
+            document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
+            document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
         };
         document.addEventListener('mousemove', handleBodyMouseMove);
 
         return () => {
+            const sections = document.querySelectorAll('.scroll-section');
             sections.forEach(sec => observer.unobserve(sec));
             document.removeEventListener('mousemove', handleBodyMouseMove);
         };

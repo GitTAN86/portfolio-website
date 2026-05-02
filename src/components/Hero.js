@@ -42,10 +42,7 @@ export default function Hero({ data }) {
                 
             </div>
             
-            <div className="scroll-indicator">
-                <p>Scroll to Explore</p>
-                <i className="fa-solid fa-chevron-down"></i>
-            </div>
+
         </section>
     );
 }
