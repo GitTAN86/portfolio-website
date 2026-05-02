@@ -32,7 +32,7 @@ export default function Hero({ data }) {
         <section id="hero" className="hero scroll-section">
             <div className="hero-content glass-card tilt-card" ref={tiltRef}>
                 <div className="profile-image-wrapper">
-                    <img src="/images/pic1.jpg" alt={data?.heroName || "Bahman"} className="profile-img" />
+                    <img src={data?.profileImage || "/images/pic1.jpg"} alt={data?.heroName || "Bahman"} className="profile-img" />
                     <div className="img-glow"></div>
                 </div>
                 <h2 className="greeting">Hello, I am</h2>

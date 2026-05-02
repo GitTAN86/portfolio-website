@@ -11,21 +11,31 @@ export default function About({ data }) {
                     )}
                 </div>
                 <div className="gallery-container glass-card">
-                    <div className="gallery-item">
-                        <img src="/images/pic1.jpg" alt="Bahman working" />
-                    </div>
-                    <div className="gallery-item">
-                        <img src="/images/pic2.jpg" alt="Bahman working" />
-                    </div>
-                    <div className="gallery-item">
-                        <img src="/images/pic3.jpg" alt="Bahman team" />
-                    </div>
-                    <div className="gallery-item">
-                        <img src="/images/pic5.png" alt="Bahman team" />
-                    </div>
-                    <div className="gallery-item">
-                        <img src="/images/pic4.jpg" alt="Bahman working" />
-                    </div>
+                    {data?.gallery && data.gallery.length > 0 ? (
+                        data.gallery.map((url, index) => (
+                            <div className="gallery-item" key={index}>
+                                <img src={url} alt={`Gallery item ${index + 1}`} />
+                            </div>
+                        ))
+                    ) : (
+                        <>
+                            <div className="gallery-item">
+                                <img src="/images/pic1.jpg" alt="Bahman working" />
+                            </div>
+                            <div className="gallery-item">
+                                <img src="/images/pic2.jpg" alt="Bahman working" />
+                            </div>
+                            <div className="gallery-item">
+                                <img src="/images/pic3.jpg" alt="Bahman team" />
+                            </div>
+                            <div className="gallery-item">
+                                <img src="/images/pic5.png" alt="Bahman team" />
+                            </div>
+                            <div className="gallery-item">
+                                <img src="/images/pic4.jpg" alt="Bahman working" />
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </section>
