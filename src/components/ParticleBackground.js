@@ -72,13 +72,13 @@ export default function ParticleBackground() {
 
                 // Orbit properties
                 this.angle = Math.random() * Math.PI * 2;
-                this.radius = Math.random() * 200 + 50;
-                this.speed = Math.random() * 0.03 + 0.015; // Moderate rotation speed
-
+                this.radius = Math.random() * 200 + 80; 
+                this.speed = Math.random() * 0.008 + 0.08; // Original rotation speed
+                
                 // Visuals (Digital Dashes)
-                this.size = Math.random() * 12 + 4; // Length of the dash
+                this.size = Math.random() * 12 + 2; // Length of the dash
                 this.thickness = Math.random() * 2 + 1; // Width of the dash
-
+                
                 const googleColors = ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#B100FF'];
                 this.color = googleColors[Math.floor(Math.random() * googleColors.length)];
             }
@@ -86,18 +86,18 @@ export default function ParticleBackground() {
             draw() {
                 ctx.save();
                 ctx.translate(this.x, this.y);
-
+                
                 // Rotate based on orbit tangent
                 const tangentAngle = this.angle + Math.PI / 2;
                 ctx.rotate(tangentAngle);
-
+                
                 const isDark = document.body.classList.contains('theme-3') || document.body.classList.contains('theme-4');
                 const opacity = isDark ? 0.7 : 0.4;
 
                 ctx.beginPath();
                 ctx.moveTo(-this.size / 2, 0);
                 ctx.lineTo(this.size / 2, 0);
-
+                
                 ctx.shadowBlur = 10;
                 ctx.shadowColor = this.color;
                 ctx.globalAlpha = opacity;
@@ -113,17 +113,17 @@ export default function ParticleBackground() {
                 this.angle += this.speed;
 
                 // Dynamic "breathing" radius
-                let currentRadius = this.radius + Math.sin(this.angle * 2) * 15;
-
+                let currentRadius = this.radius + Math.sin(this.angle * 2);
+                
                 // Calculate final position
                 this.x = this.centerX + Math.cos(this.angle) * currentRadius;
                 this.y = this.centerY + Math.sin(this.angle) * currentRadius;
 
                 if (mouse.x === null || mouse.isOverContent) {
                     // Default Floating / Drift mode
-                    this.defaultX += Math.cos(this.angle) * 2;
-                    this.defaultY += Math.sin(this.angle) * 2;
-
+                    this.defaultX += Math.cos(this.angle) * 2; // Original drift speed
+                    this.defaultY += Math.sin(this.angle) * 2; // Original drift speed
+                    
                     // Screen wrapping for the anchors
                     if (this.defaultX < -200) this.defaultX = canvas.width + 200;
                     if (this.defaultX > canvas.width + 200) this.defaultX = -200;
@@ -135,8 +135,8 @@ export default function ParticleBackground() {
                     this.centerY += (this.defaultY - this.centerY) * 0.05;
                 } else {
                     // Vortex / Swarm mode (Mouse is on Background)
-                    // High swarmStrength for near-instant following
-                    const swarmStrength = 0.6;
+                    // Original swarmStrength for "milky" smooth following
+                    const swarmStrength = 0.04; 
                     this.centerX += (mouse.x - this.centerX) * swarmStrength;
                     this.centerY += (mouse.y - this.centerY) * swarmStrength;
                 }
