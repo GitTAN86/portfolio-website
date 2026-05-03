@@ -29,15 +29,16 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Only upload the folders Namecheap needs
-          local-dir: ./
-          # Path to your app root on Namecheap
-          server-dir: /my_portfolio_project/ 
+          server-dir: /my_portfolio_project/
+          # DANGEROUS: If set to ./ it might include node_modules
+          # BETTER: We explicitly exclude the heavy stuff
           exclude: |
-            **/.git*
-            **/.node_modules*
-            **/src*
-            README.md
+            **/node_modules/**
+            **/.git/**
+            **/.github/**
+            **/.next/cache/**
+            src/**
+            project.zip
 
       - name: Restart Namecheap App
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
