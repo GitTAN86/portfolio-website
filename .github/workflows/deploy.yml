@@ -1,0 +1,50 @@
+name: Deploy Next.js to Namecheap
+
+on:
+  push:
+    branches:
+      - main  # Or your default branch name
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Match your cPanel version
+
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
+
+      - name: Sync Files to Namecheap
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # Only upload the folders Namecheap needs
+          local-dir: ./
+          # Path to your app root on Namecheap
+          server-dir: /my_portfolio_project/ 
+          exclude: |
+            **/.git*
+            **/.node_modules*
+            **/src*
+            README.md
+
+      - name: Restart Namecheap App
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # This creates an empty file that tells Namecheap to reload
+          local-dir: ./tmp/
+          server-dir: /my_portfolio_project/tmp/
