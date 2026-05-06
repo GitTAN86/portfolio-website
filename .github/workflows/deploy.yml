@@ -55,13 +55,14 @@ jobs:
       - name: Trigger Remote Extraction
         run: |
           # We call the PHP script to unzip the file on the server
-          # Ensure you have the DOMAIN_NAME secret set in GitHub
-          curl -s -X GET "https://${{ secrets.DOMAIN_NAME }}/extract.php" || echo "Extraction triggered"
+          # -f makes curl fail on server errors, so we know if it worked
+          curl -f -s -X GET "https://${{ secrets.DOMAIN_NAME }}/extract.php"
 
       - name: Create Restart Marker
         run: |
           mkdir -p tmp
-          : > tmp/restart.txt
+          # Adding a timestamp ensures the file is different every time, forcing a restart
+          echo "Restarted at $(date)" > tmp/restart.txt
 
       - name: Restart Namecheap App
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -70,6 +71,5 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
-          passive: true
           local-dir: tmp/
           server-dir: /my_portfolio_project/tmp/
