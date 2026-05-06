@@ -55,8 +55,7 @@ jobs:
       - name: Trigger Remote Extraction
         run: |
           # We call the PHP script to unzip the file on the server
-          # -f makes curl fail on server errors, so we know if it worked
-          curl -f -s -X GET "https://${{ secrets.DOMAIN_NAME }}/extract.php"
+          curl -f -s -X GET "https://bahmannoushabadi.me/extract.php"
 
       - name: Create Restart Marker
         run: |
