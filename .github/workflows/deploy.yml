@@ -8,6 +8,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout Code
@@ -20,7 +21,7 @@ jobs:
 
       - name: Install and Build
         run: |
-          npm install
+          npm ci
           npm run build
 
       - name: Sync Files to Namecheap
@@ -30,8 +31,9 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /my_portfolio_project/
-          # DANGEROUS: If set to ./ it might include node_modules
-          # BETTER: We explicitly exclude the heavy stuff
+          local-dir: ./
+          # Network hiccups are common with shared hosting FTP; give it more time.
+          timeout: 120000
           exclude: |
             **/node_modules/**
             **/.git/**
@@ -49,3 +51,4 @@ jobs:
           # This creates an empty file that tells Namecheap to reload
           local-dir: ./tmp/
           server-dir: /my_portfolio_project/tmp/
+          timeout: 120000
