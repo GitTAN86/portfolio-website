@@ -41,13 +41,12 @@ jobs:
       - name: Upload Package via LFTP
         run: |
           sudo apt-get install -y lftp
-          lftp -e "
+          lftp -u "${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}" "${{ secrets.FTP_SERVER }}" -e "
             set ftp:ssl-allow yes;
             set ssl:verify-certificate no;
             set ftp:passive-mode true;
             set net:timeout 30;
             set net:max-retries 3;
-            open -u \"${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}\" \"${{ secrets.FTP_SERVER }}\";
             put -O /my_portfolio_project/ deploy.zip; 
             put -O /my_portfolio_project/ extract.php; 
             quit
