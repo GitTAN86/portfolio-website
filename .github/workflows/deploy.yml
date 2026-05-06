@@ -37,29 +37,26 @@ jobs:
           # Create a single ZIP file for fast upload
           cd deploy && zip -r ../deploy.zip .
           cd ..
-          
-          # Prepare a separate folder for the FTP sync (only the zip and unzipper)
-          mkdir -p upload
-          mv deploy.zip upload/
-          cp extract.php upload/
 
-      - name: Upload Package to Namecheap
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          security: loose
-          passive: true
-          local-dir: upload/
-          server-dir: /my_portfolio_project/
+      - name: Upload Package via LFTP
+        run: |
+          # lftp is much more robust than standard JS-based FTP actions
+          # It handles timeouts and large files significantly better
+          sudo apt-get install -y lftp
+          lftp -e "
+            set ftp:ssl-allow no; 
+            set net:timeout 10;
+            set net:max-retries 3;
+            set net:reconnect-interval-base 5;
+            put -O /my_portfolio_project/ deploy.zip; 
+            put -O /my_portfolio_project/ extract.php; 
+            quit
+          " -u "${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}" "${{ secrets.FTP_SERVER }}"
 
       - name: Trigger Remote Extraction
         run: |
           # We call the PHP script to unzip the file on the server
-          # Replace 'yourdomain.com' with your actual domain in your GitHub Secrets if needed
-          # For now, we'll assume the FTP server-dir matches the web root
+          # Ensure you have the DOMAIN_NAME secret set in GitHub
           curl -s -X GET "https://${{ secrets.DOMAIN_NAME }}/extract.php" || echo "Extraction triggered"
 
       - name: Create Restart Marker
