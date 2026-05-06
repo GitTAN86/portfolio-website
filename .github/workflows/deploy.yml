@@ -40,18 +40,18 @@ jobs:
 
       - name: Upload Package via LFTP
         run: |
-          # lftp is much more robust than standard JS-based FTP actions
-          # It handles timeouts and large files significantly better
           sudo apt-get install -y lftp
           lftp -e "
-            set ftp:ssl-allow no; 
-            set net:timeout 10;
+            set ftp:ssl-allow yes;
+            set ssl:verify-certificate no;
+            set ftp:passive-mode true;
+            set net:timeout 30;
             set net:max-retries 3;
-            set net:reconnect-interval-base 5;
+            open -u \"${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}\" \"${{ secrets.FTP_SERVER }}\";
             put -O /my_portfolio_project/ deploy.zip; 
             put -O /my_portfolio_project/ extract.php; 
             quit
-          " -u "${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}" "${{ secrets.FTP_SERVER }}"
+          "
 
       - name: Trigger Remote Extraction
         run: |
