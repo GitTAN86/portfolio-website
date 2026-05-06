@@ -47,16 +47,17 @@ jobs:
             set ftp:passive-mode true;
             set net:timeout 30;
             set net:max-retries 3;
+            mkdir -p /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
+            mkdir -p /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/public/;
             put -O /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/ deploy.zip; 
-            put -O /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/ extract.php; 
+            put -O /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/public/ extract.php; 
             quit
           "
 
       - name: Trigger Remote Extraction
         run: |
-          # We call the PHP script to unzip the file on the server
-          # Note: If this URL still fails, we may need to check your domain's "Web Root" in cPanel
-          curl -f -s -X GET "https://bahmannoushabadi.me/Auto_Agent/my_portfolio_project/extract.php"
+          # We call the PHP script inside the public folder to bypass Node.js routing
+          curl -f -s -X GET "https://bahmannoushabadi.me/public/extract.php"
 
       - name: Create Restart Marker
         run: |
