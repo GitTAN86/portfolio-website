@@ -47,20 +47,20 @@ jobs:
             set ftp:passive-mode true;
             set net:timeout 30;
             set net:max-retries 3;
-            put -O /my_portfolio_project/ deploy.zip; 
-            put -O /my_portfolio_project/ extract.php; 
+            put -O /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/ deploy.zip; 
+            put -O /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/ extract.php; 
             quit
           "
 
       - name: Trigger Remote Extraction
         run: |
           # We call the PHP script to unzip the file on the server
-          curl -f -s -X GET "https://bahmannoushabadi.me/extract.php"
+          # Note: If this URL still fails, we may need to check your domain's "Web Root" in cPanel
+          curl -f -s -X GET "https://bahmannoushabadi.me/Auto_Agent/my_portfolio_project/extract.php"
 
       - name: Create Restart Marker
         run: |
           mkdir -p tmp
-          # Adding a timestamp ensures the file is different every time, forcing a restart
           echo "Restarted at $(date)" > tmp/restart.txt
 
       - name: Restart Namecheap App
@@ -71,4 +71,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           local-dir: tmp/
-          server-dir: /my_portfolio_project/tmp/
+          server-dir: /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/tmp/
