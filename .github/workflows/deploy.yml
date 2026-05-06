@@ -27,31 +27,16 @@ jobs:
       - name: Prepare Deploy Package
         run: |
           mkdir -p deploy
+          # Copy standalone server files
           cp -r .next/standalone/* deploy/
+          # Copy static files and public assets into the standalone structure
           mkdir -p deploy/.next/static
           cp -r .next/static/* deploy/.next/static/ 2>/dev/null || true
           cp -r public deploy/ 2>/dev/null || true
-          
-          cd deploy && zip -r ../deploy.zip .
-          cd ..
-          
-          # Create a separate folder for the unzipper only
-          mkdir -p unzip_script
-          cp extract.php unzip_script/
 
-      - name: Upload Unzipper (Smart Sync)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          local-dir: unzip_script/
-          # This tool is better at finding the public_html folder
-          server-dir: /public_html/
-
-      - name: Upload Big Zip (Fast LFTP)
+      - name: Upload Package via Parallel LFTP
         run: |
+          # LFTP with --parallel uploads multiple files at once, bypassing standard FTP limits
           sudo apt-get install -y lftp
           lftp -u "${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}" "${{ secrets.FTP_SERVER }}" -e "
             set ftp:ssl-allow yes;
@@ -59,15 +44,10 @@ jobs:
             set ftp:passive-mode true;
             set net:timeout 30;
             set net:max-retries 3;
-            mkdir -p bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
-            put -O bahmannoushabadi.me/Auto_Agent/my_portfolio_project/ deploy.zip; 
+            mkdir -p /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
+            mirror -R --parallel=10 deploy/ /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
             quit
           "
-
-      - name: Trigger Remote Extraction
-        run: |
-          # Now that the script is in public_html, it should be at the root URL
-          curl -f -s -X GET "https://bahmannoushabadi.me/extract.php"
 
       - name: Create Restart Marker
         run: |
