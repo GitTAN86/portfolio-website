@@ -8,8 +8,8 @@
 // You can add a password check here if you want:
 // if ($_GET['key'] !== 'YOUR_SECRET_KEY') die('Unauthorized');
 
-$zipFile = '../deploy.zip';
-$extractTo = '../';
+$zipFile = '../bahmannoushabadi.me/Auto_Agent/my_portfolio_project/deploy.zip';
+$extractTo = '../bahmannoushabadi.me/Auto_Agent/my_portfolio_project/';
 
 if (!file_exists($zipFile)) {
     die("Error: $zipFile not found.");

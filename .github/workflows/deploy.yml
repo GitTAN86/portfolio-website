@@ -48,16 +48,15 @@ jobs:
             set net:timeout 30;
             set net:max-retries 3;
             mkdir -p /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
-            mkdir -p /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/public/;
             put -O /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/ deploy.zip; 
-            put -O /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/public/ extract.php; 
+            put -O /public_html/ extract.php; 
             quit
           "
 
       - name: Trigger Remote Extraction
         run: |
-          # We call the PHP script inside the public folder to bypass Node.js routing
-          curl -f -s -X GET "https://bahmannoushabadi.me/public/extract.php"
+          # The script is now in public_html, reachable at the root URL
+          curl -f -s -X GET "https://bahmannoushabadi.me/extract.php"
 
       - name: Create Restart Marker
         run: |
