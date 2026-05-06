@@ -1,58 +1,60 @@
-"use client";
-import { useState, useEffect } from "react";
-
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Skills from "@/components/Skills";
-import Experience from "@/components/Experience";
-import Footer from "@/components/Footer";
-import FeedbackModal from "@/components/FeedbackModal";
-import AdminLink from "@/components/AdminLink";
-import ScrollThemeManager from "@/components/ScrollThemeManager";
-import ParticleBackground from "@/components/ParticleBackground";
-
+import HomeClient from "@/components/HomeClient";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-export default function Home() {
-  const [data, setData] = useState({
-    heroName: "Bahman Noushabadi",
-    heroTagline: "Tech Leader & Developer",
-    heroHeadline: "Bridging the Gap Between Operational Excellence and Technical Innovation.",
-    aboutText: "Loading...",
+export default async function Home() {
+  let data = {
+    heroName: "",
+    heroTagline: "",
+    heroHeadline: "",
+    aboutText: "",
     skills: [],
     experience: []
-  });
+  };
 
-  useEffect(() => {
-    const fetchCMSData = async () => {
-      try {
-        const docSnap = await getDoc(doc(db, "content", "main"));
-        if (docSnap.exists()) {
-          setData(prev => ({ ...prev, ...docSnap.data() }));
-        }
-      } catch (error) {
-        console.error("Error fetching CMS data:", error);
-      }
-    };
+  try {
+    const response = await fetch(
+      "https://firestore.googleapis.com/v1/projects/portfolio-6c69f/databases/(default)/documents/content/main",
+      { next: { revalidate: 3600 } } // Cache for 1 hour
+    );
     
-    if (db) fetchCMSData();
-  }, []);
-
-  return (
-    <>
-      <ScrollThemeManager />
-      <ParticleBackground />
-      <main className="content-wrapper">
-        <Hero data={data} />
-        <About data={data} />
-        <Skills data={data} />
-        <Experience data={data} />
-        <Footer data={data} />
-      </main>
+    if (response.ok) {
+      const result = await response.json();
+      // Firestore REST API returns data in a 'fields' object with types
+      const fields = result.fields;
       
-      <FeedbackModal />
-      <AdminLink />
-    </>
-  );
+      // Helper to extract values from Firestore REST format
+      const extractValue = (field) => {
+        if (!field) return null;
+        if (field.stringValue !== undefined) return field.stringValue;
+        if (field.arrayValue !== undefined) return field.arrayValue.values?.map(v => extractValue(v)) || [];
+        if (field.mapValue !== undefined) {
+          const map = {};
+          for (const key in field.mapValue.fields) {
+            map[key] = extractValue(field.mapValue.fields[key]);
+          }
+          return map;
+        }
+        return null;
+      };
+
+      data = {
+        heroName: extractValue(fields.heroName) || "",
+        heroTagline: extractValue(fields.heroTagline) || "",
+        heroHeadline: extractValue(fields.heroHeadline) || "",
+        aboutText: extractValue(fields.aboutText) || "",
+        skills: extractValue(fields.skills) || [],
+        experience: extractValue(fields.experience) || [],
+        profileImage: extractValue(fields.profileImage) || "",
+        gallery: extractValue(fields.gallery) || [],
+        linkedin: extractValue(fields.linkedin) || "",
+        email: extractValue(fields.email) || "",
+        whatsapp: extractValue(fields.whatsapp) || ""
+      };
+    }
+  } catch (error) {
+    console.error("Error fetching CMS data from REST API:", error);
+  }
+
+  return <HomeClient initialData={data} />;
 }
