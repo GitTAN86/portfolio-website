@@ -32,11 +32,11 @@ export default function Hero({ data }) {
         <section id="hero" className="hero scroll-section">
             <div className="hero-content glass-card tilt-card" ref={tiltRef}>
                 <div className="profile-image-wrapper">
-                    <img src={data?.profileImage || "/images/pic1.jpg"} alt={data?.heroName || "Bahman"} className="profile-img" />
+                    <img src={data?.profileImage || ""} alt={data?.heroName || ""} className="profile-img" />
                     <div className="img-glow"></div>
                 </div>
                 <h2 className="greeting">Hello, I am</h2>
-                <h1 className="name">{data?.heroName || "Loading..."}</h1>
+                <h1 className="name">{data?.heroName || ""}</h1>
                 <h3 className="tagline">{data?.heroTagline || ""}</h3>
                 <p className="headline">{data?.heroHeadline || ""}</p>
                 

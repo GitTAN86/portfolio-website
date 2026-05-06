@@ -17,25 +17,7 @@ export default function About({ data }) {
                                 <img src={url} alt={`Gallery item ${index + 1}`} />
                             </div>
                         ))
-                    ) : (
-                        <>
-                            <div className="gallery-item">
-                                <img src="/images/pic1.jpg" alt="Bahman working" />
-                            </div>
-                            <div className="gallery-item">
-                                <img src="/images/pic2.jpg" alt="Bahman working" />
-                            </div>
-                            <div className="gallery-item">
-                                <img src="/images/pic3.jpg" alt="Bahman team" />
-                            </div>
-                            <div className="gallery-item">
-                                <img src="/images/pic5.png" alt="Bahman team" />
-                            </div>
-                            <div className="gallery-item">
-                                <img src="/images/pic4.jpg" alt="Bahman working" />
-                            </div>
-                        </>
-                    )}
+                    ) : null}
                 </div>
             </div>
         </section>
