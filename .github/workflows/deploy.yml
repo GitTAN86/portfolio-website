@@ -47,9 +47,9 @@ jobs:
             set ftp:passive-mode true;
             set net:timeout 30;
             set net:max-retries 3;
-            mkdir -p /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
-            put -O /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/ deploy.zip; 
-            put -O /public_html/ extract.php; 
+            mkdir -p bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
+            put -O bahmannoushabadi.me/Auto_Agent/my_portfolio_project/ deploy.zip; 
+            put -O public_html/ extract.php; 
             quit
           "
 
@@ -71,4 +71,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           local-dir: tmp/
-          server-dir: /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/tmp/
+          server-dir: bahmannoushabadi.me/Auto_Agent/my_portfolio_project/tmp/
