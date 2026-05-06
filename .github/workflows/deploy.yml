@@ -27,18 +27,30 @@ jobs:
       - name: Prepare Deploy Package
         run: |
           mkdir -p deploy
-          # Copy standalone server files
           cp -r .next/standalone/* deploy/
-          # Copy static files and public assets into the standalone structure
           mkdir -p deploy/.next/static
           cp -r .next/static/* deploy/.next/static/ 2>/dev/null || true
           cp -r public deploy/ 2>/dev/null || true
           
-          # Create a single ZIP file for fast upload
           cd deploy && zip -r ../deploy.zip .
           cd ..
+          
+          # Create a separate folder for the unzipper only
+          mkdir -p unzip_script
+          cp extract.php unzip_script/
 
-      - name: Upload Package via LFTP
+      - name: Upload Unzipper (Smart Sync)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: unzip_script/
+          # This tool is better at finding the public_html folder
+          server-dir: /public_html/
+
+      - name: Upload Big Zip (Fast LFTP)
         run: |
           sudo apt-get install -y lftp
           lftp -u "${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}" "${{ secrets.FTP_SERVER }}" -e "
@@ -49,13 +61,12 @@ jobs:
             set net:max-retries 3;
             mkdir -p bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
             put -O bahmannoushabadi.me/Auto_Agent/my_portfolio_project/ deploy.zip; 
-            put -O public_html/ extract.php; 
             quit
           "
 
       - name: Trigger Remote Extraction
         run: |
-          # The script is now in public_html, reachable at the root URL
+          # Now that the script is in public_html, it should be at the root URL
           curl -f -s -X GET "https://bahmannoushabadi.me/extract.php"
 
       - name: Create Restart Marker
