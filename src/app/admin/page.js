@@ -27,6 +27,7 @@ export default function AdminPage() {
     const [whatsapp, setWhatsapp] = useState("");
     const [profileImage, setProfileImage] = useState("");
     const [gallery, setGallery] = useState([]);
+    const [cvUrl, setCvUrl] = useState("");
     
     const [skills, setSkills] = useState([]);
     const [experience, setExperience] = useState([]);
@@ -93,6 +94,7 @@ export default function AdminPage() {
                 setExperience(data.experience || []);
                 setProfileImage(data.profileImage || "");
                 setGallery(data.gallery || []);
+                setCvUrl(data.cvUrl || "");
             }
         } catch (err) {
             console.error("Error loading CMS data", err);
@@ -222,6 +224,8 @@ export default function AdminPage() {
             
             if (type === 'profile') {
                 setProfileImage(url);
+            } else if (type === 'cv') {
+                setCvUrl(url);
             } else {
                 setGallery([...gallery, url]);
             }
@@ -239,14 +243,14 @@ export default function AdminPage() {
     };
 
     const handleSaveCMS = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         setCmsStatus("Publishing...");
         try {
             await setDoc(doc(db, "content", "main"), {
                 heroName, heroTagline, heroHeadline, aboutText,
                 linkedin, email: emailLink, whatsapp,
                 skills, experience,
-                profileImage, gallery
+                profileImage, gallery, cvUrl
             });
             setCmsStatus("Published successfully!");
         } catch (err) {
@@ -585,8 +589,36 @@ export default function AdminPage() {
                                 </label>
                             </div>
 
-                            {/* Gallery Management */}
+                            {/* CV PDF Upload */}
                             <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <h4 style={{ color: 'white', marginBottom: '15px' }}>Downloadable CV (PDF)</h4>
+                                <div style={{ marginBottom: '15px', padding: '15px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', wordBreak: 'break-all' }}>
+                                    {cvUrl ? (
+                                        <a href={cvUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+                                            <i className="fa-solid fa-file-pdf" style={{ marginRight: '8px', fontSize: '1.2rem' }}></i> Current CV Attached
+                                        </a>
+                                    ) : (
+                                        <span style={{ color: '#a0a0a0' }}>No CV attached yet.</span>
+                                    )}
+                                </div>
+                                <input 
+                                    type="file" 
+                                    accept=".pdf,application/pdf" 
+                                    id="cvUpload"
+                                    onChange={(e) => handleFileUpload(e, 'cv')}
+                                    style={{ display: 'none' }}
+                                />
+                                <label 
+                                    htmlFor="cvUpload" 
+                                    className="submit-btn" 
+                                    style={{ display: 'block', textAlign: 'center', cursor: 'pointer', opacity: uploading ? 0.5 : 1 }}
+                                >
+                                    {uploading ? 'Uploading...' : 'Upload New CV (PDF)'}
+                                </label>
+                            </div>
+
+                            {/* Gallery Management */}
+                            <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', gridColumn: 'span 2' }}>
                                 <h4 style={{ color: 'white', marginBottom: '15px' }}>Gallery Images</h4>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '10px', marginBottom: '20px', minHeight: '150px' }}>
                                     {gallery.map((url, i) => (
@@ -624,6 +656,26 @@ export default function AdminPage() {
                                 </div>
                             </div>
                         </div>
+
+                        <div style={{ position: 'sticky', bottom: '30px', zIndex: 10, marginTop: '20px' }}>
+                            <button onClick={handleSaveCMS} className="submit-btn" style={{ width: '100%', padding: '20px', fontSize: '1.2rem', borderRadius: '16px', boxShadow: '0 10px 30px rgba(66, 133, 244, 0.4)' }}>
+                                <i className="fa-solid fa-cloud-arrow-up" style={{ marginRight: '10px' }}></i> Publish Media Changes Live
+                            </button>
+                            {cmsStatus && (
+                                <div style={{ 
+                                    marginTop: '15px', 
+                                    padding: '12px', 
+                                    borderRadius: '10px', 
+                                    background: cmsStatus.includes('Error') ? 'rgba(234,67,53,0.1)' : 'rgba(0,255,136,0.1)',
+                                    color: cmsStatus.includes('Error') ? '#EA4335' : '#00ff88',
+                                    border: `1px solid ${cmsStatus.includes('Error') ? 'rgba(234,67,53,0.2)' : 'rgba(0,255,136,0.2)'}`,
+                                    textAlign: 'center' 
+                                }}>
+                                    {cmsStatus}
+                                </div>
+                            )}
+                        </div>
+
                     </div>
                 </div>
             )}

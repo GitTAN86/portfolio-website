@@ -14,6 +14,11 @@ export default function Footer({ data }) {
                     <a href={data?.whatsapp ? `https://wa.me/${data.whatsapp}` : "#"} target="_blank" rel="noopener noreferrer" className="social-icon">
                         <i className="fa-brands fa-whatsapp"></i>
                     </a>
+                    {data?.cvUrl && (
+                        <a href={data.cvUrl} target="_blank" rel="noopener noreferrer" className="social-icon" title="Download CV" style={{ width: 'auto', padding: '0 20px', borderRadius: '30px', gap: '10px' }}>
+                            <i className="fa-solid fa-file-pdf"></i> <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>CV</span>
+                        </a>
+                    )}
                 </div>
                 <p className="copyright">&copy; {new Date().getFullYear()} {data?.heroName || ""}.</p>
             </div>

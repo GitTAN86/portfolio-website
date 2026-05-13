@@ -15,7 +15,7 @@ export default async function Home() {
   try {
     const response = await fetch(
       "https://firestore.googleapis.com/v1/projects/portfolio-6c69f/databases/(default)/documents/content/main",
-      { next: { revalidate: 3600 } } // Cache for 1 hour
+      { cache: 'no-store' } // Fetch fresh data on every request
     );
     
     if (response.ok) {
@@ -49,7 +49,8 @@ export default async function Home() {
         gallery: extractValue(fields.gallery) || [],
         linkedin: extractValue(fields.linkedin) || "",
         email: extractValue(fields.email) || "",
-        whatsapp: extractValue(fields.whatsapp) || ""
+        whatsapp: extractValue(fields.whatsapp) || "",
+        cvUrl: extractValue(fields.cvUrl) || ""
       };
     }
   } catch (error) {
