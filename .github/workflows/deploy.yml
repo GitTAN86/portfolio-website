@@ -45,7 +45,7 @@ jobs:
             set net:timeout 30;
             set net:max-retries 3;
             set net:connection-limit 5;
-            mirror -R -v --parallel=5 --ignore-time --ignore-size deploy/ /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
+            mirror -R -v --parallel=5 --ignore-time --ignore-size deploy/ /public_html/;
             quit
           "
 
@@ -62,4 +62,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           local-dir: tmp/
-          server-dir: bahmannoushabadi.me/Auto_Agent/my_portfolio_project/tmp/
+          server-dir: public_html/tmp/
