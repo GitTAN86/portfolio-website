@@ -45,8 +45,7 @@ jobs:
             set net:timeout 30;
             set net:max-retries 3;
             set net:connection-limit 5;
-            mkdir -p /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
-            mirror -R --parallel=5 deploy/ /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
+            mirror -R -v --parallel=5 --ignore-time --ignore-size deploy/ /bahmannoushabadi.me/Auto_Agent/my_portfolio_project/;
             quit
           "
 
