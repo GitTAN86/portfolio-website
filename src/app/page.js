@@ -162,7 +162,6 @@ export default function Home() {
       gsap.set(words, { opacity: 0.1, filter: "blur(8px)", y: 16 });
     }
 
-    // ── Master scrub timeline ─────────────────────────────────
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: container,
@@ -173,11 +172,9 @@ export default function Home() {
       },
     });
 
-    // Stage 2 – scroll indicator fades, image zooms in (0–35% of scroll)
     tl.to(indic, { opacity: 0, y: 20, duration: 0.4 }, 0);
     tl.to(img,   { scale: 1, opacity: 1, ease: "power3.out", duration: 1.2 }, 0);
 
-    // Stage 3 – text container appears, words light up one by one (35–100%)
     tl.to(text, { opacity: 1, duration: 0.4, ease: "none" }, "+=0.25");
 
     if (words.length > 0) {
@@ -190,7 +187,6 @@ export default function Home() {
         duration: 3.5,
       }, "-=0.2");
     }
-
 
     ScrollTrigger.refresh();
 
