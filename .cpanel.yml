@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/bahmzmgd/public_html
+    - cp -R * $DEPLOYPATH
