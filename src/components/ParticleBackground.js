@@ -92,7 +92,7 @@ export default function ParticleBackground() {
                 ctx.rotate(tangentAngle);
 
                 const isDark = document.body.classList.contains('theme-3') || document.body.classList.contains('theme-4');
-                const opacity = isDark ? 0.7 : 0.4;
+                const opacity = isDark ? 0.4 : 0.3;
 
                 ctx.beginPath();
                 ctx.moveTo(-this.size / 2, 0);
@@ -119,27 +119,24 @@ export default function ParticleBackground() {
                 this.x = this.centerX + Math.cos(this.angle) * currentRadius;
                 this.y = this.centerY + Math.sin(this.angle) * currentRadius;
 
-                if (mouse.x === null || mouse.isOverContent) {
-                    // Default Floating / Drift mode
-                    this.defaultX += Math.cos(this.angle) * 0.8; // Original drift speed
-                    this.defaultY += Math.sin(this.angle) * 0.8; // Original drift speed
+                // Floating / Drift mode — always active (vortex torch effect disabled)
+                this.defaultX += Math.cos(this.angle) * 0.8;
+                this.defaultY += Math.sin(this.angle) * 0.8;
 
-                    // Screen wrapping for the anchors
-                    if (this.defaultX < -200) this.defaultX = canvas.width + 200;
-                    if (this.defaultX > canvas.width + 200) this.defaultX = -200;
-                    if (this.defaultY < -200) this.defaultY = canvas.height + 200;
-                    if (this.defaultY > canvas.height + 200) this.defaultY = -200;
+                if (this.defaultX < -200) this.defaultX = canvas.width + 200;
+                if (this.defaultX > canvas.width + 200) this.defaultX = -200;
+                if (this.defaultY < -200) this.defaultY = canvas.height + 200;
+                if (this.defaultY > canvas.height + 200) this.defaultY = -200;
 
-                    // Smoothly pull centerX/Y back to their default anchor points
-                    this.centerX += (this.defaultX - this.centerX) * 0.05;
-                    this.centerY += (this.defaultY - this.centerY) * 0.05;
-                } else {
-                    // Vortex / Swarm mode (Mouse is on Background)
-                    // Original swarmStrength for "milky" smooth following
-                    const swarmStrength = 0.04;
-                    this.centerX += (mouse.x - this.centerX) * swarmStrength;
-                    this.centerY += (mouse.y - this.centerY) * swarmStrength;
-                }
+                this.centerX += (this.defaultX - this.centerX) * 0.05;
+                this.centerY += (this.defaultY - this.centerY) * 0.05;
+
+                // ── Vortex / Torch effect (commented out — re-enable to restore) ──
+                // if (mouse.x !== null && !mouse.isOverContent) {
+                //     const swarmStrength = 0.04;
+                //     this.centerX += (mouse.x - this.centerX) * swarmStrength;
+                //     this.centerY += (mouse.y - this.centerY) * swarmStrength;
+                // }
             }
         }
 
