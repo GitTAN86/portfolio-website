@@ -90,7 +90,7 @@ export default function ScrollThemeManager() {
         initObserver();
 
         // Global mouse move for flashlight pattern
-        const handleBodyMouseMove = (e) => {
+       /* const handleBodyMouseMove = (e) => {
             document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
             document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
         };
@@ -100,7 +100,7 @@ export default function ScrollThemeManager() {
             const sections = document.querySelectorAll('.scroll-section');
             sections.forEach(sec => observer.unobserve(sec));
             document.removeEventListener('mousemove', handleBodyMouseMove);
-        };
+        };*/
     }, []);
 
     return null;

@@ -18,82 +18,83 @@ if (typeof window !== "undefined") {
 // ── "Hello" word cloud — 70 world languages ──────────────────
 // Words appear one by one on page load, then float gently.
 // On first scroll they zoom out as the profile photo zooms in.
+// rotate: degrees — GSAP owns the full transform (centering + rotation + float)
 const HELLO_CLOUD = [
-  // ── Centre ────────────────────────────────────────────────────
-  { text: "سلام",        x: 50, y: 50, size: 3.6, font: "'Georgia', serif",           color: "#070606ff", opacity: 1.00, floatAmt: 6  }, // 1 English
-  // ── Inner ring (top 10 spoken) ────────────────────────────────
-  { text: "Hello",          x: 28, y: 34, size: 2.4, font: "'Arial', sans-serif",        color: "#00E5FF", opacity: 0.92, floatAmt: 7  }, // 2 Mandarin
-  { text: "नमस्ते",       x: 68, y: 30, size: 2.2, font: "'Arial', sans-serif",        color: "#FFD700", opacity: 0.90, floatAmt: 8  }, // 3 Hindi
-  { text: "Hola",         x: 63, y: 63, size: 2.1, font: "'Trebuchet MS', sans-serif", color: "#FF6B9D", opacity: 0.88, floatAmt: 9  }, // 4 Spanish
-  { text: "Bonjour",      x: 24, y: 65, size: 2.0, font: "'Palatino', serif",          color: "#C084FC", opacity: 0.87, floatAmt: 8  }, // 5 French
-  { text: "مرحبا",        x: 47, y: 78, size: 1.9, font: "'Arial', sans-serif",        color: "#34D399", opacity: 0.85, floatAmt: 10 }, // 6 Arabic
-  { text: "হ্যালো",       x: 79, y: 58, size: 1.8, font: "'Arial', sans-serif",        color: "#FB923C", opacity: 0.83, floatAmt: 9  }, // 7 Bengali
-  { text: "Olá",          x: 83, y: 20, size: 1.8, font: "'Times New Roman', serif",   color: "#FDE68A", opacity: 0.82, floatAmt: 10 }, // 8 Portuguese
-  { text: "Halo",         x: 35, y: 20, size: 1.7, font: "'Arial', sans-serif",        color: "#67E8F9", opacity: 0.82, floatAmt: 11 }, // 9 Indonesian
-  { text: "你好",         x: 12, y: 50, size: 1.8, font: "'Arial', sans-serif",        color: "#F9A8D4", opacity: 0.82, floatAmt: 9  }, // 10 Urdu
-  // ── Mid ring ──────────────────────────────────────────────────
-  { text: "Привет",       x: 10, y: 65, size: 1.6, font: "'Georgia', serif",           color: "#FDA4AF", opacity: 0.78, floatAmt: 11 }, // 11 Russian
-  { text: "Hallo",        x: 74, y: 75, size: 1.6, font: "'Verdana', sans-serif",      color: "#D8B4FE", opacity: 0.78, floatAmt: 10 }, // 12 German
-  { text: "こんにちは",   x: 50, y: 22, size: 1.5, font: "'Arial', sans-serif",        color: "#6EE7B7", opacity: 0.78, floatAmt: 11 }, // 13 Japanese
-  { text: "नमस्कार",      x: 88, y: 40, size: 1.4, font: "'Arial', sans-serif",        color: "#7DD3FC", opacity: 0.76, floatAmt: 10 }, // 14 Marathi
-  { text: "Xin chào",     x: 32, y: 83, size: 1.4, font: "'Arial', sans-serif",        color: "#86EFAC", opacity: 0.76, floatAmt: 12 }, // 15 Vietnamese
-  { text: "నమస్కారం",    x: 65, y: 12, size: 1.3, font: "'Arial', sans-serif",        color: "#FCA5A5", opacity: 0.74, floatAmt: 12 }, // 16 Telugu
-  { text: "Habari",       x: 6,  y: 22, size: 1.3, font: "'Verdana', sans-serif",      color: "#5EEAD4", opacity: 0.72, floatAmt: 13 }, // 17 Swahili
-  { text: "Sannu",        x: 92, y: 65, size: 1.3, font: "'Arial', sans-serif",        color: "#FDBA74", opacity: 0.72, floatAmt: 12 }, // 18 Hausa
-  { text: "Merhaba",      x: 58, y: 88, size: 1.3, font: "'Verdana', sans-serif",      color: "#A3E635", opacity: 0.72, floatAmt: 10 }, // 19 Turkish
-  { text: "سلام",         x: 18, y: 38, size: 1.3, font: "'Arial', sans-serif",        color: "#38BDF8", opacity: 0.70, floatAmt: 11 }, // 20 W. Punjabi
-  // ── Outer ring ────────────────────────────────────────────────
-  { text: "Kamusta",      x: 78, y: 88, size: 1.2, font: "'Arial', sans-serif",        color: "#A78BFA", opacity: 0.70, floatAmt: 13 }, // 21 Tagalog
-  { text: "வணக்கம்",     x: 38, y: 42, size: 1.2, font: "'Arial', sans-serif",        color: "#F472B6", opacity: 0.68, floatAmt: 11 }, // 22 Tamil
-  { text: "你好",          x: 60, y: 40, size: 1.2, font: "'Arial', sans-serif",        color: "#4ADE80", opacity: 0.68, floatAmt: 10 }, // 23 Cantonese
-  { text: "侬好",          x: 33, y: 60, size: 1.2, font: "'Arial', sans-serif",        color: "#FCD34D", opacity: 0.68, floatAmt: 12 }, // 24 Wu/Shanghainese
-  { text: "درود",         x: 16, y: 75, size: 1.2, font: "'Arial', sans-serif",        color: "#E879F9", opacity: 0.68, floatAmt: 11 }, // 25 Farsi
-  { text: "안녕하세요",   x: 55, y: 15, size: 1.2, font: "'Arial', sans-serif",        color: "#F87171", opacity: 0.68, floatAmt: 13 }, // 26 Korean
-  { text: "ሰላም",          x: 90, y: 78, size: 1.1, font: "'Arial', sans-serif",        color: "#86EFAC", opacity: 0.65, floatAmt: 13 }, // 27 Amharic
-  { text: "สวัสดี",       x: 46, y: 93, size: 1.1, font: "'Arial', sans-serif",        color: "#BAE6FD", opacity: 0.65, floatAmt: 14 }, // 28 Thai
-  { text: "Sugeng",       x: 73, y: 48, size: 1.1, font: "'Arial', sans-serif",        color: "#DDD6FE", opacity: 0.65, floatAmt: 11 }, // 29 Javanese
-  { text: "Ciao",         x: 22, y: 56, size: 1.2, font: "'Courier New', monospace",   color: "#FDBA74", opacity: 0.68, floatAmt: 9  }, // 30 Italian
-  { text: "નમસ્તે",       x: 90, y: 10, size: 1.1, font: "'Arial', sans-serif",        color: "#FDE68A", opacity: 0.62, floatAmt: 12 }, // 31 Gujarati
-  { text: "ನಮಸ್ಕಾರ",     x: 5,  y: 33, size: 1.1, font: "'Arial', sans-serif",        color: "#67E8F9", opacity: 0.62, floatAmt: 12 }, // 32 Kannada
-  { text: "Ẹ káàárọ̀",   x: 18, y: 85, size: 1.0, font: "'Arial', sans-serif",        color: "#A3E635", opacity: 0.60, floatAmt: 13 }, // 33 Yoruba
-  { text: "प्रणाम",       x: 55, y: 38, size: 1.0, font: "'Arial', sans-serif",        color: "#C084FC", opacity: 0.60, floatAmt: 10 }, // 34 Bhojpuri
-  { text: "Привіт",       x: 8,  y: 78, size: 1.1, font: "'Georgia', serif",           color: "#FB923C", opacity: 0.62, floatAmt: 12 }, // 35 Ukrainian
-  { text: "Cześć",        x: 90, y: 30, size: 1.1, font: "'Verdana', sans-serif",      color: "#7DD3FC", opacity: 0.62, floatAmt: 11 }, // 36 Polish
-  { text: "Helo",         x: 43, y: 70, size: 1.0, font: "'Arial', sans-serif",        color: "#86EFAC", opacity: 0.60, floatAmt: 13 }, // 37 Malay
-  { text: "Akkam",        x: 80, y: 6,  size: 1.0, font: "'Arial', sans-serif",        color: "#F9A8D4", opacity: 0.58, floatAmt: 14 }, // 38 Oromo
-  { text: "Salut",        x: 20, y: 22, size: 1.0, font: "'Trebuchet MS', sans-serif", color: "#5EEAD4", opacity: 0.58, floatAmt: 11 }, // 39 Romanian
-  { text: "Salam",        x: 68, y: 82, size: 1.0, font: "'Arial', sans-serif",        color: "#FCA5A5", opacity: 0.58, floatAmt: 12 }, // 40 Azerbaijani
-  // ── Wide periphery ────────────────────────────────────────────
-  { text: "नमस्ते",       x: 40, y: 25, size: 1.0, font: "'Arial', sans-serif",        color: "#6EE7B7", opacity: 0.56, floatAmt: 12 }, // 41 Maithili
-  { text: "မင်္ဂလာပါ",   x: 92, y: 48, size: 1.0, font: "'Arial', sans-serif",        color: "#D8B4FE", opacity: 0.58, floatAmt: 13 }, // 42 Burmese
-  { text: "ਸਤ ਸ੍ਰੀ",     x: 6,  y: 8,  size: 1.0, font: "'Arial', sans-serif",        color: "#FDE68A", opacity: 0.52, floatAmt: 15 }, // 43 E. Punjabi
-  { text: "नमस्ते",       x: 62, y: 55, size: 1.0, font: "'Arial', sans-serif",        color: "#38BDF8", opacity: 0.56, floatAmt: 10 }, // 44 Awadhi
-  { text: "Salom",        x: 47, y: 10, size: 1.0, font: "'Arial', sans-serif",        color: "#FDA4AF", opacity: 0.55, floatAmt: 14 }, // 45 Uzbek
-  { text: "Manahoana",    x: 25, y: 92, size: 0.95,font: "'Arial', sans-serif",        color: "#A78BFA", opacity: 0.50, floatAmt: 15 }, // 46 Malagasy
-  { text: "Wilujeng",     x: 76, y: 63, size: 0.95,font: "'Arial', sans-serif",        color: "#4ADE80", opacity: 0.52, floatAmt: 12 }, // 47 Sundanese
-  { text: "你好",          x: 32, y: 47, size: 0.95,font: "'Arial', sans-serif",        color: "#FCD34D", opacity: 0.52, floatAmt: 11 }, // 48 Xiang
-  { text: "你好",          x: 85, y: 50, size: 0.9, font: "'Arial', sans-serif",        color: "#F472B6", opacity: 0.50, floatAmt: 13 }, // 49 Gan
-  { text: "哩好",          x: 67, y: 70, size: 0.95,font: "'Arial', sans-serif",        color: "#5EEAD4", opacity: 0.52, floatAmt: 12 }, // 50 Min Nan
-  { text: "你好",          x: 15, y: 58, size: 0.9, font: "'Arial', sans-serif",        color: "#FBBF24", opacity: 0.50, floatAmt: 13 }, // 51 Hakka
-  { text: "سلام",         x: 6,  y: 92, size: 0.9, font: "'Arial', sans-serif",        color: "#FB7185", opacity: 0.48, floatAmt: 15 }, // 52 Pashto
-  { text: "നമസ്കാരം",    x: 90, y: 88, size: 0.9, font: "'Arial', sans-serif",        color: "#86EFAC", opacity: 0.48, floatAmt: 14 }, // 53 Malayalam
-  { text: "ନମସ୍କାର",     x: 42, y: 88, size: 0.9, font: "'Arial', sans-serif",        color: "#7DD3FC", opacity: 0.48, floatAmt: 15 }, // 54 Odia
-  { text: "Zdravo",       x: 22, y: 46, size: 0.95,font: "'Verdana', sans-serif",      color: "#E879F9", opacity: 0.52, floatAmt: 12 }, // 55 Serbo-Croatian
-  { text: "Nabad",        x: 78, y: 38, size: 0.9, font: "'Arial', sans-serif",        color: "#FCA5A5", opacity: 0.50, floatAmt: 13 }, // 56 Somali
-  { text: "Nnọọ",         x: 36, y: 70, size: 0.9, font: "'Arial', sans-serif",        color: "#BAE6FD", opacity: 0.50, floatAmt: 13 }, // 57 Igbo
-  { text: "Hallo",        x: 8,  y: 15, size: 0.95,font: "'Arial', sans-serif",        color: "#C7D2FE", opacity: 0.52, floatAmt: 14 }, // 58 Dutch
-  { text: "سلام",         x: 95, y: 18, size: 0.9, font: "'Arial', sans-serif",        color: "#FDE68A", opacity: 0.48, floatAmt: 14 }, // 59 Sindhi
-  { text: "Salaam",       x: 96, y: 56, size: 0.9, font: "'Arial', sans-serif",        color: "#6EE7B7", opacity: 0.46, floatAmt: 14 }, // 60 Fula
-  { text: "जय जोहार",    x: 56, y: 70, size: 0.9, font: "'Arial', sans-serif",        color: "#D8B4FE", opacity: 0.48, floatAmt: 13 }, // 61 Chhattisgarhi
-  { text: "ආයුබෝවන්",    x: 70, y: 20, size: 0.9, font: "'Arial', sans-serif",        color: "#67E8F9", opacity: 0.50, floatAmt: 12 }, // 62 Sinhala
-  { text: "নমস্কাৰ",     x: 50, y: 65, size: 0.9, font: "'Arial', sans-serif",        color: "#FB923C", opacity: 0.48, floatAmt: 12 }, // 63 Assamese
-  { text: "Silav",        x: 26, y: 77, size: 0.9, font: "'Arial', sans-serif",        color: "#F9A8D4", opacity: 0.48, floatAmt: 14 }, // 64 Kurdish
-  { text: "Сәлем",        x: 87, y: 72, size: 0.9, font: "'Georgia', serif",           color: "#A3E635", opacity: 0.48, floatAmt: 13 }, // 65 Kazakh
-  { text: "Ahoj",         x: 32, y: 12, size: 0.9, font: "'Verdana', sans-serif",      color: "#5EEAD4", opacity: 0.48, floatAmt: 14 }, // 66 Czech
-  { text: "Γεια σας",    x: 14, y: 42, size: 0.95,font: "'Times New Roman', serif",   color: "#E879F9", opacity: 0.52, floatAmt: 11 }, // 67 Greek
-  { text: "Szia",         x: 62, y: 25, size: 0.9, font: "'Arial', sans-serif",        color: "#FCA5A5", opacity: 0.50, floatAmt: 12 }, // 68 Hungarian
-  { text: "Hej",          x: 5,  y: 6,  size: 0.9, font: "'Arial', sans-serif",        color: "#84FFFF", opacity: 0.44, floatAmt: 14 }, // 69 Swedish
-  { text: "Բարև",         x: 95, y: 6,  size: 0.9, font: "'Arial', sans-serif",        color: "#FFCC80", opacity: 0.44, floatAmt: 13 }, // 70 Armenian
+  // ── Centre — black, upright ────────────────────────────────────────────────────
+  { text: "سلام",        x: 50, y: 50, size: 4.5,  font: "'Georgia', serif",           color: "#000000", opacity: 1.00, floatAmt: 6,  rotate:  0   }, // 1  center
+  // ── Inner ring (top 10 spoken) ────────────────────────────────────────────────
+  { text: "Hello",        x: 28, y: 34, size: 3.0,  font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.92, floatAmt: 7,  rotate: -18  }, // 2  English
+  { text: "नमस्ते",       x: 68, y: 30, size: 2.8,  font: "'Arial', sans-serif",        color: "#880E4F", opacity: 0.90, floatAmt: 8,  rotate:  12  }, // 3  Hindi
+  { text: "Hola",         x: 63, y: 63, size: 2.7,  font: "'Trebuchet MS', sans-serif", color: "#1B5E20", opacity: 0.88, floatAmt: 9,  rotate:  -8  }, // 4  Spanish
+  { text: "Bonjour",      x: 24, y: 65, size: 2.6,  font: "'Palatino', serif",          color: "#4A148C", opacity: 0.87, floatAmt: 8,  rotate:  22  }, // 5  French
+  { text: "مرحبا",        x: 47, y: 78, size: 2.4,  font: "'Arial', sans-serif",        color: "#006064", opacity: 0.85, floatAmt: 10, rotate: -35  }, // 6  Arabic
+  { text: "হ্যালো",       x: 79, y: 58, size: 2.3,  font: "'Arial', sans-serif",        color: "#BF360C", opacity: 0.83, floatAmt: 9,  rotate:  15  }, // 7  Bengali
+  { text: "Olá",          x: 83, y: 20, size: 2.3,  font: "'Times New Roman', serif",   color: "#01579B", opacity: 0.82, floatAmt: 10, rotate: -28  }, // 8  Portuguese
+  { text: "Halo",         x: 35, y: 20, size: 2.1,  font: "'Arial', sans-serif",        color: "#33691E", opacity: 0.82, floatAmt: 11, rotate:  40  }, // 9  Indonesian
+  { text: "你好",          x: 12, y: 50, size: 2.3,  font: "'Arial', sans-serif",        color: "#311B92", opacity: 0.82, floatAmt: 9,  rotate: -50  }, // 10 Mandarin/Urdu
+  // ── Mid ring ──────────────────────────────────────────────────────────────────
+  { text: "Привет",       x: 10, y: 65, size: 2.0,  font: "'Georgia', serif",           color: "#37474F", opacity: 0.78, floatAmt: 11, rotate:  30  }, // 11 Russian
+  { text: "Hallo",        x: 74, y: 75, size: 2.0,  font: "'Verdana', sans-serif",      color: "#6A1B9A", opacity: 0.78, floatAmt: 10, rotate: -14  }, // 12 German
+  { text: "こんにちは",   x: 50, y: 22, size: 1.9,  font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.78, floatAmt: 11, rotate:   8  }, // 13 Japanese
+  { text: "नमस्कार",      x: 88, y: 40, size: 1.8,  font: "'Arial', sans-serif",        color: "#4E342E", opacity: 0.76, floatAmt: 10, rotate: -42  }, // 14 Marathi
+  { text: "Xin chào",     x: 32, y: 83, size: 1.8,  font: "'Arial', sans-serif",        color: "#1B4F72", opacity: 0.76, floatAmt: 12, rotate:  55  }, // 15 Vietnamese
+  { text: "నమస్కారం",    x: 65, y: 12, size: 1.7,  font: "'Arial', sans-serif",        color: "#7B0000", opacity: 0.74, floatAmt: 12, rotate: -20  }, // 16 Telugu
+  { text: "Habari",       x: 6,  y: 22, size: 1.7,  font: "'Verdana', sans-serif",      color: "#1A237E", opacity: 0.72, floatAmt: 13, rotate:  45  }, // 17 Swahili
+  { text: "Sannu",        x: 92, y: 65, size: 1.7,  font: "'Arial', sans-serif",        color: "#004D40", opacity: 0.72, floatAmt: 12, rotate: -32  }, // 18 Hausa
+  { text: "Merhaba",      x: 58, y: 88, size: 1.7,  font: "'Verdana', sans-serif",      color: "#880E4F", opacity: 0.72, floatAmt: 10, rotate:  18  }, // 19 Turkish
+  { text: "سلام",         x: 18, y: 38, size: 1.7,  font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.70, floatAmt: 11, rotate: -60  }, // 20 W. Punjabi
+  // ── Outer ring ────────────────────────────────────────────────────────────────
+  { text: "Kamusta",      x: 78, y: 88, size: 1.6,  font: "'Arial', sans-serif",        color: "#4A148C", opacity: 0.70, floatAmt: 13, rotate:  25  }, // 21 Tagalog
+  { text: "வணக்கம்",     x: 38, y: 42, size: 1.6,  font: "'Arial', sans-serif",        color: "#1B5E20", opacity: 0.68, floatAmt: 11, rotate: -38  }, // 22 Tamil
+  { text: "你好",          x: 70, y: 40, size: 1.6,  font: "'Arial', sans-serif",        color: "#006064", opacity: 0.68, floatAmt: 10, rotate:  52  }, // 23 Cantonese
+  { text: "侬好",          x: 33, y: 60, size: 1.6,  font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.68, floatAmt: 12, rotate: -10  }, // 24 Wu
+  { text: "درود",         x: 16, y: 75, size: 1.6,  font: "'Arial', sans-serif",        color: "#311B92", opacity: 0.68, floatAmt: 11, rotate:  68  }, // 25 Farsi
+  { text: "안녕하세요",   x: 55, y: 15, size: 1.6,  font: "'Arial', sans-serif",        color: "#7B0000", opacity: 0.68, floatAmt: 13, rotate: -22  }, // 26 Korean
+  { text: "ሰላም",          x: 90, y: 78, size: 1.4,  font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.65, floatAmt: 13, rotate:  36  }, // 27 Amharic
+  { text: "สวัสดี",       x: 46, y: 93, size: 1.4,  font: "'Arial', sans-serif",        color: "#4A148C", opacity: 0.65, floatAmt: 14, rotate: -45  }, // 28 Thai
+  { text: "Sugeng",       x: 73, y: 48, size: 1.4,  font: "'Arial', sans-serif",        color: "#004D40", opacity: 0.65, floatAmt: 11, rotate:   5  }, // 29 Javanese
+  { text: "Ciao",         x: 22, y: 56, size: 1.6,  font: "'Courier New', monospace",   color: "#880E4F", opacity: 0.68, floatAmt: 9,  rotate: -48  }, // 30 Italian
+  { text: "નમસ્તે",       x: 90, y: 10, size: 1.4,  font: "'Arial', sans-serif",        color: "#33691E", opacity: 0.62, floatAmt: 12, rotate:  30  }, // 31 Gujarati
+  { text: "ನಮಸ್ಕಾರ",     x: 5,  y: 33, size: 1.4,  font: "'Arial', sans-serif",        color: "#BF360C", opacity: 0.62, floatAmt: 12, rotate: -55  }, // 32 Kannada
+  { text: "Ẹ káàárọ̀",   x: 18, y: 85, size: 1.25, font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.60, floatAmt: 13, rotate:  42  }, // 33 Yoruba
+  { text: "प्रणाम",       x: 55, y: 38, size: 1.25, font: "'Arial', sans-serif",        color: "#6A1B9A", opacity: 0.60, floatAmt: 10, rotate: -16  }, // 34 Bhojpuri
+  { text: "Привіт",       x: 8,  y: 78, size: 1.4,  font: "'Georgia', serif",           color: "#37474F", opacity: 0.62, floatAmt: 12, rotate:  65  }, // 35 Ukrainian
+  { text: "Cześć",        x: 90, y: 30, size: 1.4,  font: "'Verdana', sans-serif",      color: "#01579B", opacity: 0.62, floatAmt: 11, rotate: -28  }, // 36 Polish
+  { text: "Helo",         x: 43, y: 70, size: 1.25, font: "'Arial', sans-serif",        color: "#1B5E20", opacity: 0.60, floatAmt: 13, rotate:  20  }, // 37 Malay
+  { text: "Akkam",        x: 80, y: 6,  size: 1.25, font: "'Arial', sans-serif",        color: "#311B92", opacity: 0.58, floatAmt: 14, rotate: -38  }, // 38 Oromo
+  { text: "Salut",        x: 20, y: 22, size: 1.25, font: "'Trebuchet MS', sans-serif", color: "#7B0000", opacity: 0.58, floatAmt: 11, rotate:  50  }, // 39 Romanian
+  { text: "Salam",        x: 68, y: 82, size: 1.25, font: "'Arial', sans-serif",        color: "#4E342E", opacity: 0.58, floatAmt: 12, rotate: -12  }, // 40 Azerbaijani
+  // ── Wide periphery ────────────────────────────────────────────────────────────
+  { text: "नमस्ते",       x: 40, y: 25, size: 1.25, font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.56, floatAmt: 12, rotate:  35  }, // 41 Maithili
+  { text: "မင်္ဂလာပါ",   x: 92, y: 48, size: 1.25, font: "'Arial', sans-serif",        color: "#4A148C", opacity: 0.58, floatAmt: 13, rotate: -55  }, // 42 Burmese
+  { text: "ਸਤ ਸ੍ਰੀ",     x: 6,  y: 8,  size: 1.25, font: "'Arial', sans-serif",        color: "#006064", opacity: 0.52, floatAmt: 15, rotate:  80  }, // 43 E. Punjabi
+  { text: "नमस्ते",       x: 62, y: 55, size: 1.25, font: "'Arial', sans-serif",        color: "#880E4F", opacity: 0.56, floatAmt: 10, rotate: -22  }, // 44 Awadhi
+  { text: "Salom",        x: 47, y: 10, size: 1.25, font: "'Arial', sans-serif",        color: "#33691E", opacity: 0.55, floatAmt: 14, rotate:  15  }, // 45 Uzbek
+  { text: "Manahoana",    x: 25, y: 92, size: 1.1,  font: "'Arial', sans-serif",        color: "#311B92", opacity: 0.50, floatAmt: 15, rotate: -40  }, // 46 Malagasy
+  { text: "Wilujeng",     x: 76, y: 63, size: 1.1,  font: "'Arial', sans-serif",        color: "#1B4F72", opacity: 0.52, floatAmt: 12, rotate:  55  }, // 47 Sundanese
+  { text: "你好",          x: 32, y: 47, size: 1.1,  font: "'Arial', sans-serif",        color: "#4E342E", opacity: 0.52, floatAmt: 11, rotate: -30  }, // 48 Xiang
+  { text: "你好",          x: 85, y: 50, size: 1.0,  font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.50, floatAmt: 13, rotate:  72  }, // 49 Gan
+  { text: "哩好",          x: 67, y: 70, size: 1.1,  font: "'Arial', sans-serif",        color: "#7B0000", opacity: 0.52, floatAmt: 12, rotate: -18  }, // 50 Min Nan
+  { text: "你好",          x: 15, y: 58, size: 1.0,  font: "'Arial', sans-serif",        color: "#37474F", opacity: 0.50, floatAmt: 13, rotate:  45  }, // 51 Hakka
+  { text: "سلام",         x: 6,  y: 92, size: 1.0,  font: "'Arial', sans-serif",        color: "#6A1B9A", opacity: 0.48, floatAmt: 15, rotate: -68  }, // 52 Pashto
+  { text: "നമസ്കാരം",    x: 90, y: 88, size: 1.0,  font: "'Arial', sans-serif",        color: "#004D40", opacity: 0.48, floatAmt: 14, rotate:  28  }, // 53 Malayalam
+  { text: "ନମସ୍କାର",     x: 42, y: 88, size: 1.0,  font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.48, floatAmt: 15, rotate: -50  }, // 54 Odia
+  { text: "Zdravo",       x: 22, y: 46, size: 1.1,  font: "'Verdana', sans-serif",      color: "#311B92", opacity: 0.52, floatAmt: 12, rotate:  20  }, // 55 Serbo-Croatian
+  { text: "Nabad",        x: 78, y: 38, size: 1.0,  font: "'Arial', sans-serif",        color: "#880E4F", opacity: 0.50, floatAmt: 13, rotate: -35  }, // 56 Somali
+  { text: "Nnọọ",         x: 36, y: 70, size: 1.0,  font: "'Arial', sans-serif",        color: "#1B5E20", opacity: 0.50, floatAmt: 13, rotate:  60  }, // 57 Igbo
+  { text: "Hallo",        x: 8,  y: 15, size: 1.1,  font: "'Arial', sans-serif",        color: "#37474F", opacity: 0.52, floatAmt: 14, rotate: -42  }, // 58 Dutch
+  { text: "سلام",         x: 95, y: 18, size: 1.0,  font: "'Arial', sans-serif",        color: "#BF360C", opacity: 0.48, floatAmt: 14, rotate:  35  }, // 59 Sindhi
+  { text: "Salaam",       x: 96, y: 56, size: 1.0,  font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.46, floatAmt: 14, rotate: -25  }, // 60 Fula
+  { text: "जय जोहार",    x: 56, y: 70, size: 1.0,  font: "'Arial', sans-serif",        color: "#6A1B9A", opacity: 0.48, floatAmt: 13, rotate:  48  }, // 61 Chhattisgarhi
+  { text: "ආයුබෝවන්",    x: 70, y: 20, size: 1.0,  font: "'Arial', sans-serif",        color: "#004D40", opacity: 0.50, floatAmt: 12, rotate: -15  }, // 62 Sinhala
+  { text: "নমস্কাৰ",     x: 50, y: 65, size: 1.0,  font: "'Arial', sans-serif",        color: "#7B0000", opacity: 0.48, floatAmt: 12, rotate:  30  }, // 63 Assamese
+  { text: "Silav",        x: 26, y: 77, size: 1.0,  font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.48, floatAmt: 14, rotate: -58  }, // 64 Kurdish
+  { text: "Сәлем",        x: 87, y: 72, size: 1.0,  font: "'Georgia', serif",           color: "#1B5E20", opacity: 0.48, floatAmt: 13, rotate:  42  }, // 65 Kazakh
+  { text: "Ahoj",         x: 32, y: 12, size: 1.0,  font: "'Verdana', sans-serif",      color: "#311B92", opacity: 0.48, floatAmt: 14, rotate: -20  }, // 66 Czech
+  { text: "Γεια σας",    x: 14, y: 42, size: 1.1,  font: "'Times New Roman', serif",   color: "#880E4F", opacity: 0.52, floatAmt: 11, rotate:  65  }, // 67 Greek
+  { text: "Szia",         x: 62, y: 25, size: 1.0,  font: "'Arial', sans-serif",        color: "#37474F", opacity: 0.50, floatAmt: 12, rotate: -28  }, // 68 Hungarian
+  { text: "Hej",          x: 5,  y: 6,  size: 1.0,  font: "'Arial', sans-serif",        color: "#4E342E", opacity: 0.44, floatAmt: 14, rotate:  55  }, // 69 Swedish
+  { text: "Բարև",         x: 95, y: 6,  size: 1.0,  font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.44, floatAmt: 13, rotate: -45  }, // 70 Armenian
 ];
 
 const DEFAULT_PROFILE_IMAGE = "/images/bahman.jpg";
@@ -168,6 +169,7 @@ export default function Home() {
   const textRef      = useRef(null);
   const indicRef     = useRef(null);
   const wordCloudRef = useRef(null);
+  const worldMapRef  = useRef(null);
 
   // ── Skills refs ───────────────────────────────────────────────
   const skillsContainerRef = useRef(null);
@@ -224,8 +226,18 @@ export default function Home() {
     const spans = Array.from(cloud.querySelectorAll(".hello-word"));
     if (spans.length === 0) return;
 
-    // 1. All words start invisible, slightly blurred and scaled down
-    gsap.set(spans, { opacity: 0, scale: 0.5, filter: "blur(6px)", y: 15 });
+    // 1. All words start invisible, slightly blurred and scaled down.
+    //    xPercent/yPercent centre each span (replaces CSS translate(-50%,-50%)).
+    //    rotation is set per-word so GSAP owns the full transform matrix.
+    gsap.set(spans, {
+      opacity: 0,
+      scale: 0.5,
+      filter: "blur(6px)",
+      y: 15,
+      xPercent: -50,
+      yPercent: -50,
+      rotation: (i) => HELLO_CLOUD[i]?.rotate ?? 0,
+    });
 
     // 2. Each word pops in every 0.25 s with a spring entrance
     //    Use function-based opacity so each word lands at its own target opacity
@@ -234,13 +246,17 @@ export default function Home() {
       scale: 1,
       filter: "blur(0px)",
       y: 0,
-      duration: 2.65,
+      duration: 1.65,
       stagger: 0.35,          // one new word every 0.35 s
       ease: "back.out(1.4)",
     });
 
-    // 3. After all words are visible, each bobs gently at its own pace
-    const allVisibleAt = (spans.length - 1) * 0.25 + 0.65;
+    // 3. After all words are visible, each bobs gently at its own pace.
+    //    allVisibleAt must match the stagger + duration used in step 2.
+    const staggerVal    = 0.35;
+    const durationVal   = 1.65;
+    const allVisibleAt  = (spans.length - 1) * staggerVal + durationVal;
+
     spans.forEach((span, i) => {
       const amt   = HELLO_CLOUD[i]?.floatAmt ?? 10;
       const dur   = 2.0 + (i % 5) * 0.45;
@@ -255,7 +271,26 @@ export default function Home() {
       });
     });
 
-    return () => gsap.killTweensOf(spans);
+    // 4. World map fades in sync with the words:
+    //    - starts invisible when the FIRST word pops in (delay: 0)
+    //    - reaches full opacity when the LAST word finishes (duration: allVisibleAt)
+    //    The composite image encodes the contrast: pale-gray continents (≈10%)
+    //    vs vivid red-orange Iran (≈60%), so one animation does the job.
+    const worldMap = worldMapRef.current;
+    if (worldMap) {
+      gsap.set(worldMap, { opacity: 0 });
+      gsap.to(worldMap, {
+        opacity: 1,               // composite image already has the right contrast baked in
+        duration: allVisibleAt,   // finishes exactly when last word appears
+        delay: 0,                 // starts with first word
+        ease: "power1.out",
+      });
+    }
+
+    return () => {
+      gsap.killTweensOf(spans);
+      if (worldMap) gsap.killTweensOf(worldMap);
+    };
   }, []);
 
   // ── Hero Timeline (scroll-driven scrub) ──────────────────────
@@ -418,6 +453,31 @@ export default function Home() {
               zIndex: 1,
             }}
           >
+            {/* World map — fades in after last word appears, zooms out with cloud on scroll */}
+            <img
+              ref={worldMapRef}
+              src="/images/world-map.png"
+              alt=""
+              aria-hidden="true"
+              draggable={false}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",         // fills container edge-to-edge
+                objectPosition: "center",
+                opacity: 0,                 // GSAP animates this 0→1 in sync with words
+                pointerEvents: "none",
+                userSelect: "none",
+                // multiply makes white pixels transparent on any background:
+                // white(255) × bg = bg  →  ocean/white areas become invisible
+                // gray(#C8C8C8) × bg  →  faint continent tint on bg
+                // red(#E63946) × bg   →  vivid Iran tint on bg
+                mixBlendMode: "multiply",
+                willChange: "opacity",
+              }}
+            />
             {HELLO_CLOUD.map((word, i) => (
               <span
                 key={i}
@@ -426,7 +486,7 @@ export default function Home() {
                   position: "absolute",
                   left: `${word.x}%`,
                   top: `${word.y}%`,
-                  transform: "translate(-50%, -50%)",
+                  // transform is fully owned by GSAP (xPercent/yPercent + rotation)
                   fontSize: `clamp(0.75rem, ${word.size}vw, ${word.size}rem)`,
                   fontFamily: word.font,
                   color: word.color,
