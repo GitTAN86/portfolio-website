@@ -778,6 +778,46 @@ h4 {
     #dashboardScreen {
         padding: 15px !important;
     }
+
+    /* ── Skills section mobile fix ───────────────────────────────
+       Force a 2×2 grid so all 4 cards fit within the 100vh sticky
+       panel. Without this, auto-fit creates 1 column → 4 rows →
+       total height > 100vh → overflow:hidden clips the bottom cards.
+    ── */
+    .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .skill-card {
+        padding: 1rem 0.75rem;
+    }
+
+    .skill-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .skill-card h3 {
+        font-size: 0.95rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .skill-card p {
+        font-size: 0.78rem;
+        line-height: 1.4;
+    }
+
+    /* Reduce skills section title on mobile so it takes less vertical room */
+    #skills .section-title {
+        font-size: 1.6rem;
+        margin-bottom: 1.2rem !important;
+    }
+
+    /* Reduce sticky panel padding on mobile so cards have more width */
+    .skills-pin {
+        padding: 0 1rem !important;
+    }
 }
 
 /* Admin Link Button */

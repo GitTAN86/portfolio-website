@@ -465,6 +465,7 @@ export default function Home() {
       >
         <div
           ref={skillsPinRef}
+          className="skills-pin"
           style={{
             position: "sticky",
             top: 0,
