@@ -18,83 +18,62 @@ if (typeof window !== "undefined") {
 // ── "Hello" word cloud — 70 world languages ──────────────────
 // Words appear one by one on page load, then float gently.
 // On first scroll they zoom out as the profile photo zooms in.
-// rotate: degrees — GSAP owns the full transform (centering + rotation + float)
+// rotate: 0grees — GSAP owns the full transform (centering + rotation + float)
 const HELLO_CLOUD = [
   // ── Centre — black, upright ────────────────────────────────────────────────────
-  { text: "سلام",        x: 50, y: 50, size: 4.5,  font: "'Georgia', serif",           color: "#000000", opacity: 1.00, floatAmt: 6,  rotate:  0   }, // 1  center
+  { text: "درود", x: 50, y: 50, size: 5.6, font: "'Noto Nastaliq Urdu', sans-serif", color: "#fe0303ff", opacity: 1.00, floatAmt: 11, rotate: 0 }, // 25 Farsi
   // ── Inner ring (top 10 spoken) ────────────────────────────────────────────────
-  { text: "Hello",        x: 28, y: 34, size: 3.0,  font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.92, floatAmt: 7,  rotate: -18  }, // 2  English
-  { text: "नमस्ते",       x: 68, y: 30, size: 2.8,  font: "'Arial', sans-serif",        color: "#880E4F", opacity: 0.90, floatAmt: 8,  rotate:  12  }, // 3  Hindi
-  { text: "Hola",         x: 63, y: 63, size: 2.7,  font: "'Trebuchet MS', sans-serif", color: "#1B5E20", opacity: 0.88, floatAmt: 9,  rotate:  -8  }, // 4  Spanish
-  { text: "Bonjour",      x: 24, y: 65, size: 2.6,  font: "'Palatino', serif",          color: "#4A148C", opacity: 0.87, floatAmt: 8,  rotate:  22  }, // 5  French
-  { text: "مرحبا",        x: 47, y: 78, size: 2.4,  font: "'Arial', sans-serif",        color: "#006064", opacity: 0.85, floatAmt: 10, rotate: -35  }, // 6  Arabic
-  { text: "হ্যালো",       x: 79, y: 58, size: 2.3,  font: "'Arial', sans-serif",        color: "#BF360C", opacity: 0.83, floatAmt: 9,  rotate:  15  }, // 7  Bengali
-  { text: "Olá",          x: 83, y: 20, size: 2.3,  font: "'Times New Roman', serif",   color: "#01579B", opacity: 0.82, floatAmt: 10, rotate: -28  }, // 8  Portuguese
-  { text: "Halo",         x: 35, y: 20, size: 2.1,  font: "'Arial', sans-serif",        color: "#33691E", opacity: 0.82, floatAmt: 11, rotate:  40  }, // 9  Indonesian
-  { text: "你好",          x: 12, y: 50, size: 2.3,  font: "'Arial', sans-serif",        color: "#311B92", opacity: 0.82, floatAmt: 9,  rotate: -50  }, // 10 Mandarin/Urdu
+  { text: "Hello", x: 28, y: 34, size: 3.0, font: "'Arial', sans-serif", color: "#1A237E", opacity: 0.92, floatAmt: 7, rotate: 0 }, // 2  English
+  { text: "नमस्ते", x: 68, y: 30, size: 2.8, font: "'Arial', sans-serif", color: "#880E4F", opacity: 0.90, floatAmt: 8, rotate: 0 }, // 3  Hindi
+  { text: "سلام", x: 16, y: 75, size: 3.8, font: "'Georgia', serif", color: "#a80909ff", opacity: 1.00, floatAmt: 6, rotate: 0 }, // 1  center
+  { text: "Hola", x: 63, y: 63, size: 2.7, font: "'Trebuchet MS', sans-serif", color: "#1B5E20", opacity: 0.88, floatAmt: 9, rotate: 0 }, // 4  Spanish
+  { text: "Bonjour", x: 24, y: 65, size: 2.6, font: "'Palatino', serif", color: "#4A148C", opacity: 0.87, floatAmt: 8, rotate: 0 }, // 5  French
+  { text: "مرحبا", x: 47, y: 78, size: 2.4, font: "'Arial', sans-serif", color: "#006064", opacity: 0.85, floatAmt: 10, rotate: 0 }, // 6  Arabic
+  { text: "হ্যালো", x: 79, y: 58, size: 2.3, font: "'Arial', sans-serif", color: "#BF360C", opacity: 0.83, floatAmt: 9, rotate: 0 }, // 7  Bengali
+  { text: "Olá", x: 83, y: 20, size: 2.3, font: "'Times New Roman', serif", color: "#01579B", opacity: 0.82, floatAmt: 10, rotate: 0 }, // 8  Portuguese
+  { text: "Halo", x: 35, y: 20, size: 2.1, font: "'Arial', sans-serif", color: "#33691E", opacity: 0.82, floatAmt: 11, rotate: 0 }, // 9  Indonesian
+  { text: "你好", x: 12, y: 50, size: 2.3, font: "'Arial', sans-serif", color: "#311B92", opacity: 0.82, floatAmt: 9, rotate: 0 }, // 10 Mandarin/Urdu
   // ── Mid ring ──────────────────────────────────────────────────────────────────
-  { text: "Привет",       x: 10, y: 65, size: 2.0,  font: "'Georgia', serif",           color: "#37474F", opacity: 0.78, floatAmt: 11, rotate:  30  }, // 11 Russian
-  { text: "Hallo",        x: 74, y: 75, size: 2.0,  font: "'Verdana', sans-serif",      color: "#6A1B9A", opacity: 0.78, floatAmt: 10, rotate: -14  }, // 12 German
-  { text: "こんにちは",   x: 50, y: 22, size: 1.9,  font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.78, floatAmt: 11, rotate:   8  }, // 13 Japanese
-  { text: "नमस्कार",      x: 88, y: 40, size: 1.8,  font: "'Arial', sans-serif",        color: "#4E342E", opacity: 0.76, floatAmt: 10, rotate: -42  }, // 14 Marathi
-  { text: "Xin chào",     x: 32, y: 83, size: 1.8,  font: "'Arial', sans-serif",        color: "#1B4F72", opacity: 0.76, floatAmt: 12, rotate:  55  }, // 15 Vietnamese
-  { text: "నమస్కారం",    x: 65, y: 12, size: 1.7,  font: "'Arial', sans-serif",        color: "#7B0000", opacity: 0.74, floatAmt: 12, rotate: -20  }, // 16 Telugu
-  { text: "Habari",       x: 6,  y: 22, size: 1.7,  font: "'Verdana', sans-serif",      color: "#1A237E", opacity: 0.72, floatAmt: 13, rotate:  45  }, // 17 Swahili
-  { text: "Sannu",        x: 92, y: 65, size: 1.7,  font: "'Arial', sans-serif",        color: "#004D40", opacity: 0.72, floatAmt: 12, rotate: -32  }, // 18 Hausa
-  { text: "Merhaba",      x: 58, y: 88, size: 1.7,  font: "'Verdana', sans-serif",      color: "#880E4F", opacity: 0.72, floatAmt: 10, rotate:  18  }, // 19 Turkish
-  { text: "سلام",         x: 18, y: 38, size: 1.7,  font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.70, floatAmt: 11, rotate: -60  }, // 20 W. Punjabi
+  { text: "Привет", x: 10, y: 65, size: 2.0, font: "'Georgia', serif", color: "#37474F", opacity: 0.78, floatAmt: 11, rotate: 0 }, // 11 Russian
+  { text: "Hallo", x: 74, y: 75, size: 2.0, font: "'Verdana', sans-serif", color: "#6A1B9A", opacity: 0.78, floatAmt: 10, rotate: 0 }, // 12 German
+  { text: "こんにちは", x: 50, y: 22, size: 1.9, font: "'Arial', sans-serif", color: "#0D47A1", opacity: 0.78, floatAmt: 11, rotate: 0 }, // 13 Japanese
+  { text: "नमस्कार", x: 88, y: 40, size: 1.8, font: "'Arial', sans-serif", color: "#4E342E", opacity: 0.76, floatAmt: 10, rotate: 0 }, // 14 Marathi
+  { text: "Xin chào", x: 32, y: 83, size: 1.8, font: "'Arial', sans-serif", color: "#1B4F72", opacity: 0.76, floatAmt: 12, rotate: 0 }, // 15 Vietnamese
+  { text: "నమస్కారం", x: 65, y: 12, size: 1.7, font: "'Arial', sans-serif", color: "#7B0000", opacity: 0.74, floatAmt: 12, rotate: 0 }, // 16 Telugu
+  { text: "Habari", x: 6, y: 22, size: 1.7, font: "'Verdana', sans-serif", color: "#1A237E", opacity: 0.72, floatAmt: 13, rotate: 0 }, // 17 Swahili
+  { text: "Sannu", x: 92, y: 65, size: 1.7, font: "'Arial', sans-serif", color: "#004D40", opacity: 0.72, floatAmt: 12, rotate: 0 }, // 18 Hausa
+  { text: "Merhaba", x: 58, y: 88, size: 1.7, font: "'Verdana', sans-serif", color: "#880E4F", opacity: 0.72, floatAmt: 10, rotate: 0 }, // 19 Turkish
   // ── Outer ring ────────────────────────────────────────────────────────────────
-  { text: "Kamusta",      x: 78, y: 88, size: 1.6,  font: "'Arial', sans-serif",        color: "#4A148C", opacity: 0.70, floatAmt: 13, rotate:  25  }, // 21 Tagalog
-  { text: "வணக்கம்",     x: 38, y: 42, size: 1.6,  font: "'Arial', sans-serif",        color: "#1B5E20", opacity: 0.68, floatAmt: 11, rotate: -38  }, // 22 Tamil
-  { text: "你好",          x: 70, y: 40, size: 1.6,  font: "'Arial', sans-serif",        color: "#006064", opacity: 0.68, floatAmt: 10, rotate:  52  }, // 23 Cantonese
-  { text: "侬好",          x: 33, y: 60, size: 1.6,  font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.68, floatAmt: 12, rotate: -10  }, // 24 Wu
-  { text: "درود",         x: 16, y: 75, size: 1.6,  font: "'Arial', sans-serif",        color: "#311B92", opacity: 0.68, floatAmt: 11, rotate:  68  }, // 25 Farsi
-  { text: "안녕하세요",   x: 55, y: 15, size: 1.6,  font: "'Arial', sans-serif",        color: "#7B0000", opacity: 0.68, floatAmt: 13, rotate: -22  }, // 26 Korean
-  { text: "ሰላም",          x: 90, y: 78, size: 1.4,  font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.65, floatAmt: 13, rotate:  36  }, // 27 Amharic
-  { text: "สวัสดี",       x: 46, y: 93, size: 1.4,  font: "'Arial', sans-serif",        color: "#4A148C", opacity: 0.65, floatAmt: 14, rotate: -45  }, // 28 Thai
-  { text: "Sugeng",       x: 73, y: 48, size: 1.4,  font: "'Arial', sans-serif",        color: "#004D40", opacity: 0.65, floatAmt: 11, rotate:   5  }, // 29 Javanese
-  { text: "Ciao",         x: 22, y: 56, size: 1.6,  font: "'Courier New', monospace",   color: "#880E4F", opacity: 0.68, floatAmt: 9,  rotate: -48  }, // 30 Italian
-  { text: "નમસ્તે",       x: 90, y: 10, size: 1.4,  font: "'Arial', sans-serif",        color: "#33691E", opacity: 0.62, floatAmt: 12, rotate:  30  }, // 31 Gujarati
-  { text: "ನಮಸ್ಕಾರ",     x: 5,  y: 33, size: 1.4,  font: "'Arial', sans-serif",        color: "#BF360C", opacity: 0.62, floatAmt: 12, rotate: -55  }, // 32 Kannada
-  { text: "Ẹ káàárọ̀",   x: 18, y: 85, size: 1.25, font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.60, floatAmt: 13, rotate:  42  }, // 33 Yoruba
-  { text: "प्रणाम",       x: 55, y: 38, size: 1.25, font: "'Arial', sans-serif",        color: "#6A1B9A", opacity: 0.60, floatAmt: 10, rotate: -16  }, // 34 Bhojpuri
-  { text: "Привіт",       x: 8,  y: 78, size: 1.4,  font: "'Georgia', serif",           color: "#37474F", opacity: 0.62, floatAmt: 12, rotate:  65  }, // 35 Ukrainian
-  { text: "Cześć",        x: 90, y: 30, size: 1.4,  font: "'Verdana', sans-serif",      color: "#01579B", opacity: 0.62, floatAmt: 11, rotate: -28  }, // 36 Polish
-  { text: "Helo",         x: 43, y: 70, size: 1.25, font: "'Arial', sans-serif",        color: "#1B5E20", opacity: 0.60, floatAmt: 13, rotate:  20  }, // 37 Malay
-  { text: "Akkam",        x: 80, y: 6,  size: 1.25, font: "'Arial', sans-serif",        color: "#311B92", opacity: 0.58, floatAmt: 14, rotate: -38  }, // 38 Oromo
-  { text: "Salut",        x: 20, y: 22, size: 1.25, font: "'Trebuchet MS', sans-serif", color: "#7B0000", opacity: 0.58, floatAmt: 11, rotate:  50  }, // 39 Romanian
-  { text: "Salam",        x: 68, y: 82, size: 1.25, font: "'Arial', sans-serif",        color: "#4E342E", opacity: 0.58, floatAmt: 12, rotate: -12  }, // 40 Azerbaijani
+  { text: "Kamusta", x: 78, y: 88, size: 1.6, font: "'Arial', sans-serif", color: "#4A148C", opacity: 0.70, floatAmt: 13, rotate: 0 }, // 21 Tagalog
+  { text: "வணக்கம்", x: 38, y: 42, size: 1.6, font: "'Arial', sans-serif", color: "#1B5E20", opacity: 0.68, floatAmt: 11, rotate: 0 }, // 22 Tamil
+  { text: "你好", x: 70, y: 40, size: 1.6, font: "'Arial', sans-serif", color: "#006064", opacity: 0.68, floatAmt: 10, rotate: 0 }, // 23 Cantonese
+  { text: "侬好", x: 33, y: 60, size: 1.6, font: "'Arial', sans-serif", color: "#1A237E", opacity: 0.68, floatAmt: 12, rotate: 0 }, // 24 Wu
+  { text: "안녕하세요", x: 55, y: 15, size: 1.6, font: "'Arial', sans-serif", color: "#7B0000", opacity: 0.68, floatAmt: 13, rotate: 0 }, // 26 Korean
+  { text: "ሰላም", x: 90, y: 78, size: 1.4, font: "'Arial', sans-serif", color: "#0D47A1", opacity: 0.65, floatAmt: 13, rotate: 0 }, // 27 Amharic
+  { text: "สวัสดี", x: 46, y: 93, size: 1.4, font: "'Arial', sans-serif", color: "#4A148C", opacity: 0.65, floatAmt: 14, rotate: 0 }, // 28 Thai
+  { text: "Sugeng", x: 73, y: 48, size: 1.4, font: "'Arial', sans-serif", color: "#004D40", opacity: 0.65, floatAmt: 11, rotate: 0 }, // 29 Javanese
+  { text: "Ciao", x: 22, y: 56, size: 1.6, font: "'Courier New', monospace", color: "#880E4F", opacity: 0.68, floatAmt: 9, rotate: 0 }, // 30 Italian
+  { text: "નમસ્તે", x: 90, y: 10, size: 1.4, font: "'Arial', sans-serif", color: "#33691E", opacity: 0.62, floatAmt: 12, rotate: 0 }, // 31 Gujarati
+  { text: "ನಮಸ್ಕಾರ", x: 5, y: 33, size: 1.4, font: "'Arial', sans-serif", color: "#BF360C", opacity: 0.62, floatAmt: 12, rotate: 0 }, // 32 Kannada
+  { text: "Ẹ káàárọ̀", x: 18, y: 85, size: 1.25, font: "'Arial', sans-serif", color: "#1A237E", opacity: 0.60, floatAmt: 13, rotate: 0 }, // 33 Yoruba
+  { text: "प्रणाम", x: 55, y: 38, size: 1.25, font: "'Arial', sans-serif", color: "#6A1B9A", opacity: 0.60, floatAmt: 10, rotate: 0 }, // 34 Bhojpuri
+  { text: "Привіт", x: 8, y: 78, size: 1.4, font: "'Georgia', serif", color: "#37474F", opacity: 0.62, floatAmt: 12, rotate: 0 }, // 35 Ukrainian
+  { text: "Cześć", x: 90, y: 30, size: 1.4, font: "'Verdana', sans-serif", color: "#01579B", opacity: 0.62, floatAmt: 11, rotate: 0 }, // 36 Polish
+  { text: "Helo", x: 43, y: 70, size: 1.25, font: "'Arial', sans-serif", color: "#1B5E20", opacity: 0.60, floatAmt: 13, rotate: 0 }, // 37 Malay
+  { text: "Akkam", x: 80, y: 6, size: 1.25, font: "'Arial', sans-serif", color: "#311B92", opacity: 0.58, floatAmt: 14, rotate: 0 }, // 38 Oromo
+  { text: "Salut", x: 20, y: 22, size: 1.25, font: "'Trebuchet MS', sans-serif", color: "#7B0000", opacity: 0.58, floatAmt: 11, rotate: 0 }, // 39 Romanian
+  { text: "Salam", x: 68, y: 82, size: 1.25, font: "'Arial', sans-serif", color: "#4E342E", opacity: 0.58, floatAmt: 12, rotate: 0 }, // 40 Azerbaijani
   // ── Wide periphery ────────────────────────────────────────────────────────────
-  { text: "नमस्ते",       x: 40, y: 25, size: 1.25, font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.56, floatAmt: 12, rotate:  35  }, // 41 Maithili
-  { text: "မင်္ဂလာပါ",   x: 92, y: 48, size: 1.25, font: "'Arial', sans-serif",        color: "#4A148C", opacity: 0.58, floatAmt: 13, rotate: -55  }, // 42 Burmese
-  { text: "ਸਤ ਸ੍ਰੀ",     x: 6,  y: 8,  size: 1.25, font: "'Arial', sans-serif",        color: "#006064", opacity: 0.52, floatAmt: 15, rotate:  80  }, // 43 E. Punjabi
-  { text: "नमस्ते",       x: 62, y: 55, size: 1.25, font: "'Arial', sans-serif",        color: "#880E4F", opacity: 0.56, floatAmt: 10, rotate: -22  }, // 44 Awadhi
-  { text: "Salom",        x: 47, y: 10, size: 1.25, font: "'Arial', sans-serif",        color: "#33691E", opacity: 0.55, floatAmt: 14, rotate:  15  }, // 45 Uzbek
-  { text: "Manahoana",    x: 25, y: 92, size: 1.1,  font: "'Arial', sans-serif",        color: "#311B92", opacity: 0.50, floatAmt: 15, rotate: -40  }, // 46 Malagasy
-  { text: "Wilujeng",     x: 76, y: 63, size: 1.1,  font: "'Arial', sans-serif",        color: "#1B4F72", opacity: 0.52, floatAmt: 12, rotate:  55  }, // 47 Sundanese
-  { text: "你好",          x: 32, y: 47, size: 1.1,  font: "'Arial', sans-serif",        color: "#4E342E", opacity: 0.52, floatAmt: 11, rotate: -30  }, // 48 Xiang
-  { text: "你好",          x: 85, y: 50, size: 1.0,  font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.50, floatAmt: 13, rotate:  72  }, // 49 Gan
-  { text: "哩好",          x: 67, y: 70, size: 1.1,  font: "'Arial', sans-serif",        color: "#7B0000", opacity: 0.52, floatAmt: 12, rotate: -18  }, // 50 Min Nan
-  { text: "你好",          x: 15, y: 58, size: 1.0,  font: "'Arial', sans-serif",        color: "#37474F", opacity: 0.50, floatAmt: 13, rotate:  45  }, // 51 Hakka
-  { text: "سلام",         x: 6,  y: 92, size: 1.0,  font: "'Arial', sans-serif",        color: "#6A1B9A", opacity: 0.48, floatAmt: 15, rotate: -68  }, // 52 Pashto
-  { text: "നമസ്കാരം",    x: 90, y: 88, size: 1.0,  font: "'Arial', sans-serif",        color: "#004D40", opacity: 0.48, floatAmt: 14, rotate:  28  }, // 53 Malayalam
-  { text: "ନମସ୍କାର",     x: 42, y: 88, size: 1.0,  font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.48, floatAmt: 15, rotate: -50  }, // 54 Odia
-  { text: "Zdravo",       x: 22, y: 46, size: 1.1,  font: "'Verdana', sans-serif",      color: "#311B92", opacity: 0.52, floatAmt: 12, rotate:  20  }, // 55 Serbo-Croatian
-  { text: "Nabad",        x: 78, y: 38, size: 1.0,  font: "'Arial', sans-serif",        color: "#880E4F", opacity: 0.50, floatAmt: 13, rotate: -35  }, // 56 Somali
-  { text: "Nnọọ",         x: 36, y: 70, size: 1.0,  font: "'Arial', sans-serif",        color: "#1B5E20", opacity: 0.50, floatAmt: 13, rotate:  60  }, // 57 Igbo
-  { text: "Hallo",        x: 8,  y: 15, size: 1.1,  font: "'Arial', sans-serif",        color: "#37474F", opacity: 0.52, floatAmt: 14, rotate: -42  }, // 58 Dutch
-  { text: "سلام",         x: 95, y: 18, size: 1.0,  font: "'Arial', sans-serif",        color: "#BF360C", opacity: 0.48, floatAmt: 14, rotate:  35  }, // 59 Sindhi
-  { text: "Salaam",       x: 96, y: 56, size: 1.0,  font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.46, floatAmt: 14, rotate: -25  }, // 60 Fula
-  { text: "जय जोहार",    x: 56, y: 70, size: 1.0,  font: "'Arial', sans-serif",        color: "#6A1B9A", opacity: 0.48, floatAmt: 13, rotate:  48  }, // 61 Chhattisgarhi
-  { text: "ආයුබෝවන්",    x: 70, y: 20, size: 1.0,  font: "'Arial', sans-serif",        color: "#004D40", opacity: 0.50, floatAmt: 12, rotate: -15  }, // 62 Sinhala
-  { text: "নমস্কাৰ",     x: 50, y: 65, size: 1.0,  font: "'Arial', sans-serif",        color: "#7B0000", opacity: 0.48, floatAmt: 12, rotate:  30  }, // 63 Assamese
-  { text: "Silav",        x: 26, y: 77, size: 1.0,  font: "'Arial', sans-serif",        color: "#0D47A1", opacity: 0.48, floatAmt: 14, rotate: -58  }, // 64 Kurdish
-  { text: "Сәлем",        x: 87, y: 72, size: 1.0,  font: "'Georgia', serif",           color: "#1B5E20", opacity: 0.48, floatAmt: 13, rotate:  42  }, // 65 Kazakh
-  { text: "Ahoj",         x: 32, y: 12, size: 1.0,  font: "'Verdana', sans-serif",      color: "#311B92", opacity: 0.48, floatAmt: 14, rotate: -20  }, // 66 Czech
-  { text: "Γεια σας",    x: 14, y: 42, size: 1.1,  font: "'Times New Roman', serif",   color: "#880E4F", opacity: 0.52, floatAmt: 11, rotate:  65  }, // 67 Greek
-  { text: "Szia",         x: 62, y: 25, size: 1.0,  font: "'Arial', sans-serif",        color: "#37474F", opacity: 0.50, floatAmt: 12, rotate: -28  }, // 68 Hungarian
-  { text: "Hej",          x: 5,  y: 6,  size: 1.0,  font: "'Arial', sans-serif",        color: "#4E342E", opacity: 0.44, floatAmt: 14, rotate:  55  }, // 69 Swedish
-  { text: "Բարև",         x: 95, y: 6,  size: 1.0,  font: "'Arial', sans-serif",        color: "#1A237E", opacity: 0.44, floatAmt: 13, rotate: -45  }, // 70 Armenian
+  { text: "नमस्ते", x: 40, y: 25, size: 1.25, font: "'Arial', sans-serif", color: "#0D47A1", opacity: 0.56, floatAmt: 12, rotate: 0 }, // 41 Maithili
+  { text: "നമസ്കാരം", x: 90, y: 88, size: 1.0, font: "'Arial', sans-serif", color: "#004D40", opacity: 0.48, floatAmt: 14, rotate: 0 }, // 53 Malayalam
+  { text: "ନମସ୍କାର", x: 42, y: 88, size: 1.0, font: "'Arial', sans-serif", color: "#0D47A1", opacity: 0.48, floatAmt: 15, rotate: 0 }, // 54 Odia
+  { text: "Hallo", x: 8, y: 15, size: 1.1, font: "'Arial', sans-serif", color: "#37474F", opacity: 0.52, floatAmt: 14, rotate: 0 }, // 58 Dutch
+  { text: "ආයුබෝවන්", x: 70, y: 20, size: 1.0, font: "'Arial', sans-serif", color: "#004D40", opacity: 0.50, floatAmt: 12, rotate: 0 }, // 62 Sinhala
+  { text: "Silav", x: 26, y: 77, size: 1.0, font: "'Arial', sans-serif", color: "#0D47A1", opacity: 0.48, floatAmt: 14, rotate: 0 }, // 64 Kurdish
+  { text: "Сәлем", x: 87, y: 72, size: 1.0, font: "'Georgia', serif", color: "#1B5E20", opacity: 0.48, floatAmt: 13, rotate: 0 }, // 65 Kazakh
+  { text: "Szia", x: 62, y: 25, size: 1.0, font: "'Arial', sans-serif", color: "#37474F", opacity: 0.50, floatAmt: 12, rotate: 0 }, // 68 Hungarian
+  { text: "Hej", x: 5, y: 6, size: 1.0, font: "'Arial', sans-serif", color: "#4E342E", opacity: 0.44, floatAmt: 14, rotate: 0 }, // 69 Swedish
+  { text: "Բարև", x: 95, y: 6, size: 1.0, font: "'Arial', sans-serif", color: "#1A237E", opacity: 0.44, floatAmt: 13, rotate: 0 }, // 70 Armenian
 ];
 
 const DEFAULT_PROFILE_IMAGE = "/images/bahman.jpg";
@@ -164,17 +143,17 @@ export default function Home() {
 
   // ── Hero refs ─────────────────────────────────────────────────
   const containerRef = useRef(null);
-  const pinRef       = useRef(null);
-  const imgRef       = useRef(null);
-  const textRef      = useRef(null);
-  const indicRef     = useRef(null);
+  const pinRef = useRef(null);
+  const imgRef = useRef(null);
+  const textRef = useRef(null);
+  const indicRef = useRef(null);
   const wordCloudRef = useRef(null);
-  const worldMapRef  = useRef(null);
+  const worldMapRef = useRef(null);
 
   // ── Skills refs ───────────────────────────────────────────────
   const skillsContainerRef = useRef(null);
-  const skillsPinRef       = useRef(null);
-  const skillsTitleRef     = useRef(null);
+  const skillsPinRef = useRef(null);
+  const skillsTitleRef = useRef(null);
 
   // ── CMS Fetch ────────────────────────────────────────────────
   useEffect(() => {
@@ -198,18 +177,18 @@ export default function Home() {
           return null;
         };
         setData({
-          heroName:     ex(f.heroName)     || DEFAULT_CMS_DATA.heroName,
-          heroTagline:  ex(f.heroTagline)  || DEFAULT_CMS_DATA.heroTagline,
+          heroName: ex(f.heroName) || DEFAULT_CMS_DATA.heroName,
+          heroTagline: ex(f.heroTagline) || DEFAULT_CMS_DATA.heroTagline,
           heroHeadline: ex(f.heroHeadline) || DEFAULT_CMS_DATA.heroHeadline,
-          aboutText:    ex(f.aboutText)    || DEFAULT_CMS_DATA.aboutText,
-          skills:       ex(f.skills)       || DEFAULT_CMS_DATA.skills,
-          experience:   ex(f.experience)   || DEFAULT_CMS_DATA.experience,
+          aboutText: ex(f.aboutText) || DEFAULT_CMS_DATA.aboutText,
+          skills: ex(f.skills) || DEFAULT_CMS_DATA.skills,
+          experience: ex(f.experience) || DEFAULT_CMS_DATA.experience,
           profileImage: ex(f.profileImage) || DEFAULT_CMS_DATA.profileImage,
-          gallery:      ex(f.gallery)      || DEFAULT_CMS_DATA.gallery,
-          linkedin:     ex(f.linkedin)     || DEFAULT_CMS_DATA.linkedin,
-          email:        ex(f.email)        || DEFAULT_CMS_DATA.email,
-          whatsapp:     ex(f.whatsapp)     || DEFAULT_CMS_DATA.whatsapp,
-          cvUrl:        ex(f.cvUrl)        || DEFAULT_CMS_DATA.cvUrl,
+          gallery: ex(f.gallery) || DEFAULT_CMS_DATA.gallery,
+          linkedin: ex(f.linkedin) || DEFAULT_CMS_DATA.linkedin,
+          email: ex(f.email) || DEFAULT_CMS_DATA.email,
+          whatsapp: ex(f.whatsapp) || DEFAULT_CMS_DATA.whatsapp,
+          cvUrl: ex(f.cvUrl) || DEFAULT_CMS_DATA.cvUrl,
         });
       } catch (e) {
         console.warn("CMS fetch failed, using defaults:", e);
@@ -235,7 +214,7 @@ export default function Home() {
       y: 15,
       xPercent: -50,
       yPercent: -50,
-      rotation: (i) => HELLO_CLOUD[i]?.rotate ?? 0,
+      rotation: (i) => HELLO_CLOUD[i]?.rotate ? 0 : 0
     });
 
     // 2. Each word pops in every 0.25 s with a spring entrance
@@ -251,13 +230,13 @@ export default function Home() {
 
     // 3. After all words are visible, each bobs gently at its own pace.
     //    allVisibleAt must match the stagger + duration used in step 2.
-    const staggerVal    = 0.35;
-    const durationVal   = 1.65;
-    const allVisibleAt  = (spans.length - 1) * staggerVal + durationVal;
+    const staggerVal = 0.35;
+    const durationVal = 1.65;
+    const allVisibleAt = (spans.length - 1) * staggerVal + durationVal;
 
     spans.forEach((span, i) => {
-      const amt   = HELLO_CLOUD[i]?.floatAmt ?? 10;
-      const dur   = 2.0 + (i % 5) * 0.45;
+      const amt = HELLO_CLOUD[i]?.floatAmt ?? 10;
+      const dur = 2.0 + (i % 5) * 0.45;
       const delay = allVisibleAt + (i % 7) * 0.38;
       gsap.to(span, {
         y: -amt,
@@ -294,17 +273,17 @@ export default function Home() {
   // ── Hero Timeline (scroll-driven scrub) ──────────────────────
   useEffect(() => {
     const container = containerRef.current;
-    const pin       = pinRef.current;
-    const img       = imgRef.current;
-    const text      = textRef.current;
-    const indic     = indicRef.current;
-    const cloud     = wordCloudRef.current;
+    const pin = pinRef.current;
+    const img = imgRef.current;
+    const text = textRef.current;
+    const indic = indicRef.current;
+    const cloud = wordCloudRef.current;
 
     if (!container || !pin || !img || !text || !indic) return;
 
     gsap.killTweensOf([img, text, indic, cloud].filter(Boolean));
-    gsap.set(img,   { scale: 0, opacity: 0 });
-    gsap.set(text,  { opacity: 0 });
+    gsap.set(img, { scale: 0, opacity: 0 });
+    gsap.set(text, { opacity: 0 });
     gsap.set(indic, { opacity: 0, y: 0 });
     // Cloud container stays visible (spans control their own opacity via cloud useEffect)
     if (cloud) gsap.set(cloud, { scale: 1, opacity: 1 });
@@ -333,12 +312,12 @@ export default function Home() {
     // This creates the "1.5 second feel" of empty space before the photo arrives.
 
     // ── Stage 2: Profile photo + indicator fade in (pos 2.3) ────
-    tl.to(img,   { scale: 1, opacity: 1, ease: "power3.out", duration: 1.2 }, 1.5);
+    tl.to(img, { scale: 1, opacity: 1, ease: "power3.out", duration: 1.2 }, 1.5);
     tl.to(indic, { opacity: 1, duration: 0.3 }, 2.4);
 
     // ── Stage 3: Indicator fades, text + words reveal (pos ~3.8) ─
     tl.to(indic, { opacity: 0, y: 20, duration: 0.3 }, 3.6);
-    tl.to(text,  { opacity: 1, duration: 0.4, ease: "none" }, 3.8);
+    tl.to(text, { opacity: 1, duration: 0.4, ease: "none" }, 3.8);
 
     if (words.length > 0) {
       tl.to(words, {
@@ -362,8 +341,8 @@ export default function Home() {
   // ── Skills Timeline (left-to-right card reveal) ─────────────
   useEffect(() => {
     const container = skillsContainerRef.current;
-    const pin       = skillsPinRef.current;
-    const titleEl   = skillsTitleRef.current;
+    const pin = skillsPinRef.current;
+    const titleEl = skillsTitleRef.current;
 
     if (!container || !pin || !data.skills?.length) return;
 
@@ -408,7 +387,7 @@ export default function Home() {
   return (
     <>
       <ScrollThemeManager />
-      { <ParticleBackground /> }
+      {<ParticleBackground />}
 
       {/* ── HERO SECTION ── */}
       <section
@@ -514,11 +493,11 @@ export default function Home() {
               zIndex: 2,
             }}
           >
-            <img 
-              src={data.profileImage} 
-              alt={data.heroName} 
-              className="profile-img" 
-              draggable={false} 
+            <img
+              src={data.profileImage}
+              alt={data.heroName}
+              className="profile-img"
+              draggable={false}
               fetchPriority="high"
               decoding="async"
             />
