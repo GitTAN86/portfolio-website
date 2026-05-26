@@ -149,11 +149,16 @@ export default function Home() {
   const indicRef = useRef(null);
   const wordCloudRef = useRef(null);
   const worldMapRef = useRef(null);
+  const heroRevealPlayed = useRef(false);
+  const heroTimelineRef = useRef(null);
 
   // ── Skills refs ───────────────────────────────────────────────
   const skillsContainerRef = useRef(null);
   const skillsPinRef = useRef(null);
   const skillsTitleRef = useRef(null);
+
+  // ── Experience refs ───────────────────────────────────────────
+  const expWrapperRef = useRef(null);
 
   // ── CMS Fetch ────────────────────────────────────────────────
   useEffect(() => {
@@ -270,7 +275,7 @@ export default function Home() {
     };
   }, []);
 
-  // ── Hero Timeline (scroll-driven scrub) ──────────────────────
+  // ── Hero Timeline (scroll-driven scrub + auto-reveal) ────────
   useEffect(() => {
     const container = containerRef.current;
     const pin = pinRef.current;
@@ -285,7 +290,6 @@ export default function Home() {
     gsap.set(img, { scale: 0, opacity: 0 });
     gsap.set(text, { opacity: 0 });
     gsap.set(indic, { opacity: 0, y: 0 });
-    // Cloud container stays visible (spans control their own opacity via cloud useEffect)
     if (cloud) gsap.set(cloud, { scale: 1, opacity: 1 });
 
     const words = Array.from(text.querySelectorAll("[data-word]"));
@@ -293,52 +297,106 @@ export default function Home() {
       gsap.set(words, { opacity: 0.1, filter: "blur(8px)", y: 16 });
     }
 
+    const playHeroReveal = () => {
+      if (heroRevealPlayed.current) return;
+      heroRevealPlayed.current = true;
+
+      if (heroTimelineRef.current) {
+        heroTimelineRef.current.kill();
+      }
+
+      const revealTl = gsap.timeline();
+      heroTimelineRef.current = revealTl;
+
+      revealTl.to(img, {
+        scale: 1,
+        opacity: 1,
+        duration: 1.2,
+        ease: "back.out(1.2)"
+      });
+
+      revealTl.to(text, {
+        opacity: 1,
+        duration: 0.4
+      }, "-=0.4");
+
+      if (words.length > 0) {
+        revealTl.to(words, {
+          opacity: 1,
+          filter: "none",
+          y: 0,
+          stagger: 0.045,
+          duration: 1.2,
+          ease: "power2.out"
+        }, "-=0.2");
+      }
+
+      revealTl.to(indic, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5
+      });
+    };
+
+    const resetHeroReveal = () => {
+      if (!heroRevealPlayed.current) return;
+      heroRevealPlayed.current = false;
+
+      if (heroTimelineRef.current) {
+        heroTimelineRef.current.kill();
+      }
+
+      gsap.to(img, { scale: 0, opacity: 0, duration: 0.4 });
+      gsap.to(text, { opacity: 0, duration: 0.4 });
+      if (words.length > 0) {
+        gsap.set(words, { opacity: 0.1, filter: "blur(8px)", y: 16 });
+      }
+      gsap.to(indic, { opacity: 0, y: 20, duration: 0.4 });
+    };
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: container,
         start: "top top",
         end: "bottom bottom",
-        scrub: 2.2,
+        scrub: 1.2,
         invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          if (self.progress >= 0.25) {
+            playHeroReveal();
+          } else if (self.progress < 0.05) {
+            resetHeroReveal();
+          }
+        }
       },
     });
 
-    // ── Stage 1: Cloud zooms out & disappears (pos 0 → 0.8) ──────
+    // Cloud zooms out and disappears in first 25% progress
     if (cloud) {
-      tl.to(cloud, { scale: 1.65, opacity: 0, ease: "power2.in", duration: 1 }, 0);
+      tl.to(cloud, {
+        scale: 1.65,
+        opacity: 0,
+        ease: "power2.inOut",
+        duration: 0.25
+      }, 0);
     }
 
-    // ── Gap of 1.5 scroll-units (cloud finishes at 0.8, image starts at 2.3) ──
-    // This creates the "1.5 second feel" of empty space before the photo arrives.
-
-    // ── Stage 2: Profile photo + indicator fade in (pos 2.3) ────
-    tl.to(img, { scale: 1, opacity: 1, ease: "power3.out", duration: 1.2 }, 1.5);
-    tl.to(indic, { opacity: 1, duration: 0.3 }, 2.4);
-
-    // ── Stage 3: Indicator fades, text + words reveal (pos ~3.8) ─
-    tl.to(indic, { opacity: 0, y: 20, duration: 0.3 }, 3.6);
-    tl.to(text, { opacity: 1, duration: 0.4, ease: "none" }, 3.8);
-
-    if (words.length > 0) {
-      tl.to(words, {
-        opacity: 1,
-        filter: "blur(0px)",
-        y: 0,
-        stagger: { each: 0.055 },
-        ease: "power2.out",
-        duration: 3.5,
-      }, "-=0.2");
-    }
+    // Dummy tween to fill out the remaining 75% of pinned space
+    tl.to({}, { duration: 0.75 }, 0.25);
 
     ScrollTrigger.refresh();
 
     return () => {
       tl.scrollTrigger?.kill();
+      if (heroTimelineRef.current) {
+        heroTimelineRef.current.kill();
+      }
+      heroRevealPlayed.current = false;
       gsap.killTweensOf([img, text, indic, cloud, ...words].filter(Boolean));
     };
   }, [data]);
 
-  // ── Skills Timeline (left-to-right card reveal) ─────────────
+  // ── Skills Timeline (step-by-step card reveal) ─────────────
   useEffect(() => {
     const container = skillsContainerRef.current;
     const pin = skillsPinRef.current;
@@ -358,22 +416,30 @@ export default function Home() {
         trigger: container,
         start: "top top",
         end: "bottom bottom",
-        scrub: 1.2,
+        scrub: 0.4,
         invalidateOnRefresh: true,
       },
     });
 
+    // Step 0: Title and Card 1 fade in together (from 0.0 to 1.0)
     if (titleEl) {
-      tl.to(titleEl, { opacity: 1, y: 0, ease: "power2.out", duration: 0.6 }, 0);
+      tl.to(titleEl, { opacity: 1, y: 0, ease: "power2.out", duration: 1.0 }, 0);
     }
-    cards.forEach((card, i) => {
-      tl.to(card, {
-        opacity: 1, x: 0, scale: 1,
+    tl.to(cards[0], { opacity: 1, x: 0, scale: 1, ease: "power3.out", duration: 1.0 }, 0);
+
+    // Step 1..N-1: Each subsequent card gets its own scroll step (duration 1.0 each)
+    for (let i = 1; i < cards.length; i++) {
+      tl.to(cards[i], {
+        opacity: 1,
+        x: 0,
+        scale: 1,
         ease: "power3.out",
-        duration: 1.2,
-      }, 0.4 + i * 0.9);
-    });
-    tl.to({}, { duration: 1.5 });
+        duration: 1.0,
+      }, i);
+    }
+
+    // Two-scroll buffer at the end where all cards remain fully visible
+    tl.to({}, { duration: 2.0 }, cards.length);
 
     ScrollTrigger.refresh();
 
@@ -383,6 +449,53 @@ export default function Home() {
       gsap.killTweensOf(cards);
     };
   }, [data.skills]);
+
+  // ── Experience Timeline (per-item reveal on scroll) ────────
+  useEffect(() => {
+    const expWrapper = expWrapperRef.current;
+    if (!expWrapper || !data.experience?.length) return;
+
+    const items = Array.from(expWrapper.querySelectorAll(".timeline-item"));
+    if (items.length === 0) return;
+
+    const triggers = [];
+
+    items.forEach((item) => {
+      // Set initial state immediately
+      gsap.set(item, { opacity: 0, y: 50 });
+
+      const st = ScrollTrigger.create({
+        trigger: item,
+        start: "top 85%",
+        onEnter: () => {
+          gsap.to(item, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            overwrite: "auto"
+          });
+        },
+        onLeaveBack: () => {
+          gsap.to(item, {
+            opacity: 0,
+            y: 50,
+            duration: 0.6,
+            ease: "power2.in",
+            overwrite: "auto"
+          });
+        }
+      });
+      triggers.push(st);
+    });
+
+    ScrollTrigger.refresh();
+
+    return () => {
+      triggers.forEach(t => t.kill());
+      gsap.killTweensOf(items);
+    };
+  }, [data.experience]);
 
   return (
     <>
@@ -397,7 +510,7 @@ export default function Home() {
         style={{
           position: "relative",
           width: "100%",
-          height: "250vh",
+          height: "400vh",
           backgroundColor: "transparent",
           opacity: 1,
           transform: "none",
@@ -545,14 +658,16 @@ export default function Home() {
         <About data={data} />
       </div>
 
-      {/* ── SKILLS SECTION (pinned, left-to-right card reveal) ── */}
+
+
+      {/* ── SKILLS SECTION (pinned, step-by-step card reveal) ── */}
       <section
         ref={skillsContainerRef}
         id="skills"
         style={{
           position: "relative",
           width: "100%",
-          height: "250vh",
+          height: data.skills?.length ? `${(data.skills.length + 2) * 100}vh` : "600vh",
           backgroundColor: "transparent",
           opacity: 1,
           transform: "none",
@@ -594,9 +709,12 @@ export default function Home() {
         </div>
       </section>
 
+
+
       {/* ── DOWNSTREAM CONTENT ── */}
-      <main className="content-wrapper">
+      <main ref={expWrapperRef} className="content-wrapper">
         <Experience data={data} />
+        <div style={{ height: "50vh" }} />
         <Footer data={data} />
       </main>
 
