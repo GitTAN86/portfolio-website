@@ -434,10 +434,10 @@ h4 {
 .timeline::before {
     content: '';
     position: absolute;
-    top: 0;
+    top: 10px; /* Starts exactly at the center of the first dot (latest experience, now at top: 0) */
     left: 20px;
     width: 2px;
-    height: 100%;
+    height: calc(100% - 10px);
     background: linear-gradient(to bottom, var(--color-primary), var(--color-tertiary));
 }
 
@@ -450,7 +450,7 @@ h4 {
 .timeline-dot {
     position: absolute;
     left: 11px;
-    top: 20px;
+    top: 0; /* Aligned exactly at the same level as the top of the experience card */
     width: 20px;
     height: 20px;
     background: var(--color-bg);
@@ -1024,5 +1024,19 @@ body:not(.theme-3):not(.theme-4) .admin-link-btn:hover {
     }
     .about-text-container {
         padding: 1.2rem !important;
+    }
+}
+
+/* ── Touch Screens & Small Viewports Skills Layout Fix ── */
+@media (max-width: 1024px), (pointer: coarse) {
+    #skills {
+        height: auto !important;
+        padding: 5rem 0 !important;
+    }
+    .skills-pin {
+        position: relative !important;
+        height: auto !important;
+        justify-content: flex-start !important;
+        padding: 0 1.5rem !important;
     }
 }

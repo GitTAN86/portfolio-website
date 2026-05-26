@@ -141,6 +141,19 @@ function WordSplit({ text }) {
 
 export default function Home() {
   const [data, setData] = useState(DEFAULT_CMS_DATA);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const checkMobile = () => {
+      const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.matchMedia("(pointer: coarse)").matches;
+      const isSmallScreen = window.matchMedia("(max-width: 1024px)").matches;
+      setIsMobile(isSmallScreen || isTouch);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // ── Hero refs ─────────────────────────────────────────────────
   const containerRef = useRef(null);
@@ -413,43 +426,73 @@ export default function Home() {
     if (titleEl) gsap.set(titleEl, { opacity: 0, y: 30 });
     gsap.set(cards, { opacity: 0, x: -70, scale: 0.88 });
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: container,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 0.4,
-        invalidateOnRefresh: true,
-      },
-    });
+    if (isMobile) {
+      // Mobile / Touch screens: Stagger-fade in on first scroll
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: "top 85%",
+          toggleActions: "play none none reverse",
+        },
+      });
 
-    // Step 0: Title and Card 1 fade in together (from 0.0 to 1.0)
-    if (titleEl) {
-      tl.to(titleEl, { opacity: 1, y: 0, ease: "power2.out", duration: 1.0 }, 0);
-    }
-    tl.to(cards[0], { opacity: 1, x: 0, scale: 1, ease: "power3.out", duration: 1.0 }, 0);
-
-    // Step 1..N-1: Each subsequent card gets its own scroll step (duration 1.0 each)
-    for (let i = 1; i < cards.length; i++) {
-      tl.to(cards[i], {
+      if (titleEl) {
+        tl.to(titleEl, { opacity: 1, y: 0, ease: "power2.out", duration: 0.6 });
+      }
+      tl.to(cards, {
         opacity: 1,
         x: 0,
         scale: 1,
         ease: "power3.out",
-        duration: 1.0,
-      }, i);
+        stagger: 0.15,
+        duration: 0.8,
+      }, "-=0.4");
+
+      ScrollTrigger.refresh();
+
+      return () => {
+        tl.scrollTrigger?.kill();
+        if (titleEl) gsap.killTweensOf(titleEl);
+        gsap.killTweensOf(cards);
+      };
+    } else {
+      // Desktop: Pinned step-by-step card reveal
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 0.4,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      // Step 0: Title and Card 1 fade in together (from 0.0 to 1.0)
+      if (titleEl) {
+        tl.to(titleEl, { opacity: 1, y: 0, ease: "power2.out", duration: 1.0 }, 0);
+      }
+      tl.to(cards[0], { opacity: 1, x: 0, scale: 1, ease: "power3.out", duration: 1.0 }, 0);
+
+      // Step 1..N-1: Each subsequent card gets its own scroll step (duration 1.0 each)
+      for (let i = 1; i < cards.length; i++) {
+        tl.to(cards[i], {
+          opacity: 1,
+          x: 0,
+          scale: 1,
+          ease: "power3.out",
+          duration: 1.0,
+        }, i);
+      }
+
+      ScrollTrigger.refresh();
+
+      return () => {
+        tl.scrollTrigger?.kill();
+        if (titleEl) gsap.killTweensOf(titleEl);
+        gsap.killTweensOf(cards);
+      };
     }
-
-    // No buffer scroll at the end - unpin immediately after last card reveal
-
-    ScrollTrigger.refresh();
-
-    return () => {
-      tl.scrollTrigger?.kill();
-      if (titleEl) gsap.killTweensOf(titleEl);
-      gsap.killTweensOf(cards);
-    };
-  }, [data.skills]);
+  }, [data.skills, isMobile]);
 
   // ── Experience Timeline (per-item reveal on scroll) ────────
   useEffect(() => {
@@ -666,7 +709,8 @@ export default function Home() {
         style={{
           position: "relative",
           width: "100%",
-          height: data.skills?.length ? `${data.skills.length * 100}vh` : "400vh",
+          height: isMobile ? "auto" : (data.skills?.length ? `${data.skills.length * 100}vh` : "400vh"),
+          padding: isMobile ? "5rem 0" : "0",
           backgroundColor: "transparent",
           opacity: 1,
           transform: "none",
@@ -677,16 +721,16 @@ export default function Home() {
           ref={skillsPinRef}
           className="skills-pin"
           style={{
-            position: "sticky",
+            position: isMobile ? "relative" : "sticky",
             top: 0,
             width: "100%",
-            height: "100vh",
+            height: isMobile ? "auto" : "100vh",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: isMobile ? "flex-start" : "center",
             overflow: "hidden",
-            padding: "0 2rem",
+            padding: isMobile ? "0 1.5rem" : "0 2rem",
           }}
         >
           <h2
