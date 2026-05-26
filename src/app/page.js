@@ -232,7 +232,6 @@ export default function Home() {
     gsap.set(spans, {
       opacity: 0,
       scale: 0.5,
-      filter: "blur(6px)",
       y: 15,
       xPercent: -50,
       yPercent: -50,
@@ -244,7 +243,6 @@ export default function Home() {
     gsap.to(spans, {
       opacity: (i) => HELLO_CLOUD[i].opacity,
       scale: 1,
-      filter: "blur(0px)",
       y: 0,
       duration: 1.65,
       stagger: 0.35,          // one new word every 0.35 s
@@ -460,6 +458,8 @@ export default function Home() {
               alt=""
               aria-hidden="true"
               draggable={false}
+              fetchPriority="high"
+              decoding="async"
               style={{
                 position: "absolute",
                 inset: 0,
@@ -492,9 +492,8 @@ export default function Home() {
                   color: word.color,
                   whiteSpace: "nowrap",
                   userSelect: "none",
-                  willChange: "transform, opacity, filter",
-                  // soft drop shadow matching word colour for depth
-                  textShadow: `0 2px 12px ${word.color}55`,
+                  willChange: "transform, opacity",
+                  // Removed textShadow for performance (70 spans with drop-shadow kills GPU)
                 }}
               >
                 {word.text}
@@ -515,7 +514,14 @@ export default function Home() {
               zIndex: 2,
             }}
           >
-            <img src={data.profileImage} alt={data.heroName} className="profile-img" draggable={false} />
+            <img 
+              src={data.profileImage} 
+              alt={data.heroName} 
+              className="profile-img" 
+              draggable={false} 
+              fetchPriority="high"
+              decoding="async"
+            />
             <div className="img-glow" />
           </div>
 

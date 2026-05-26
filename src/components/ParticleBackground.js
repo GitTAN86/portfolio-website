@@ -98,8 +98,7 @@ export default function ParticleBackground() {
                 ctx.moveTo(-this.size / 2, 0);
                 ctx.lineTo(this.size / 2, 0);
 
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = this.color;
+                // Removed shadowBlur as it causes extreme performance degradation on Canvas animations
                 ctx.globalAlpha = opacity;
                 ctx.strokeStyle = this.color;
                 ctx.lineWidth = this.thickness;
