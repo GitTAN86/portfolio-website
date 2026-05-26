@@ -119,6 +119,7 @@ const DEFAULT_CMS_DATA = {
   email: "bahman@example.com",
   whatsapp: "1234567890",
   cvUrl: "#",
+  aboutSlides: [],
 };
 
 function WordSplit({ text }) {
@@ -194,6 +195,7 @@ export default function Home() {
           email: ex(f.email) || DEFAULT_CMS_DATA.email,
           whatsapp: ex(f.whatsapp) || DEFAULT_CMS_DATA.whatsapp,
           cvUrl: ex(f.cvUrl) || DEFAULT_CMS_DATA.cvUrl,
+          aboutSlides: ex(f.aboutSlides) || DEFAULT_CMS_DATA.aboutSlides,
         });
       } catch (e) {
         console.warn("CMS fetch failed, using defaults:", e);
@@ -362,27 +364,27 @@ export default function Home() {
         scrub: 1.2,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          if (self.progress >= 0.25) {
+          if (self.progress >= 0.5) {
             playHeroReveal();
-          } else if (self.progress < 0.05) {
+          } else if (self.progress < 0.1) {
             resetHeroReveal();
           }
         }
       },
     });
 
-    // Cloud zooms out and disappears in first 25% progress
+    // Cloud zooms out and disappears in first 50% progress
     if (cloud) {
       tl.to(cloud, {
         scale: 1.65,
         opacity: 0,
         ease: "power2.inOut",
-        duration: 0.25
+        duration: 0.5
       }, 0);
     }
 
-    // Dummy tween to fill out the remaining 75% of pinned space
-    tl.to({}, { duration: 0.75 }, 0.25);
+    // Dummy tween to fill out the remaining 50% of pinned space
+    tl.to({}, { duration: 0.5 }, 0.5);
 
     ScrollTrigger.refresh();
 
@@ -438,8 +440,7 @@ export default function Home() {
       }, i);
     }
 
-    // Two-scroll buffer at the end where all cards remain fully visible
-    tl.to({}, { duration: 2.0 }, cards.length);
+    // No buffer scroll at the end - unpin immediately after last card reveal
 
     ScrollTrigger.refresh();
 
@@ -510,7 +511,7 @@ export default function Home() {
         style={{
           position: "relative",
           width: "100%",
-          height: "400vh",
+          height: "200vh",
           backgroundColor: "transparent",
           opacity: 1,
           transform: "none",
@@ -642,14 +643,11 @@ export default function Home() {
             <p className="headline"><WordSplit text={data.heroHeadline} /></p>
           </div>
 
-          {/* ── Scroll Indicator ── */}
+          {/* ── Scroll Indicator (Hidden) ── */}
           <div
             ref={indicRef}
-            className="scroll-indicator"
-            style={{ pointerEvents: "none", position: "relative", zIndex: 2 }}
-          >
-            <div className="mouse" />
-          </div>
+            style={{ display: "none" }}
+          />
         </div>
       </section>
 
@@ -664,10 +662,11 @@ export default function Home() {
       <section
         ref={skillsContainerRef}
         id="skills"
+        className="scroll-section"
         style={{
           position: "relative",
           width: "100%",
-          height: data.skills?.length ? `${(data.skills.length + 2) * 100}vh` : "600vh",
+          height: data.skills?.length ? `${data.skills.length * 100}vh` : "400vh",
           backgroundColor: "transparent",
           opacity: 1,
           transform: "none",
@@ -714,7 +713,7 @@ export default function Home() {
       {/* ── DOWNSTREAM CONTENT ── */}
       <main ref={expWrapperRef} className="content-wrapper">
         <Experience data={data} />
-        <div style={{ height: "50vh" }} />
+        <div style={{ height: "2rem" }} />
         <Footer data={data} />
       </main>
 

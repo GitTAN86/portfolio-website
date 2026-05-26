@@ -31,6 +31,7 @@ export default function AdminPage() {
     
     const [skills, setSkills] = useState([]);
     const [experience, setExperience] = useState([]);
+    const [aboutSlides, setAboutSlides] = useState([]);
     
     const [cmsStatus, setCmsStatus] = useState("");
 
@@ -92,6 +93,7 @@ export default function AdminPage() {
                 setWhatsapp(data.whatsapp || "");
                 setSkills(data.skills || []);
                 setExperience(data.experience || []);
+                setAboutSlides(data.aboutSlides || []);
                 setProfileImage(data.profileImage || "");
                 setGallery(data.gallery || []);
                 setCvUrl(data.cvUrl || "");
@@ -249,7 +251,7 @@ export default function AdminPage() {
             await setDoc(doc(db, "content", "main"), {
                 heroName, heroTagline, heroHeadline, aboutText,
                 linkedin, email: emailLink, whatsapp,
-                skills, experience,
+                skills, experience, aboutSlides,
                 profileImage, gallery, cvUrl
             });
             setCmsStatus("Published successfully!");
@@ -304,6 +306,29 @@ export default function AdminPage() {
             newExp[index][field] = value;
         }
         setExperience(newExp);
+    };
+
+    const updateAboutSlide = (index, field, value) => {
+        const newSlides = [...aboutSlides];
+        newSlides[index][field] = value;
+        setAboutSlides(newSlides);
+    };
+
+    const handleSlideImageUpload = async (e, index) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setUploading(true);
+        try {
+            const fileRef = ref(storage, `media/${Date.now()}_${file.name}`);
+            await uploadBytes(fileRef, file);
+            const url = await getDownloadURL(fileRef);
+            updateAboutSlide(index, 'image', url);
+            setCmsStatus("Slide image uploaded! Save to publish changes.");
+        } catch (err) {
+            console.error("Upload failed", err);
+            alert("Upload failed.");
+        }
+        setUploading(false);
     };
 
     if (loading) return <div style={{ color: 'white', padding: '50px', textAlign: 'center' }}>Loading Admin...</div>;
@@ -411,6 +436,47 @@ export default function AdminPage() {
                             </h3>
                             <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>About Biography (HTML Support)</label>
                             <textarea value={aboutText} onChange={e => setAboutText(e.target.value)} rows="8" placeholder="Tell your story..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
+                        </div>
+
+                        {/* About Slides Manager Card (Coverflow) */}
+                        <div className="glass-card" style={{ padding: '30px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                                <h3 style={{ color: 'var(--color-tertiary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-images"></i> About Slides Manager (3D Coverflow)
+                                </h3>
+                                <button type="button" onClick={() => setAboutSlides([...aboutSlides, { title: "New Slide", image: "", text: "<p>New Slide Description...</p>" }])} className="submit-btn" style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem' }}>+ Add New Slide</button>
+                            </div>
+                            <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '20px' }}>Manage the 3D coverflow images, titles, and synced text layout on your About Me page.</p>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                {aboutSlides.map((slide, index) => (
+                                    <div key={index} style={{ display: 'flex', gap: '15px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
+                                        <button type="button" onClick={() => setAboutSlides(aboutSlides.filter((_, i) => i !== index))} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(234, 67, 53, 0.1)', color: '#EA4335', border: '1px solid rgba(234, 67, 53, 0.2)', padding: '8px', borderRadius: '6px', cursor: 'pointer' }}>
+                                            <i className="fa-solid fa-trash"></i>
+                                        </button>
+                                        <div style={{ flexGrow: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                            <div>
+                                                <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Title</label>
+                                                <input type="text" value={slide.title || ""} onChange={e => updateAboutSlide(index, 'title', e.target.value)} placeholder="Slide Title (e.g. Technology Leadership)" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                            </div>
+                                            <div>
+                                                <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Image</label>
+                                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                                    <input type="text" value={slide.image || ""} onChange={e => updateAboutSlide(index, 'image', e.target.value)} placeholder="Image URL (or select file ->)" style={{ flexGrow: 1, padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                    <label className="submit-btn" style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer', display: 'inline-block' }}>
+                                                        Upload
+                                                        <input type="file" accept="image/*" onChange={(e) => handleSlideImageUpload(e, index)} style={{ display: 'none' }} />
+                                                    </label>
+                                                    {slide.image && <img src={slide.image} style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover' }} />}
+                                                </div>
+                                            </div>
+                                            <div style={{ gridColumn: 'span 2' }}>
+                                                <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Description (HTML supported)</label>
+                                                <textarea value={slide.text || ""} onChange={e => updateAboutSlide(index, 'text', e.target.value)} placeholder="HTML content here (e.g. <p>Description...</p>)" rows="3" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         {/* Contact & Socials Card */}
