@@ -67,126 +67,138 @@ export default function About({ data }) {
         setIsDragging(false);
     };
 
+    const showCarousel = data?.sectionVisibility?.aboutCarousel !== false;
+    const showTextPanel = data?.sectionVisibility?.aboutTextPanel !== false;
+
     return (
         <section id="about" className="about section-padding scroll-section">
             <h2 className="section-title">About Me</h2>
-            <div className="about-grid">
+            <div 
+                className="about-grid"
+                style={{
+                    gridTemplateColumns: (!showCarousel || !showTextPanel) ? "1fr" : undefined
+                }}
+            >
                 {/* ── Left Side: 3D Coverflow Carousel (Swapped & Bigger) ── */}
-                <div 
-                    className="coverflow-carousel-section"
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        width: "100%",
-                        overflow: "hidden",
-                        order: 1
-                    }}
-                >
+                {showCarousel && (
                     <div 
-                        className="coverflow-container"
-                        onMouseDown={(e) => handleDragStart(e.clientX)}
-                        onMouseMove={(e) => handleDragMove(e.clientX)}
-                        onMouseUp={handleDragEnd}
-                        onMouseLeave={handleDragEnd}
-                        onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
-                        onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
-                        onTouchEnd={handleDragEnd}
-                    >
-                        <div className="coverflow-track">
-                            {slides.map((slide, index) => {
-                                const offset = getOffset(index);
-                                const isActive = offset === 0;
-                                const isLeft = offset === -1;
-                                const isRight = offset === 1;
-
-                                let slideClass = "coverflow-slide";
-                                if (isActive) slideClass += " active";
-                                else if (isLeft) slideClass += " left";
-                                else if (isRight) slideClass += " right";
-
-                                return (
-                                    <div
-                                        key={index}
-                                        className={slideClass}
-                                        style={{
-                                            pointerEvents: isActive ? "auto" : "none",
-                                            cursor: isActive ? "grab" : "pointer"
-                                        }}
-                                        onClick={() => {
-                                            if (!isActive) {
-                                                setActiveIndex(index);
-                                            }
-                                        }}
-                                    >
-                                        <img 
-                                            src={slide.image} 
-                                            alt={slide.title} 
-                                            draggable={false} 
-                                        />
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Navigation Dots */}
-                    <div 
-                        className="coverflow-dots"
+                        className="coverflow-carousel-section"
                         style={{
                             display: "flex",
-                            gap: "10px",
-                            marginTop: "1.5rem"
+                            flexDirection: "column",
+                            alignItems: "center",
+                            width: "100%",
+                            overflow: "hidden",
+                            order: 1
                         }}
                     >
-                        {slides.map((_, index) => (
-                            <button
-                                key={index}
-                                style={{
-                                    width: activeIndex === index ? "24px" : "8px",
-                                    height: "8px",
-                                    borderRadius: "4px",
-                                    backgroundColor: activeIndex === index ? "var(--color-primary)" : "var(--color-text-muted)",
-                                    border: "none",
-                                    outline: "none",
-                                    cursor: "pointer",
-                                    transition: "all 0.3s ease"
-                                }}
-                                onClick={() => setActiveIndex(index)}
-                                aria-label={`Go to slide ${index + 1}`}
-                            />
-                        ))}
-                    </div>
-                </div>
+                        <div 
+                            className="coverflow-container"
+                            onMouseDown={(e) => handleDragStart(e.clientX)}
+                            onMouseMove={(e) => handleDragMove(e.clientX)}
+                            onMouseUp={handleDragEnd}
+                            onMouseLeave={handleDragEnd}
+                            onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
+                            onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
+                            onTouchEnd={handleDragEnd}
+                        >
+                            <div className="coverflow-track">
+                                {slides.map((slide, index) => {
+                                    const offset = getOffset(index);
+                                    const isActive = offset === 0;
+                                    const isLeft = offset === -1;
+                                    const isRight = offset === 1;
 
-                {/* ── Right Side: Synced Text Panel (Swapped & Height Fixed) ── */}
-                <div 
-                    className="about-text-container glass-card"
-                    style={{ 
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        order: 2
-                    }}
-                >
-                    <div className={`about-text-slide ${isTransitioningText ? "fade-out" : ""}`}>
-                        <h3 
-                            style={{ 
-                                fontSize: "1.6rem", 
-                                color: "var(--color-primary)", 
-                                marginBottom: "1.2rem",
-                                fontWeight: "600" 
+                                    let slideClass = "coverflow-slide";
+                                    if (isActive) slideClass += " active";
+                                    else if (isLeft) slideClass += " left";
+                                    else if (isRight) slideClass += " right";
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={slideClass}
+                                            style={{
+                                                pointerEvents: isActive ? "auto" : "none",
+                                                cursor: isActive ? "grab" : "pointer"
+                                            }}
+                                            onClick={() => {
+                                                if (!isActive) {
+                                                    setActiveIndex(index);
+                                                }
+                                            }}
+                                        >
+                                            <img 
+                                                src={slide.image} 
+                                                alt={slide.title} 
+                                                draggable={false} 
+                                            />
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Navigation Dots */}
+                        <div 
+                            className="coverflow-dots"
+                            style={{
+                                display: "flex",
+                                gap: "10px",
+                                marginTop: "1.5rem"
                             }}
                         >
-                            {slides[displayedIndex]?.title || ""}
-                        </h3>
-                        <div 
-                            className="about-paragraph"
-                            style={{ textAlign: "justify" }}
-                            dangerouslySetInnerHTML={{ __html: slides[displayedIndex]?.text || "" }} 
-                        />
+                            {slides.map((_, index) => (
+                                <button
+                                    key={index}
+                                    style={{
+                                        width: activeIndex === index ? "24px" : "8px",
+                                        height: "8px",
+                                        borderRadius: "4px",
+                                        backgroundColor: activeIndex === index ? "var(--color-primary)" : "var(--color-text-muted)",
+                                        border: "none",
+                                        outline: "none",
+                                        cursor: "pointer",
+                                        transition: "all 0.3s ease"
+                                    }}
+                                    onClick={() => setActiveIndex(index)}
+                                    aria-label={`Go to slide ${index + 1}`}
+                                />
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
+
+                {/* ── Right Side: Synced Text Panel (Swapped & Height Fixed) ── */}
+                {showTextPanel && (
+                    <div 
+                        className="about-text-container glass-card"
+                        style={{ 
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            order: 2
+                        }}
+                    >
+                        <div className={`about-text-slide ${isTransitioningText ? "fade-out" : ""}`}>
+                            <h3 
+                                style={{ 
+                                    fontSize: "1.6rem", 
+                                    color: "var(--color-primary)", 
+                                    marginBottom: "1.2rem",
+                                    fontWeight: "600" 
+                                }}
+                            >
+                                {slides[displayedIndex]?.title || ""}
+                            </h3>
+                            <div 
+                                className="about-paragraph"
+                                style={{ textAlign: "justify" }}
+                                dangerouslySetInnerHTML={{ __html: slides[displayedIndex]?.text || "" }} 
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
         </section>
     );

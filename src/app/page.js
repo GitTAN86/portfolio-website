@@ -76,7 +76,7 @@ const HELLO_CLOUD = [
   { text: "Բարև", x: 95, y: 6, size: 1.0, font: "'Arial', sans-serif", color: "#1A237E", opacity: 0.44, floatAmt: 13, rotate: 0 }, // 70 Armenian
 ];
 
-const DEFAULT_PROFILE_IMAGE = "/images/bahman.jpg";
+const DEFAULT_PROFILE_IMAGE = "/images/pic6.jpeg";
 
 const DEFAULT_CMS_DATA = {
   heroName: "Bahman Noushabadi",
@@ -187,6 +187,9 @@ export default function Home() {
         const ex = (v) => {
           if (!v) return null;
           if (v.stringValue !== undefined) return v.stringValue;
+          if (v.booleanValue !== undefined) return v.booleanValue;
+          if (v.integerValue !== undefined) return parseInt(v.integerValue, 10);
+          if (v.doubleValue !== undefined) return parseFloat(v.doubleValue);
           if (v.arrayValue) return (v.arrayValue.values || []).map(ex);
           if (v.mapValue) {
             const m = {};
@@ -209,6 +212,8 @@ export default function Home() {
           whatsapp: ex(f.whatsapp) || DEFAULT_CMS_DATA.whatsapp,
           cvUrl: ex(f.cvUrl) || DEFAULT_CMS_DATA.cvUrl,
           aboutSlides: ex(f.aboutSlides) || DEFAULT_CMS_DATA.aboutSlides,
+          sectionVisibility: ex(f.sectionVisibility) || {},
+          themes: ex(f.themes) || {},
         });
       } catch (e) {
         console.warn("CMS fetch failed, using defaults:", e);
@@ -541,222 +546,273 @@ export default function Home() {
     };
   }, [data.experience]);
 
+  const themes = data.themes || {
+    theme1: { bg: "#F9F9FB", text: "#202124", textMuted: "#5f6368", primary: "#4285F4", secondary: "#EA4335", tertiary: "#b100ff" },
+    theme2: { bg: "#D4DFEB", text: "#202124", textMuted: "#5f6368", primary: "#4285F4", secondary: "#EA4335", tertiary: "#b100ff" },
+    theme3: { bg: "#2C3E50", text: "#F9F9FB", textMuted: "#B0BEC5", primary: "#4285F4", secondary: "#EA4335", tertiary: "#b100ff" },
+    theme4: { bg: "#05050A", text: "#ffffff", textMuted: "#a0a0a0", primary: "#4285F4", secondary: "#EA4335", tertiary: "#b100ff" }
+  };
+
   return (
     <>
       <ScrollThemeManager />
       {<ParticleBackground />}
 
+      {/* Dynamic Theme Colors Injection */}
+      <style>{`
+        body.theme-1 {
+          --color-bg: ${themes.theme1?.bg || "#F9F9FB"};
+          --color-text: ${themes.theme1?.text || "#202124"};
+          --color-text-muted: ${themes.theme1?.textMuted || "#5f6368"};
+          --color-primary: ${themes.theme1?.primary || "#4285F4"};
+          --color-secondary: ${themes.theme1?.secondary || "#EA4335"};
+          --color-tertiary: ${themes.theme1?.tertiary || "#b100ff"};
+        }
+        body.theme-2 {
+          --color-bg: ${themes.theme2?.bg || "#D4DFEB"};
+          --color-text: ${themes.theme2?.text || "#202124"};
+          --color-text-muted: ${themes.theme2?.textMuted || "#5f6368"};
+          --color-primary: ${themes.theme2?.primary || "#4285F4"};
+          --color-secondary: ${themes.theme2?.secondary || "#EA4335"};
+          --color-tertiary: ${themes.theme2?.tertiary || "#b100ff"};
+        }
+        body.theme-3 {
+          --color-bg: ${themes.theme3?.bg || "#2C3E50"};
+          --color-text: ${themes.theme3?.text || "#F9F9FB"};
+          --color-text-muted: ${themes.theme3?.textMuted || "#B0BEC5"};
+          --color-primary: ${themes.theme3?.primary || "#4285F4"};
+          --color-secondary: ${themes.theme3?.secondary || "#EA4335"};
+          --color-tertiary: ${themes.theme3?.tertiary || "#b100ff"};
+        }
+        body.theme-4 {
+          --color-bg: ${themes.theme4?.bg || "#05050A"};
+          --color-text: ${themes.theme4?.text || "#ffffff"};
+          --color-text-muted: ${themes.theme4?.textMuted || "#a0a0a0"};
+          --color-primary: ${themes.theme4?.primary || "#4285F4"};
+          --color-secondary: ${themes.theme4?.secondary || "#EA4335"};
+          --color-tertiary: ${themes.theme4?.tertiary || "#b100ff"};
+        }
+      `}</style>
+
       {/* ── HERO SECTION ── */}
-      <section
-        ref={containerRef}
-        id="hero"
-        className="scroll-section"
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "200vh",
-          backgroundColor: "transparent",
-          opacity: 1,
-          transform: "none",
-          transition: "none",
-        }}
-      >
-        <div
-          ref={pinRef}
+      {data.sectionVisibility?.hero !== false && (
+        <section
+          ref={containerRef}
+          id="hero"
+          className="scroll-section"
           style={{
-            position: "sticky",
-            top: 0,
+            position: "relative",
             width: "100%",
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
+            height: "200vh",
+            backgroundColor: "transparent",
+            opacity: 1,
+            transform: "none",
+            transition: "none",
           }}
         >
-          {/* ── Hello Word Cloud ── */}
           <div
-            ref={wordCloudRef}
+            ref={pinRef}
             style={{
-              position: "absolute",
-              inset: 0,
-              pointerEvents: "none",
-              willChange: "transform, opacity",
-              transformOrigin: "center center",
-              zIndex: 1,
-            }}
-          >
-            {/* World map — fades in after last word appears, zooms out with cloud on scroll */}
-            <img
-              ref={worldMapRef}
-              src="/images/world-map.png"
-              alt=""
-              aria-hidden="true"
-              draggable={false}
-              fetchPriority="high"
-              decoding="async"
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",         // fills container edge-to-edge
-                objectPosition: "center",
-                opacity: 0,                 // GSAP animates this 0→1 in sync with words
-                pointerEvents: "none",
-                userSelect: "none",
-                // multiply makes white pixels transparent on any background:
-                // white(255) × bg = bg  →  ocean/white areas become invisible
-                // gray(#C8C8C8) × bg  →  faint continent tint on bg
-                // red(#E63946) × bg   →  vivid Iran tint on bg
-                mixBlendMode: "multiply",
-                willChange: "opacity",
-              }}
-            />
-            {HELLO_CLOUD.map((word, i) => (
-              <span
-                key={i}
-                className="hello-word"
-                style={{
-                  position: "absolute",
-                  left: `${word.x}%`,
-                  top: `${word.y}%`,
-                  // transform is fully owned by GSAP (xPercent/yPercent + rotation)
-                  fontSize: `clamp(0.75rem, ${word.size}vw, ${word.size}rem)`,
-                  fontFamily: word.font,
-                  color: word.color,
-                  whiteSpace: "nowrap",
-                  userSelect: "none",
-                  willChange: "transform, opacity",
-                  // Removed textShadow for performance (70 spans with drop-shadow kills GPU)
-                }}
-              >
-                {word.text}
-              </span>
-            ))}
-          </div>
-
-          {/* ── Profile Image ── */}
-          <div
-            ref={imgRef}
-            className="profile-image-wrapper"
-            style={{
-              transformOrigin: "center center",
-              marginBottom: "2rem",
-              pointerEvents: "none",
-              opacity: 0,
-              position: "relative",
-              zIndex: 2,
-            }}
-          >
-            <img
-              src={data.profileImage}
-              alt={data.heroName}
-              className="profile-img"
-              draggable={false}
-              fetchPriority="high"
-              decoding="async"
-            />
-            <div className="img-glow" />
-          </div>
-
-          {/* ── Text Block ── */}
-          <div
-            ref={textRef}
-            style={{
-              textAlign: "center",
-              maxWidth: "820px",
-              padding: "0 24px",
-              userSelect: "none",
-              opacity: 0,
+              position: "sticky",
+              top: 0,
+              width: "100%",
+              height: "100vh",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "0.3rem",
-              position: "relative",
-              zIndex: 2,
+              justifyContent: "center",
+              overflow: "hidden",
             }}
           >
-            <span className="greeting" style={{ display: "block" }}>
-              <WordSplit text="Hello, I am" />
-            </span>
-            <h1 className="name"><WordSplit text={data.heroName} /></h1>
-            <h3 className="tagline"><WordSplit text={data.heroTagline} /></h3>
-            <p className="headline"><WordSplit text={data.heroHeadline} /></p>
-          </div>
+             {/* ── Hello Word Cloud ── */}
+            {data.sectionVisibility?.heroWordCloud !== false && (
+              <div
+                ref={wordCloudRef}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  pointerEvents: "none",
+                  willChange: "transform, opacity",
+                  transformOrigin: "center center",
+                  zIndex: 1,
+                }}
+              >
+                {/* World map — fades in after last word appears, zooms out with cloud on scroll */}
+                {data.sectionVisibility?.heroMap !== false && (
+                  <img
+                    ref={worldMapRef}
+                    src="/images/world-map.png"
+                    alt=""
+                    aria-hidden="true"
+                    draggable={false}
+                    fetchPriority="high"
+                    decoding="async"
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",         // fills container edge-to-edge
+                      objectPosition: "center",
+                      opacity: 0,                 // GSAP animates this 0→1 in sync with words
+                      pointerEvents: "none",
+                      userSelect: "none",
+                      // multiply makes white pixels transparent on any background:
+                      // white(255) × bg = bg  →  ocean/white areas become invisible
+                      // gray(#C8C8C8) × bg  →  faint continent tint on bg
+                      // red(#E63946) × bg   →  vivid Iran tint on bg
+                      mixBlendMode: "multiply",
+                      willChange: "opacity",
+                    }}
+                  />
+                )}
+                {HELLO_CLOUD.map((word, i) => (
+                  <span
+                    key={i}
+                    className="hello-word"
+                    style={{
+                      position: "absolute",
+                      left: `${word.x}%`,
+                      top: `${word.y}%`,
+                      // transform is fully owned by GSAP (xPercent/yPercent + rotation)
+                      fontSize: `clamp(0.75rem, ${word.size}vw, ${word.size}rem)`,
+                      fontFamily: word.font,
+                      color: word.color,
+                      whiteSpace: "nowrap",
+                      userSelect: "none",
+                      willChange: "transform, opacity",
+                      // Removed textShadow for performance (70 spans with drop-shadow kills GPU)
+                    }}
+                  >
+                    {word.text}
+                  </span>
+                ))}
+              </div>
+            )}
 
-          {/* ── Scroll Indicator (Hidden) ── */}
-          <div
-            ref={indicRef}
-            style={{ display: "none" }}
-          />
-        </div>
-      </section>
+            {/* ── Profile Image ── */}
+            <div
+              ref={imgRef}
+              className="profile-image-wrapper"
+              style={{
+                transformOrigin: "center center",
+                marginBottom: "2rem",
+                pointerEvents: "none",
+                opacity: 0,
+                position: "relative",
+                zIndex: 2,
+              }}
+            >
+              <img
+                src={data.profileImage}
+                alt={data.heroName}
+                className="profile-img"
+                draggable={false}
+                fetchPriority="high"
+                decoding="async"
+              />
+              <div className="img-glow" />
+            </div>
+
+            {/* ── Text Block ── */}
+            <div
+              ref={textRef}
+              style={{
+                textAlign: "center",
+                maxWidth: "820px",
+                padding: "0 24px",
+                userSelect: "none",
+                opacity: 0,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "0.3rem",
+                position: "relative",
+                zIndex: 2,
+              }}
+            >
+              <span className="greeting" style={{ display: "block" }}>
+                <WordSplit text="Hello, I am" />
+              </span>
+              <h1 className="name"><WordSplit text={data.heroName} /></h1>
+              <h3 className="tagline"><WordSplit text={data.heroTagline} /></h3>
+              <p className="headline"><WordSplit text={data.heroHeadline} /></p>
+            </div>
+
+            {/* ── Scroll Indicator (Hidden) ── */}
+            <div
+              ref={indicRef}
+              style={{ display: "none" }}
+            />
+          </div>
+        </section>
+      )}
 
       {/* ── ABOUT ME ── */}
-      <div className="content-wrapper">
-        <About data={data} />
-      </div>
-
-
+      {data.sectionVisibility?.about !== false && (
+        <div className="content-wrapper">
+          <About data={data} />
+        </div>
+      )}
 
       {/* ── SKILLS SECTION (pinned, step-by-step card reveal) ── */}
-      <section
-        ref={skillsContainerRef}
-        id="skills"
-        className="scroll-section"
-        style={{
-          position: "relative",
-          width: "100%",
-          height: isMobile ? "auto" : (data.skills?.length ? `${data.skills.length * 100}vh` : "400vh"),
-          padding: isMobile ? "5rem 0" : "0",
-          backgroundColor: "transparent",
-          opacity: 1,
-          transform: "none",
-          transition: "none",
-        }}
-      >
-        <div
-          ref={skillsPinRef}
-          className="skills-pin"
+      {data.sectionVisibility?.skills !== false && (
+        <section
+          ref={skillsContainerRef}
+          id="skills"
+          className="scroll-section"
           style={{
-            position: isMobile ? "relative" : "sticky",
-            top: 0,
+            position: "relative",
             width: "100%",
-            height: isMobile ? "auto" : "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: isMobile ? "flex-start" : "center",
-            overflow: "hidden",
-            padding: isMobile ? "0 1.5rem" : "0 2rem",
+            height: isMobile ? "auto" : (data.skills?.length ? `${data.skills.length * 100}vh` : "400vh"),
+            padding: isMobile ? "5rem 0" : "0",
+            backgroundColor: "transparent",
+            opacity: 1,
+            transform: "none",
+            transition: "none",
           }}
         >
-          <h2
-            ref={skillsTitleRef}
-            className="section-title"
-            style={{ marginBottom: "2.5rem", willChange: "transform, opacity" }}
+          <div
+            ref={skillsPinRef}
+            className="skills-pin"
+            style={{
+              position: isMobile ? "relative" : "sticky",
+              top: 0,
+              width: "100%",
+              height: isMobile ? "auto" : "100vh",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: isMobile ? "flex-start" : "center",
+              overflow: "hidden",
+              padding: isMobile ? "0 1.5rem" : "0 2rem",
+            }}
           >
-            Core Competencies
-          </h2>
-          <div className="skills-grid" style={{ width: "100%", maxWidth: "1200px" }}>
-            {data.skills.map((skill, index) => (
-              <div key={index} className="glass-card skill-card" style={{ willChange: "transform, opacity" }}>
-                <i className={`${skill.icon || "fa-solid fa-star"} skill-icon`}></i>
-                <h3>{skill.title}</h3>
-                <p>{skill.description}</p>
+            <h2
+              ref={skillsTitleRef}
+              className="section-title"
+              style={{ marginBottom: "2.5rem", willChange: "transform, opacity" }}
+            >
+              Core Competencies
+            </h2>
+            {data.sectionVisibility?.skillsGrid !== false && (
+              <div className="skills-grid" style={{ width: "100%", maxWidth: "1200px" }}>
+                {data.skills.map((skill, index) => (
+                  <div key={index} className="glass-card skill-card" style={{ willChange: "transform, opacity" }}>
+                    <i className={`${skill.icon || "fa-solid fa-star"} skill-icon`}></i>
+                    <h3>{skill.title}</h3>
+                    <p>{skill.description}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        </div>
-      </section>
-
-
+        </section>
+      )}
 
       {/* ── DOWNSTREAM CONTENT ── */}
       <main ref={expWrapperRef} className="content-wrapper">
-        <Experience data={data} />
+        {data.sectionVisibility?.experience !== false && <Experience data={data} />}
         <div style={{ height: "2rem" }} />
         <Footer data={data} />
       </main>
