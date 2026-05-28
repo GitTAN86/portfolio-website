@@ -215,6 +215,14 @@ export default function AdminPage() {
         }
     }, [user, captchaEnabled]);
 
+    // Load CMS data whenever a CM session becomes active (login or page-refresh restore)
+    useEffect(() => {
+        if (user?.isCMSession && userRole === "content_manager") {
+            loadCMSData();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user, userRole]);
+
     // Active auth session state listener with RBAC provisioning
     useEffect(() => {
         document.body.className = 'theme-4'; // Force dark theme for admin readability
@@ -341,6 +349,9 @@ export default function AdminPage() {
                 setUserRole(userData.role || "content_manager");
                 setUser({ uid: userDoc.id, isCMSession: true });
                 setLoginError("");
+
+                // Load the live CMS data immediately on login
+                loadCMSData();
             } catch (err) {
                 console.error("CM login error", err);
                 setLoginError("Login failed. Please try again.");
