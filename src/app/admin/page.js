@@ -1000,7 +1000,7 @@ export default function AdminPage() {
         { id: 'media', icon: 'fa-image', label: 'Media' },
         { id: 'analytics', icon: 'fa-chart-line', label: 'Traffic', superAdminOnly: true },
         { id: 'reports', icon: 'fa-file-export', label: 'Reports', superAdminOnly: true },
-        { id: 'settings', icon: 'fa-gears', label: 'Settings', superAdminOnly: true }
+        { id: 'settings', icon: 'fa-gears', label: 'Settings' }
     ];
     const visibleTabs = allTabs.filter(t => !t.superAdminOnly || userRole === 'super_admin');
 
@@ -1488,7 +1488,7 @@ export default function AdminPage() {
                 </div>
             )}
 
-            {activeTab === 'settings' && userRole === 'super_admin' && (
+            {activeTab === 'settings' && (
                 <div id="settingsView" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
                         {/* Settings Header with Save & Publish buttons */}
@@ -1729,7 +1729,8 @@ export default function AdminPage() {
                             </div>
                         </div>
 
-                        {/* Security Controls */}
+                        {/* Security Controls - Super Admin Only */}
+                        {userRole === 'super_admin' && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <h3 style={{ color: 'var(--color-secondary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <i className="fa-solid fa-shield-halved"></i> Login Security Settings
@@ -1750,6 +1751,7 @@ export default function AdminPage() {
                                 </label>
                             </div>
                         </div>
+                        )}
 
                         {/* Theme Customizer Swatches */}
                         <div className="glass-card" style={{ padding: '30px' }}>
@@ -1865,7 +1867,8 @@ export default function AdminPage() {
                             </div>
                         </div>
 
-                        {/* Password Changer */}
+                        {/* Password Changer - Super Admin Only */}
+                        {userRole === 'super_admin' && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <h3 style={{ color: 'white', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <i className="fa-solid fa-key"></i> Update Master Password
@@ -1905,11 +1908,13 @@ export default function AdminPage() {
                                 </p>
                             )}
                         </div>
+                        )}
 
-                        {/* User Roles directory manager */}
+                        {/* User Roles directory manager - Super Admin Only */}
+                        {userRole === 'super_admin' && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <h3 style={{ color: 'white', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <i className="fa-solid fa-users-gear"></i> User Directory & Access Levels (RBAC)
+                                <i className="fa-solid fa-users-gear"></i> User Directory &amp; Access Levels (RBAC)
                             </h3>
                             <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '20px' }}>
                                 Manage user profiles and roles. Role demotions of your active account are locked to prevent accidental lockout.
@@ -2083,6 +2088,7 @@ export default function AdminPage() {
                                 </table>
                             </div>
                         </div>
+                        )}
 
                         {/* Settings save block */}
 
