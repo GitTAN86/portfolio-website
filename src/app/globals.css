@@ -1,3 +1,44 @@
+@property --color-bg {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #F9F9FB;
+}
+@property --color-text {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #202124;
+}
+@property --color-text-muted {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #5f6368;
+}
+@property --color-primary {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #4285F4;
+}
+@property --color-secondary {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #EA4335;
+}
+@property --color-tertiary {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #b100ff;
+}
+@property --glass-bg {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(255, 255, 255, 0.65);
+}
+@property --glass-border {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(255, 255, 255, 0.8);
+}
+
 :root {
     --color-bg: #F9F9FB;
     --color-primary: #4285F4;
@@ -58,7 +99,17 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     position: relative;
-    transition: background-color 1.5s ease, color 1.5s ease;
+    transition: 
+        --color-bg 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+        --color-text 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+        --color-text-muted 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+        --color-primary 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+        --color-secondary 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+        --color-tertiary 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+        --glass-bg 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+        --glass-border 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+        color 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card,
@@ -513,7 +564,9 @@ h4 {
     font-size: 2.5rem;
     background: linear-gradient(90deg, var(--color-primary), var(--color-tertiary));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+    color: transparent;
 }
 
 .footer-card p {
@@ -851,13 +904,13 @@ h4 {
 }
 
 /* Make admin button visible on light backgrounds (Themes 1 & 2) */
-body:not(.theme-3):not(.theme-4) .admin-link-btn {
+body:not(.theme-3, .theme-4) .admin-link-btn {
     background: rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.1);
     color: rgba(0, 0, 0, 0.4);
 }
 
-body:not(.theme-3):not(.theme-4) .admin-link-btn:hover {
+body:not(.theme-3, .theme-4) .admin-link-btn:hover {
     background: rgba(0, 0, 0, 0.15);
     color: var(--color-primary);
     border-color: rgba(0, 0, 0, 0.3);
