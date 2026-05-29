@@ -121,6 +121,10 @@ export default function AdminPage() {
     const [editingPermissionsId, setEditingPermissionsId] = useState("");
     const [editingPermissions, setEditingPermissions] = useState({ ...DEFAULT_CM_PERMISSIONS });
 
+    // Collapsible sections — key: sectionId, value: true = collapsed
+    const [collapsedSections, setCollapsedSections] = useState({});
+    const toggleSection = (key) => setCollapsedSections(p => ({ ...p, [key]: !p[key] }));
+
     // Section visibility state
     const [sectionVisibility, setSectionVisibility] = useState({
         hero: true,
@@ -1134,9 +1138,13 @@ export default function AdminPage() {
                         {/* Hero Section Card */}
                         {(userRole === 'super_admin' || userPermissions.contentHero !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <h3 style={{ color: 'var(--color-primary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <i className="fa-solid fa-rocket"></i> Hero Section
-                            </h3>
+                            <div onClick={() => toggleSection('heroCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.heroCard ? 0 : '20px' }}>
+                                <h3 style={{ color: 'var(--color-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-rocket"></i> Hero Section
+                                </h3>
+                                <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.heroCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                            </div>
+                            {!collapsedSections.heroCard && (
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                 <div style={{ gridColumn: 'span 2' }}>
                                     <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Full Name</label>
@@ -1158,69 +1166,90 @@ export default function AdminPage() {
                                     <input type="text" value={heroHeadline} onChange={e => setHeroHeadline(e.target.value)} placeholder="e.g. Bridging the Gap..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                 </div>
                             </div>
+                            )}
                         </div>
                         )}
 
                         {/* About Section Card */}
                         {(userRole === 'super_admin' || userPermissions.contentAbout !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <h3 style={{ color: 'var(--color-tertiary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <i className="fa-solid fa-user"></i> About Section
-                            </h3>
-                            <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>About Biography (HTML Support)</label>
-                            <textarea value={aboutText} onChange={e => setAboutText(e.target.value)} rows="8" placeholder="Tell your story..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
+                            <div onClick={() => toggleSection('aboutCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.aboutCard ? 0 : '20px' }}>
+                                <h3 style={{ color: 'var(--color-tertiary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-user"></i> About Section
+                                </h3>
+                                <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.aboutCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                            </div>
+                            {!collapsedSections.aboutCard && (
+                            <>
+                                <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>About Biography (HTML Support)</label>
+                                <textarea value={aboutText} onChange={e => setAboutText(e.target.value)} rows="8" placeholder="Tell your story..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
+                            </>
+                            )}
                         </div>
                         )}
 
                         {/* About Slides Manager Card (Coverflow) */}
                         {(userRole === 'super_admin' || userPermissions.contentAboutSlides !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <div onClick={() => toggleSection('slidesCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.slidesCard ? 0 : '20px' }}>
                                 <h3 style={{ color: 'var(--color-tertiary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <i className="fa-solid fa-images"></i> About Slides Manager (3D Coverflow)
                                 </h3>
-                                <button type="button" onClick={() => setAboutSlides([...aboutSlides, { title: "New Slide", image: "", text: "<p>New Slide Description...</p>" }])} className="submit-btn" style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem' }}>+ Add New Slide</button>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    {!collapsedSections.slidesCard && (
+                                        <button type="button" onClick={e => { e.stopPropagation(); setAboutSlides([...aboutSlides, { title: "New Slide", image: "", text: "<p>New Slide Description...</p>" }]); }} className="submit-btn" style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem' }}>+ Add New Slide</button>
+                                    )}
+                                    <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.slidesCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                                </div>
                             </div>
-                            <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '20px' }}>Manage the 3D coverflow images, titles, and synced text layout on your About Me page.</p>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                {aboutSlides.map((slide, index) => (
-                                    <div key={index} style={{ display: 'flex', gap: '15px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
-                                        <button type="button" onClick={() => setAboutSlides(aboutSlides.filter((_, i) => i !== index))} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(234, 67, 53, 0.1)', color: '#EA4335', border: '1px solid rgba(234, 67, 53, 0.2)', padding: '8px', borderRadius: '6px', cursor: 'pointer' }}>
-                                            <i className="fa-solid fa-trash"></i>
-                                        </button>
-                                        <div style={{ flexGrow: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                                            <div>
-                                                <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Title</label>
-                                                <input type="text" value={slide.title || ""} onChange={e => updateAboutSlide(index, 'title', e.target.value)} placeholder="Slide Title (e.g. Technology Leadership)" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
-                                            </div>
-                                            <div>
-                                                <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Image</label>
-                                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                                    <input type="text" value={slide.image || ""} onChange={e => updateAboutSlide(index, 'image', e.target.value)} placeholder="Image URL (or select file ->)" style={{ flexGrow: 1, padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
-                                                    <label className="submit-btn" style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer', display: 'inline-block' }}>
-                                                        Upload
-                                                        <input type="file" accept="image/*" onChange={(e) => handleSlideImageUpload(e, index)} style={{ display: 'none' }} />
-                                                    </label>
-                                                    {slide.image && <img src={slide.image} style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover' }} />}
+                            {!collapsedSections.slidesCard && (
+                            <>
+                                <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '20px' }}>Manage the 3D coverflow images, titles, and synced text layout on your About Me page.</p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                    {aboutSlides.map((slide, index) => (
+                                        <div key={index} style={{ display: 'flex', gap: '15px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
+                                            <button type="button" onClick={() => setAboutSlides(aboutSlides.filter((_, i) => i !== index))} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(234, 67, 53, 0.1)', color: '#EA4335', border: '1px solid rgba(234, 67, 53, 0.2)', padding: '8px', borderRadius: '6px', cursor: 'pointer' }}>
+                                                <i className="fa-solid fa-trash"></i>
+                                            </button>
+                                            <div style={{ flexGrow: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                                <div>
+                                                    <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Title</label>
+                                                    <input type="text" value={slide.title || ""} onChange={e => updateAboutSlide(index, 'title', e.target.value)} placeholder="Slide Title (e.g. Technology Leadership)" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                </div>
+                                                <div>
+                                                    <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Image</label>
+                                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                                        <input type="text" value={slide.image || ""} onChange={e => updateAboutSlide(index, 'image', e.target.value)} placeholder="Image URL (or select file ->)" style={{ flexGrow: 1, padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                        <label className="submit-btn" style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer', display: 'inline-block' }}>
+                                                            Upload
+                                                            <input type="file" accept="image/*" onChange={(e) => handleSlideImageUpload(e, index)} style={{ display: 'none' }} />
+                                                        </label>
+                                                        {slide.image && <img src={slide.image} style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover' }} />}
+                                                    </div>
+                                                </div>
+                                                <div style={{ gridColumn: 'span 2' }}>
+                                                    <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Description (HTML supported)</label>
+                                                    <textarea value={slide.text || ""} onChange={e => updateAboutSlide(index, 'text', e.target.value)} placeholder="HTML content here (e.g. <p>Description...</p>)" rows="3" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
                                                 </div>
                                             </div>
-                                            <div style={{ gridColumn: 'span 2' }}>
-                                                <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Description (HTML supported)</label>
-                                                <textarea value={slide.text || ""} onChange={e => updateAboutSlide(index, 'text', e.target.value)} placeholder="HTML content here (e.g. <p>Description...</p>)" rows="3" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
-                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+                            </>
+                            )}
                         </div>
                         )}
 
                         {/* Contact & Socials Card */}
                         {(userRole === 'super_admin' || userPermissions.contentContact !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <h3 style={{ color: '#34A853', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <i className="fa-solid fa-address-book"></i> Contact & Socials
-                            </h3>
+                            <div onClick={() => toggleSection('contactCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.contactCard ? 0 : '20px' }}>
+                                <h3 style={{ color: '#34A853', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-address-book"></i> Contact & Socials
+                                </h3>
+                                <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.contactCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                            </div>
+                            {!collapsedSections.contactCard && (
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                                 <div>
                                     <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>LinkedIn URL</label>
@@ -1235,18 +1264,25 @@ export default function AdminPage() {
                                     <input type="text" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="+60123456789" style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                 </div>
                             </div>
+                            )}
                         </div>
                         )}
 
                         {/* Skills Manager Card */}
                         {(userRole === 'super_admin' || userPermissions.contentSkills !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <div onClick={() => toggleSection('skillsCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.skillsCard ? 0 : '20px' }}>
                                 <h3 style={{ color: '#4285F4', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <i className="fa-solid fa-list-check"></i> Skills Manager
                                 </h3>
-                                <button type="button" onClick={() => setSkills([...skills, { title: "", icon: "fa-solid fa-star", description: "" }])} className="submit-btn" style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem' }}>+ Add New Skill</button>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    {!collapsedSections.skillsCard && (
+                                        <button type="button" onClick={e => { e.stopPropagation(); setSkills([...skills, { title: "", icon: "fa-solid fa-star", description: "" }]); }} className="submit-btn" style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem' }}>+ Add New Skill</button>
+                                    )}
+                                    <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.skillsCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                                </div>
                             </div>
+                            {!collapsedSections.skillsCard && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                                 {skills.map((skill, index) => (
                                     <div key={index} style={{ display: 'flex', gap: '15px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -1261,18 +1297,25 @@ export default function AdminPage() {
                                     </div>
                                 ))}
                             </div>
+                            )}
                         </div>
                         )}
 
                         {/* Experience Manager Card */}
                         {(userRole === 'super_admin' || userPermissions.contentExperience !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <div onClick={() => toggleSection('experienceCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.experienceCard ? 0 : '20px' }}>
                                 <h3 style={{ color: '#FBBC05', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <i className="fa-solid fa-briefcase"></i> Experience Journey
                                 </h3>
-                                <button type="button" onClick={() => setExperience([...experience, { title: "", company: "", date: "", bullets: [] }])} className="submit-btn" style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem' }}>+ Add Job</button>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    {!collapsedSections.experienceCard && (
+                                        <button type="button" onClick={e => { e.stopPropagation(); setExperience([...experience, { title: "", company: "", date: "", bullets: [] }]); }} className="submit-btn" style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '0.85rem' }}>+ Add Job</button>
+                                    )}
+                                    <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.experienceCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                                </div>
                             </div>
+                            {!collapsedSections.experienceCard && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                 {experience.map((exp, index) => (
                                     <div key={index} style={{ background: 'rgba(255,255,255,0.03)', padding: '25px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
@@ -1300,6 +1343,7 @@ export default function AdminPage() {
                                     </div>
                                 ))}
                             </div>
+                            )}
                         </div>
                         )}
 
@@ -1578,12 +1622,17 @@ export default function AdminPage() {
                         {/* Section Visibility toggles - permission guarded */}
                         {(userRole === 'super_admin' || userPermissions.settingVisibility !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <h3 style={{ color: 'var(--color-primary)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <i className="fa-solid fa-eye"></i> Section & Component Visibility Switches
-                            </h3>
-                            <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '25px' }}>
-                                Control which sections and components are visible on the public page. Turn off entire sections or disable individual components to customize the layout.
-                            </p>
+                            <div onClick={() => toggleSection('visibilityCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.visibilityCard ? 0 : '10px' }}>
+                                <h3 style={{ color: 'var(--color-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-eye"></i> Section & Component Visibility Switches
+                                </h3>
+                                <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.visibilityCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                            </div>
+                            {!collapsedSections.visibilityCard && (
+                            <>
+                                <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '25px' }}>
+                                    Control which sections and components are visible on the public page. Turn off entire sections or disable individual components to customize the layout.
+                                </p>
 
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
                                 {/* Hero section group */}
@@ -1798,16 +1847,21 @@ export default function AdminPage() {
                                     </button>
                                 </div>
                             </div>
+                            </>
+                            )}
                         </div>
                         )}
 
                         {/* Security Controls - Super Admin Only */}
                         {userRole === 'super_admin' && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <h3 style={{ color: 'var(--color-secondary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <i className="fa-solid fa-shield-halved"></i> Login Security Settings
-                            </h3>
-
+                            <div onClick={() => toggleSection('securityCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.securityCard ? 0 : '20px' }}>
+                                <h3 style={{ color: 'var(--color-secondary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-shield-halved"></i> Login Security Settings
+                                </h3>
+                                <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.securityCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                            </div>
+                            {!collapsedSections.securityCard && (
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', padding: '15px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                     <span style={{ fontSize: '0.95rem', color: 'white' }}>Enforce Login Captcha Verification</span>
@@ -1822,45 +1876,34 @@ export default function AdminPage() {
                                     <span className="slider"></span>
                                 </label>
                             </div>
+                            )}
                         </div>
                         )}
 
                         {/* Theme Customizer Swatches - permission guarded */}
                         {(userRole === 'super_admin' || userPermissions.settingThemes !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+                            <div onClick={() => toggleSection('themesCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.themesCard ? 0 : '20px', flexWrap: 'wrap', gap: '15px' }}>
                                 <h3 style={{ color: 'var(--color-tertiary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <i className="fa-solid fa-palette"></i> Dynamic Theme Colors
                                 </h3>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setThemes({
-                                            theme1: { ...DEFAULT_THEMES.theme1 },
-                                            theme2: { ...DEFAULT_THEMES.theme2 },
-                                            theme3: { ...DEFAULT_THEMES.theme3 },
-                                            theme4: { ...DEFAULT_THEMES.theme4 }
-                                        });
-                                        setCmsStatus("All theme colors reset to defaults! Save or publish to apply.");
-                                        showToast("All theme colors reset to defaults!", "success");
-                                    }}
-                                    className="submit-btn"
-                                    style={{
-                                        padding: '6px 12px',
-                                        borderRadius: '8px',
-                                        fontSize: '0.8rem',
-                                        background: 'rgba(255,255,255,0.08)',
-                                        border: '1px solid rgba(255,255,255,0.12)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px'
-                                    }}
-                                >
-                                    <i className="fa-solid fa-arrow-rotate-left"></i> Reset All Themes
-                                </button>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    {!collapsedSections.themesCard && (
+                                    <button
+                                        type="button"
+                                        onClick={e => { e.stopPropagation(); setThemes({ theme1: { ...DEFAULT_THEMES.theme1 }, theme2: { ...DEFAULT_THEMES.theme2 }, theme3: { ...DEFAULT_THEMES.theme3 }, theme4: { ...DEFAULT_THEMES.theme4 } }); setCmsStatus("All theme colors reset to defaults! Save or publish to apply."); showToast("All theme colors reset to defaults!", "success"); }}
+                                        className="submit-btn"
+                                        style={{ padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                    >
+                                        <i className="fa-solid fa-arrow-rotate-left"></i> Reset All Themes
+                                    </button>
+                                    )}
+                                    <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.themesCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                                </div>
                             </div>
-                            <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '20px' }}>Amend custom color presets for each of the four smooth scroll transitions.</p>
-
+                            {!collapsedSections.themesCard && (
+                            <>
+                                <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '20px' }}>Amend custom color presets for each of the four smooth scroll transitions.</p>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
                                 {[
                                     { key: 'theme1', label: 'Theme 1 (Hero / Initial)' },
@@ -1938,17 +1981,23 @@ export default function AdminPage() {
                                     </div>
                                 ))}
                             </div>
+                            </>
+                            )}
                         </div>
                         )}
 
                         {/* Password Changer - Super Admin Only */}
                         {userRole === 'super_admin' && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <h3 style={{ color: 'white', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <i className="fa-solid fa-key"></i> Update Master Password
-                            </h3>
+                            <div onClick={() => toggleSection('passwordCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.passwordCard ? 0 : '20px' }}>
+                                <h3 style={{ color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-key"></i> Update Master Password
+                                </h3>
+                                <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.passwordCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                            </div>
+                            {!collapsedSections.passwordCard && (
+                            <>
                             <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '20px' }}>Change your administrative credentials. Must be at least 6 characters.</p>
-
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '15px' }}>
                                 <div>
                                     <label style={{ color: '#a0a0a0', fontSize: '0.8rem', display: 'block', marginBottom: '6px' }}>New Password</label>
@@ -1981,15 +2030,22 @@ export default function AdminPage() {
                                     {passwordStatus}
                                 </p>
                             )}
+                            </>
+                            )}
                         </div>
                         )}
 
                         {/* User Roles directory manager - Super Admin Only */}
                         {userRole === 'super_admin' && (
                         <div className="glass-card" style={{ padding: '30px' }}>
-                            <h3 style={{ color: 'white', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <i className="fa-solid fa-users-gear"></i> User Directory &amp; Access Levels (RBAC)
-                            </h3>
+                            <div onClick={() => toggleSection('rbacCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.rbacCard ? 0 : '20px' }}>
+                                <h3 style={{ color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-users-gear"></i> User Directory &amp; Access Levels (RBAC)
+                                </h3>
+                                <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.rbacCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                            </div>
+                            {!collapsedSections.rbacCard && (
+                            <>
                             <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '20px' }}>
                                 Manage user profiles and roles. Role demotions of your active account are locked to prevent accidental lockout.
                             </p>
@@ -2312,6 +2368,8 @@ export default function AdminPage() {
                                     </tbody>
                                 </table>
                             </div>
+                            </>
+                            )}
                         </div>
                         )}
 
