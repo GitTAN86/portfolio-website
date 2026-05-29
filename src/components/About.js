@@ -6,6 +6,7 @@ export default function About({ data }) {
     const [isTransitioningText, setIsTransitioningText] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const dragStartX = useRef(0);
+    const hasDragged = useRef(false);
 
     const slides = data?.aboutSlides && data.aboutSlides.length > 0 ? data.aboutSlides : [
         {
@@ -49,11 +50,15 @@ export default function About({ data }) {
     const handleDragStart = (clientX) => {
         setIsDragging(true);
         dragStartX.current = clientX;
+        hasDragged.current = false;
     };
 
     const handleDragMove = (clientX) => {
         if (!isDragging) return;
         const diff = clientX - dragStartX.current;
+        if (Math.abs(diff) > 10) {
+            hasDragged.current = true;
+        }
         if (diff > 60) {
             setActiveIndex((prev) => (prev - 1 + slides.length) % slides.length);
             setIsDragging(false);
@@ -73,7 +78,7 @@ export default function About({ data }) {
     return (
         <section id="about" className="about section-padding scroll-section">
             <h2 className="section-title">About Me</h2>
-            <div 
+            <div
                 className="about-grid"
                 style={{
                     gridTemplateColumns: (!showCarousel || !showTextPanel) ? "1fr" : undefined
@@ -81,7 +86,7 @@ export default function About({ data }) {
             >
                 {/* ── Left Side: 3D Coverflow Carousel (Swapped & Bigger) ── */}
                 {showCarousel && (
-                    <div 
+                    <div
                         className="coverflow-carousel-section"
                         style={{
                             display: "flex",
@@ -92,7 +97,7 @@ export default function About({ data }) {
                             order: 1
                         }}
                     >
-                        <div 
+                        <div
                             className="coverflow-container"
                             onMouseDown={(e) => handleDragStart(e.clientX)}
                             onMouseMove={(e) => handleDragMove(e.clientX)}
@@ -102,6 +107,20 @@ export default function About({ data }) {
                             onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
                             onTouchEnd={handleDragEnd}
                         >
+                            {/* Left Navigation Arrow */}
+                            <button 
+                                className="coverflow-nav-btn prev"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveIndex((prev) => (prev - 1 + slides.length) % slides.length);
+                                }}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onTouchStart={(e) => e.stopPropagation()}
+                                aria-label="Previous Slide"
+                            >
+                                <i className="fa-solid fa-chevron-left"></i>
+                            </button>
+
                             <div className="coverflow-track">
                                 {slides.map((slide, index) => {
                                     const offset = getOffset(index);
@@ -119,28 +138,46 @@ export default function About({ data }) {
                                             key={index}
                                             className={slideClass}
                                             style={{
-                                                pointerEvents: isActive ? "auto" : "none",
+                                                pointerEvents: "auto",
                                                 cursor: isActive ? "grab" : "pointer"
                                             }}
                                             onClick={() => {
+                                                if (hasDragged.current) {
+                                                    hasDragged.current = false;
+                                                    return;
+                                                }
                                                 if (!isActive) {
                                                     setActiveIndex(index);
                                                 }
                                             }}
                                         >
-                                            <img 
-                                                src={slide.image} 
-                                                alt={slide.title} 
-                                                draggable={false} 
+                                            <img
+                                                src={slide.image}
+                                                alt={slide.title}
+                                                draggable={false}
                                             />
                                         </div>
                                     );
                                 })}
                             </div>
+
+                            {/* Right Navigation Arrow */}
+                            <button 
+                                className="coverflow-nav-btn next"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveIndex((prev) => (prev + 1) % slides.length);
+                                }}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onTouchStart={(e) => e.stopPropagation()}
+                                aria-label="Next Slide"
+                            >
+                                <i className="fa-solid fa-chevron-right"></i>
+                            </button>
                         </div>
 
                         {/* Navigation Dots */}
-                        <div 
+                        <div
                             className="coverflow-dots"
                             style={{
                                 display: "flex",
@@ -171,9 +208,9 @@ export default function About({ data }) {
 
                 {/* ── Right Side: Synced Text Panel (Swapped & Height Fixed) ── */}
                 {showTextPanel && (
-                    <div 
+                    <div
                         className="about-text-container glass-card"
-                        style={{ 
+                        style={{
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "center",
@@ -181,20 +218,20 @@ export default function About({ data }) {
                         }}
                     >
                         <div className={`about-text-slide ${isTransitioningText ? "fade-out" : ""}`}>
-                            <h3 
-                                style={{ 
-                                    fontSize: "1.6rem", 
-                                    color: "var(--color-primary)", 
+                            <h3
+                                style={{
+                                    fontSize: "1.6rem",
+                                    color: "var(--color-primary)",
                                     marginBottom: "1.2rem",
-                                    fontWeight: "600" 
+                                    fontWeight: "600"
                                 }}
                             >
                                 {slides[displayedIndex]?.title || ""}
                             </h3>
-                            <div 
+                            <div
                                 className="about-paragraph"
                                 style={{ textAlign: "justify" }}
-                                dangerouslySetInnerHTML={{ __html: slides[displayedIndex]?.text || "" }} 
+                                dangerouslySetInnerHTML={{ __html: slides[displayedIndex]?.text || "" }}
                             />
                         </div>
                     </div>
