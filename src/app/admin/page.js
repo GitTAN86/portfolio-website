@@ -35,9 +35,22 @@ const DEFAULT_THEMES = {
 
 // Default permissions granted to new Content Manager accounts
 const DEFAULT_CM_PERMISSIONS = {
+    // Tabs
     tabContent: true,
     tabMedia: true,
     tabSettings: true,
+    // Content sub-sections
+    contentHero: true,
+    contentAbout: true,
+    contentAboutSlides: true,
+    contentContact: true,
+    contentSkills: true,
+    contentExperience: true,
+    // Media sub-sections
+    mediaProfile: true,
+    mediaCV: true,
+    mediaGallery: true,
+    // Settings sub-sections
     settingVisibility: true,
     settingThemes: true,
 };
@@ -1119,6 +1132,7 @@ export default function AdminPage() {
                             </div>
                         </div>
                         {/* Hero Section Card */}
+                        {(userRole === 'super_admin' || userPermissions.contentHero !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <h3 style={{ color: 'var(--color-primary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <i className="fa-solid fa-rocket"></i> Hero Section
@@ -1145,8 +1159,10 @@ export default function AdminPage() {
                                 </div>
                             </div>
                         </div>
+                        )}
 
                         {/* About Section Card */}
+                        {(userRole === 'super_admin' || userPermissions.contentAbout !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <h3 style={{ color: 'var(--color-tertiary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <i className="fa-solid fa-user"></i> About Section
@@ -1154,8 +1170,10 @@ export default function AdminPage() {
                             <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>About Biography (HTML Support)</label>
                             <textarea value={aboutText} onChange={e => setAboutText(e.target.value)} rows="8" placeholder="Tell your story..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
                         </div>
+                        )}
 
                         {/* About Slides Manager Card (Coverflow) */}
+                        {(userRole === 'super_admin' || userPermissions.contentAboutSlides !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                                 <h3 style={{ color: 'var(--color-tertiary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1195,8 +1213,10 @@ export default function AdminPage() {
                                 ))}
                             </div>
                         </div>
+                        )}
 
                         {/* Contact & Socials Card */}
+                        {(userRole === 'super_admin' || userPermissions.contentContact !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <h3 style={{ color: '#34A853', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <i className="fa-solid fa-address-book"></i> Contact & Socials
@@ -1216,8 +1236,10 @@ export default function AdminPage() {
                                 </div>
                             </div>
                         </div>
+                        )}
 
                         {/* Skills Manager Card */}
+                        {(userRole === 'super_admin' || userPermissions.contentSkills !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                                 <h3 style={{ color: '#4285F4', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1240,8 +1262,10 @@ export default function AdminPage() {
                                 ))}
                             </div>
                         </div>
+                        )}
 
                         {/* Experience Manager Card */}
+                        {(userRole === 'super_admin' || userPermissions.contentExperience !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                                 <h3 style={{ color: '#FBBC05', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1277,7 +1301,7 @@ export default function AdminPage() {
                                 ))}
                             </div>
                         </div>
-
+                        )}
 
                         {cmsStatus && (
                             <div style={{
@@ -1358,6 +1382,7 @@ export default function AdminPage() {
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
                             {/* Profile Photo Upload */}
+                            {(userRole === 'super_admin' || userPermissions.mediaProfile !== false) && (
                             <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                 <h4 style={{ color: 'white', marginBottom: '15px' }}>Profile Photo</h4>
                                 <div style={{ textAlign: 'center', marginBottom: '15px' }}>
@@ -1378,8 +1403,10 @@ export default function AdminPage() {
                                     {uploading ? 'Uploading...' : 'Change Profile Photo'}
                                 </label>
                             </div>
+                            )}
 
                             {/* CV PDF Upload */}
+                            {(userRole === 'super_admin' || userPermissions.mediaCV !== false) && (
                             <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                 <h4 style={{ color: 'white', marginBottom: '15px' }}>Downloadable CV (PDF)</h4>
                                 <div style={{ marginBottom: '15px', padding: '15px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', wordBreak: 'break-all' }}>
@@ -1406,9 +1433,11 @@ export default function AdminPage() {
                                     {uploading ? 'Uploading...' : 'Upload New CV (PDF)'}
                                 </label>
                             </div>
+                            )}
                         </div>
 
                         {/* Portfolio Photo Gallery Upload */}
+                        {(userRole === 'super_admin' || userPermissions.mediaGallery !== false) && (
                         <div style={{ background: 'rgba(255,255,255,0.03)', padding: '25px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '30px' }}>
                             <h4 style={{ color: 'white', marginBottom: '15px' }}>Photo Gallery Slider Images</h4>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '15px', marginBottom: '20px' }}>
@@ -1448,6 +1477,7 @@ export default function AdminPage() {
                                 />
                             </div>
                         </div>
+                        )}
 
 
                         {cmsStatus && (
@@ -2056,24 +2086,56 @@ export default function AdminPage() {
                                             <p style={{ color: '#c0c0c0', fontSize: '0.82rem', fontWeight: '600', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                 <i className="fa-solid fa-sliders" style={{ color: '#4285F4' }}></i> Access Permissions
                                             </p>
-                                            {/* Tab permissions */}
-                                            <p style={{ color: '#888', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Tabs</p>
+
+                                            {/* — TABS — */}
+                                            <p style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Tabs</p>
                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
                                                 {[{ key: 'tabContent', label: 'Content', icon: 'fa-pen-to-square' }, { key: 'tabMedia', label: 'Media', icon: 'fa-image' }, { key: 'tabSettings', label: 'Settings', icon: 'fa-gears' }].map(t => (
                                                     <label key={t.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: newUserPermissions[t.key] ? 'rgba(66,133,244,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${newUserPermissions[t.key] ? 'rgba(66,133,244,0.3)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: newUserPermissions[t.key] ? '#4285F4' : '#888', transition: 'all 0.2s' }}>
-                                                        <input type="checkbox" checked={newUserPermissions[t.key]} onChange={e => setNewUserPermissions(p => ({ ...p, [t.key]: e.target.checked, ...(t.key === 'tabSettings' && !e.target.checked ? { settingVisibility: false, settingThemes: false } : {}) }))} style={{ accentColor: '#4285F4' }} />
+                                                        <input type="checkbox" checked={!!newUserPermissions[t.key]} onChange={e => setNewUserPermissions(p => ({ ...p, [t.key]: e.target.checked, ...(t.key === 'tabContent' && !e.target.checked ? { contentHero: false, contentAbout: false, contentAboutSlides: false, contentContact: false, contentSkills: false, contentExperience: false } : {}), ...(t.key === 'tabMedia' && !e.target.checked ? { mediaProfile: false, mediaCV: false, mediaGallery: false } : {}), ...(t.key === 'tabSettings' && !e.target.checked ? { settingVisibility: false, settingThemes: false } : {}) }))} style={{ accentColor: '#4285F4' }} />
                                                         <i className={`fa-solid ${t.icon}`}></i> {t.label}
                                                     </label>
                                                 ))}
                                             </div>
-                                            {/* Settings sub-section permissions */}
+
+                                            {/* — CONTENT SUB-SECTIONS — */}
+                                            {newUserPermissions.tabContent && (
+                                                <>
+                                                    <p style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Content Sub-sections</p>
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+                                                        {[{ key: 'contentHero', label: 'Hero', icon: 'fa-rocket' }, { key: 'contentAbout', label: 'About Bio', icon: 'fa-user' }, { key: 'contentAboutSlides', label: 'About Slides', icon: 'fa-images' }, { key: 'contentContact', label: 'Contact & Socials', icon: 'fa-address-book' }, { key: 'contentSkills', label: 'Skills', icon: 'fa-list-check' }, { key: 'contentExperience', label: 'Experience', icon: 'fa-briefcase' }].map(s => (
+                                                            <label key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: newUserPermissions[s.key] ? 'rgba(66,133,244,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${newUserPermissions[s.key] ? 'rgba(66,133,244,0.25)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: newUserPermissions[s.key] ? '#88aaff' : '#888', transition: 'all 0.2s' }}>
+                                                                <input type="checkbox" checked={!!newUserPermissions[s.key]} onChange={e => setNewUserPermissions(p => ({ ...p, [s.key]: e.target.checked }))} style={{ accentColor: '#4285F4' }} />
+                                                                <i className={`fa-solid ${s.icon}`}></i> {s.label}
+                                                            </label>
+                                                        ))}
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {/* — MEDIA SUB-SECTIONS — */}
+                                            {newUserPermissions.tabMedia && (
+                                                <>
+                                                    <p style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Media Sub-sections</p>
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+                                                        {[{ key: 'mediaProfile', label: 'Profile Photo', icon: 'fa-circle-user' }, { key: 'mediaCV', label: 'CV / PDF', icon: 'fa-file-pdf' }, { key: 'mediaGallery', label: 'Photo Gallery', icon: 'fa-images' }].map(s => (
+                                                            <label key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: newUserPermissions[s.key] ? 'rgba(251,188,5,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${newUserPermissions[s.key] ? 'rgba(251,188,5,0.25)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: newUserPermissions[s.key] ? '#FBBC05' : '#888', transition: 'all 0.2s' }}>
+                                                                <input type="checkbox" checked={!!newUserPermissions[s.key]} onChange={e => setNewUserPermissions(p => ({ ...p, [s.key]: e.target.checked }))} style={{ accentColor: '#FBBC05' }} />
+                                                                <i className={`fa-solid ${s.icon}`}></i> {s.label}
+                                                            </label>
+                                                        ))}
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {/* — SETTINGS SUB-SECTIONS — */}
                                             {newUserPermissions.tabSettings && (
                                                 <>
-                                                    <p style={{ color: '#888', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Settings Sub-sections</p>
+                                                    <p style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Settings Sub-sections</p>
                                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                                                         {[{ key: 'settingVisibility', label: 'Section Visibility', icon: 'fa-eye' }, { key: 'settingThemes', label: 'Theme Colors', icon: 'fa-palette' }].map(s => (
                                                             <label key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: newUserPermissions[s.key] ? 'rgba(0,201,127,0.12)' : 'rgba(255,255,255,0.04)', border: `1px solid ${newUserPermissions[s.key] ? 'rgba(0,201,127,0.3)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: newUserPermissions[s.key] ? '#00c97f' : '#888', transition: 'all 0.2s' }}>
-                                                                <input type="checkbox" checked={newUserPermissions[s.key]} onChange={e => setNewUserPermissions(p => ({ ...p, [s.key]: e.target.checked }))} style={{ accentColor: '#00c97f' }} />
+                                                                <input type="checkbox" checked={!!newUserPermissions[s.key]} onChange={e => setNewUserPermissions(p => ({ ...p, [s.key]: e.target.checked }))} style={{ accentColor: '#00c97f' }} />
                                                                 <i className={`fa-solid ${s.icon}`}></i> {s.label}
                                                             </label>
                                                         ))}
@@ -2183,17 +2245,45 @@ export default function AdminPage() {
                                                             <p style={{ color: '#c0c0c0', fontSize: '0.82rem', fontWeight: '600', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                 <i className="fa-solid fa-sliders" style={{ color: '#4285F4' }}></i> Edit Access Permissions for <strong style={{ color: 'white' }}>{usr.fullName || usr.username}</strong>
                                                             </p>
-                                                            {/* Tabs */}
+                                                            {/* — TABS — */}
                                                             <p style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Tabs</p>
                                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
                                                                 {[{ key: 'tabContent', label: 'Content', icon: 'fa-pen-to-square' }, { key: 'tabMedia', label: 'Media', icon: 'fa-image' }, { key: 'tabSettings', label: 'Settings', icon: 'fa-gears' }].map(t => (
                                                                     <label key={t.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: editingPermissions[t.key] ? 'rgba(66,133,244,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${editingPermissions[t.key] ? 'rgba(66,133,244,0.3)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: editingPermissions[t.key] ? '#4285F4' : '#888', transition: 'all 0.2s' }}>
-                                                                        <input type="checkbox" checked={!!editingPermissions[t.key]} onChange={e => setEditingPermissions(p => ({ ...p, [t.key]: e.target.checked, ...(t.key === 'tabSettings' && !e.target.checked ? { settingVisibility: false, settingThemes: false } : {}) }))} style={{ accentColor: '#4285F4' }} />
+                                                                        <input type="checkbox" checked={!!editingPermissions[t.key]} onChange={e => setEditingPermissions(p => ({ ...p, [t.key]: e.target.checked, ...(t.key === 'tabContent' && !e.target.checked ? { contentHero: false, contentAbout: false, contentAboutSlides: false, contentContact: false, contentSkills: false, contentExperience: false } : {}), ...(t.key === 'tabMedia' && !e.target.checked ? { mediaProfile: false, mediaCV: false, mediaGallery: false } : {}), ...(t.key === 'tabSettings' && !e.target.checked ? { settingVisibility: false, settingThemes: false } : {}) }))} style={{ accentColor: '#4285F4' }} />
                                                                         <i className={`fa-solid ${t.icon}`}></i> {t.label}
                                                                     </label>
                                                                 ))}
                                                             </div>
-                                                            {/* Settings sub-sections */}
+                                                            {/* — CONTENT SUB-SECTIONS — */}
+                                                            {editingPermissions.tabContent && (
+                                                                <>
+                                                                    <p style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Content Sub-sections</p>
+                                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+                                                                        {[{ key: 'contentHero', label: 'Hero', icon: 'fa-rocket' }, { key: 'contentAbout', label: 'About Bio', icon: 'fa-user' }, { key: 'contentAboutSlides', label: 'About Slides', icon: 'fa-images' }, { key: 'contentContact', label: 'Contact & Socials', icon: 'fa-address-book' }, { key: 'contentSkills', label: 'Skills', icon: 'fa-list-check' }, { key: 'contentExperience', label: 'Experience', icon: 'fa-briefcase' }].map(s => (
+                                                                            <label key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: editingPermissions[s.key] ? 'rgba(66,133,244,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${editingPermissions[s.key] ? 'rgba(66,133,244,0.25)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: editingPermissions[s.key] ? '#88aaff' : '#888', transition: 'all 0.2s' }}>
+                                                                                <input type="checkbox" checked={!!editingPermissions[s.key]} onChange={e => setEditingPermissions(p => ({ ...p, [s.key]: e.target.checked }))} style={{ accentColor: '#4285F4' }} />
+                                                                                <i className={`fa-solid ${s.icon}`}></i> {s.label}
+                                                                            </label>
+                                                                        ))}
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                            {/* — MEDIA SUB-SECTIONS — */}
+                                                            {editingPermissions.tabMedia && (
+                                                                <>
+                                                                    <p style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Media Sub-sections</p>
+                                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+                                                                        {[{ key: 'mediaProfile', label: 'Profile Photo', icon: 'fa-circle-user' }, { key: 'mediaCV', label: 'CV / PDF', icon: 'fa-file-pdf' }, { key: 'mediaGallery', label: 'Photo Gallery', icon: 'fa-images' }].map(s => (
+                                                                            <label key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: editingPermissions[s.key] ? 'rgba(251,188,5,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${editingPermissions[s.key] ? 'rgba(251,188,5,0.25)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: editingPermissions[s.key] ? '#FBBC05' : '#888', transition: 'all 0.2s' }}>
+                                                                                <input type="checkbox" checked={!!editingPermissions[s.key]} onChange={e => setEditingPermissions(p => ({ ...p, [s.key]: e.target.checked }))} style={{ accentColor: '#FBBC05' }} />
+                                                                                <i className={`fa-solid ${s.icon}`}></i> {s.label}
+                                                                            </label>
+                                                                        ))}
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                            {/* — SETTINGS SUB-SECTIONS — */}
                                                             {editingPermissions.tabSettings && (
                                                                 <>
                                                                     <p style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Settings Sub-sections</p>
