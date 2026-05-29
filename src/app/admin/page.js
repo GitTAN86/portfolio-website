@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { auth, db, storage } from "@/lib/firebase";
 import {
     signInWithEmailAndPassword,
@@ -31,6 +31,15 @@ const DEFAULT_THEMES = {
     theme2: { bg: "#D4DFEB", text: "#202124", textMuted: "#5f6368", primary: "#4285F4", secondary: "#EA4335", tertiary: "#b100ff" },
     theme3: { bg: "#2C3E50", text: "#F9F9FB", textMuted: "#B0BEC5", primary: "#4285F4", secondary: "#EA4335", tertiary: "#b100ff" },
     theme4: { bg: "#05050A", text: "#ffffff", textMuted: "#a0a0a0", primary: "#4285F4", secondary: "#EA4335", tertiary: "#b100ff" }
+};
+
+// Default permissions granted to new Content Manager accounts
+const DEFAULT_CM_PERMISSIONS = {
+    tabContent: true,
+    tabMedia: true,
+    tabSettings: true,
+    settingVisibility: true,
+    settingThemes: true,
 };
 
 export default function AdminPage() {
@@ -90,6 +99,14 @@ export default function AdminPage() {
     const [resetTargetId, setResetTargetId] = useState("");
     const [resetPasswordValue, setResetPasswordValue] = useState("");
     const [resetPasswordStatus, setResetPasswordStatus] = useState("");
+
+    // Per-user permissions
+    const [userPermissions, setUserPermissions] = useState(DEFAULT_CM_PERMISSIONS);
+    const [newUserPermissions, setNewUserPermissions] = useState({ ...DEFAULT_CM_PERMISSIONS });
+
+    // Inline permissions editor state (in RBAC table)
+    const [editingPermissionsId, setEditingPermissionsId] = useState("");
+    const [editingPermissions, setEditingPermissions] = useState({ ...DEFAULT_CM_PERMISSIONS });
 
     // Section visibility state
     const [sectionVisibility, setSectionVisibility] = useState({
@@ -235,6 +252,7 @@ export default function AdminPage() {
                 setCurrentUserDoc(sessionData);
                 setUserRole(sessionData.role || "content_manager");
                 setUser({ uid: sessionData.id, isCMSession: true });
+                setUserPermissions({ ...DEFAULT_CM_PERMISSIONS, ...(sessionData.permissions || {}) });
                 setLoading(false);
                 // Load CMS data for content manager session
                 setTimeout(() => { loadCMSData(); }, 0);
@@ -348,6 +366,7 @@ export default function AdminPage() {
                 setCurrentUserDoc({ id: userDoc.id, ...userData });
                 setUserRole(userData.role || "content_manager");
                 setUser({ uid: userDoc.id, isCMSession: true });
+                setUserPermissions({ ...DEFAULT_CM_PERMISSIONS, ...(userData.permissions || {}) });
                 setLoginError("");
 
                 // Load the live CMS data immediately on login
@@ -388,11 +407,13 @@ export default function AdminPage() {
                     passwordHash: hashed,
                     role: "content_manager",
                     type: "local",
+                    permissions: newUserPermissions,
                     createdAt: new Date().toISOString()
                 });
                 setNewUserStatus("✓ Content Manager account created successfully!");
                 showToast("New Content Manager created!", "success");
                 setNewUserFullName(""); setNewUserUsername(""); setNewUserPassword("");
+                setNewUserPermissions({ ...DEFAULT_CM_PERMISSIONS }); // reset permissions picker
                 loadUsersDirectory();
             } catch (err) {
                 console.error("Create CM user error", err);
@@ -443,6 +464,20 @@ export default function AdminPage() {
         } catch (err) {
             console.error("Admin reset password error", err);
             setResetPasswordStatus("Error: " + err.message);
+        }
+    };
+
+    // --- Super Admin: Save edited permissions for a Content Manager ---
+    const handleSavePermissions = async (targetId) => {
+        if (!db) return;
+        try {
+            await setDoc(doc(db, "users", targetId), { permissions: editingPermissions }, { merge: true });
+            showToast("Permissions updated!", "success");
+            setEditingPermissionsId("");
+            loadUsersDirectory();
+        } catch (err) {
+            console.error("Save permissions error", err);
+            showToast("Failed to update permissions.", "error");
         }
     };
 
@@ -996,13 +1031,18 @@ export default function AdminPage() {
 
     // Role-based visible tab configs
     const allTabs = [
-        { id: 'content', icon: 'fa-pen-to-square', label: 'Content' },
-        { id: 'media', icon: 'fa-image', label: 'Media' },
+        { id: 'content', icon: 'fa-pen-to-square', label: 'Content', permKey: 'tabContent' },
+        { id: 'media', icon: 'fa-image', label: 'Media', permKey: 'tabMedia' },
         { id: 'analytics', icon: 'fa-chart-line', label: 'Traffic', superAdminOnly: true },
         { id: 'reports', icon: 'fa-file-export', label: 'Reports', superAdminOnly: true },
-        { id: 'settings', icon: 'fa-gears', label: 'Settings' }
+        { id: 'settings', icon: 'fa-gears', label: 'Settings', permKey: 'tabSettings' }
     ];
-    const visibleTabs = allTabs.filter(t => !t.superAdminOnly || userRole === 'super_admin');
+    const visibleTabs = allTabs.filter(t => {
+        if (t.superAdminOnly) return userRole === 'super_admin';
+        if (userRole === 'super_admin') return true;
+        // For Content Managers, check their per-user permissions
+        return t.permKey ? userPermissions[t.permKey] !== false : true;
+    });
 
     return (
         <div id="dashboardScreen" className="dashboard-container" style={{ minHeight: '100vh', padding: '40px 20px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -1505,7 +1545,8 @@ export default function AdminPage() {
                                 </button>
                             </div>
                         </div>
-                        {/* Section Visibility toggles */}
+                        {/* Section Visibility toggles - permission guarded */}
+                        {(userRole === 'super_admin' || userPermissions.settingVisibility !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <h3 style={{ color: 'var(--color-primary)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <i className="fa-solid fa-eye"></i> Section & Component Visibility Switches
@@ -1728,6 +1769,7 @@ export default function AdminPage() {
                                 </div>
                             </div>
                         </div>
+                        )}
 
                         {/* Security Controls - Super Admin Only */}
                         {userRole === 'super_admin' && (
@@ -1753,7 +1795,8 @@ export default function AdminPage() {
                         </div>
                         )}
 
-                        {/* Theme Customizer Swatches */}
+                        {/* Theme Customizer Swatches - permission guarded */}
+                        {(userRole === 'super_admin' || userPermissions.settingThemes !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
                                 <h3 style={{ color: 'var(--color-tertiary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1866,6 +1909,7 @@ export default function AdminPage() {
                                 ))}
                             </div>
                         </div>
+                        )}
 
                         {/* Password Changer - Super Admin Only */}
                         {userRole === 'super_admin' && (
@@ -2006,6 +2050,39 @@ export default function AdminPage() {
                                         </p>
                                     )}
 
+                                    {/* Permissions picker — Content Managers only */}
+                                    {newUserRole === 'content_manager' && (
+                                        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '16px', marginBottom: '12px' }}>
+                                            <p style={{ color: '#c0c0c0', fontSize: '0.82rem', fontWeight: '600', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <i className="fa-solid fa-sliders" style={{ color: '#4285F4' }}></i> Access Permissions
+                                            </p>
+                                            {/* Tab permissions */}
+                                            <p style={{ color: '#888', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Tabs</p>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+                                                {[{ key: 'tabContent', label: 'Content', icon: 'fa-pen-to-square' }, { key: 'tabMedia', label: 'Media', icon: 'fa-image' }, { key: 'tabSettings', label: 'Settings', icon: 'fa-gears' }].map(t => (
+                                                    <label key={t.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: newUserPermissions[t.key] ? 'rgba(66,133,244,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${newUserPermissions[t.key] ? 'rgba(66,133,244,0.3)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: newUserPermissions[t.key] ? '#4285F4' : '#888', transition: 'all 0.2s' }}>
+                                                        <input type="checkbox" checked={newUserPermissions[t.key]} onChange={e => setNewUserPermissions(p => ({ ...p, [t.key]: e.target.checked, ...(t.key === 'tabSettings' && !e.target.checked ? { settingVisibility: false, settingThemes: false } : {}) }))} style={{ accentColor: '#4285F4' }} />
+                                                        <i className={`fa-solid ${t.icon}`}></i> {t.label}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                            {/* Settings sub-section permissions */}
+                                            {newUserPermissions.tabSettings && (
+                                                <>
+                                                    <p style={{ color: '#888', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Settings Sub-sections</p>
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                                        {[{ key: 'settingVisibility', label: 'Section Visibility', icon: 'fa-eye' }, { key: 'settingThemes', label: 'Theme Colors', icon: 'fa-palette' }].map(s => (
+                                                            <label key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: newUserPermissions[s.key] ? 'rgba(0,201,127,0.12)' : 'rgba(255,255,255,0.04)', border: `1px solid ${newUserPermissions[s.key] ? 'rgba(0,201,127,0.3)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: newUserPermissions[s.key] ? '#00c97f' : '#888', transition: 'all 0.2s' }}>
+                                                                <input type="checkbox" checked={newUserPermissions[s.key]} onChange={e => setNewUserPermissions(p => ({ ...p, [s.key]: e.target.checked }))} style={{ accentColor: '#00c97f' }} />
+                                                                <i className={`fa-solid ${s.icon}`}></i> {s.label}
+                                                            </label>
+                                                        ))}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+
                                     <button type="submit" className="submit-btn" style={{ padding: '10px 20px', borderRadius: '8px', background: newUserRole === 'content_manager' ? '#00c97f' : 'var(--color-primary, #4285F4)', fontWeight: '600', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                                         <i className="fa-solid fa-user-plus"></i>
                                         {newUserRole === 'content_manager' ? 'Create Content Manager' : 'Send Admin Invite'}
@@ -2032,7 +2109,8 @@ export default function AdminPage() {
                                     </thead>
                                     <tbody>
                                         {usersList.map((usr) => (
-                                            <tr key={usr.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                                            <React.Fragment key={usr.id}>
+                                            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                                                 <td style={{ padding: '12px 15px', fontWeight: '500' }}>{usr.fullName || usr.name || '—'}</td>
                                                 <td style={{ padding: '12px 15px', color: usr.username ? '#00c97f' : '#4285F4', fontSize: '0.875rem' }}>
                                                     {usr.username ? <><i className="fa-solid fa-user" style={{ marginRight: '5px', fontSize: '0.75rem' }}></i>{usr.username}</> : <><i className="fa-solid fa-envelope" style={{ marginRight: '5px', fontSize: '0.75rem' }}></i>{usr.email}</>}
@@ -2057,32 +2135,89 @@ export default function AdminPage() {
                                                     {usr.id === auth.currentUser?.uid && <span style={{ marginLeft: '10px', fontSize: '0.75rem', color: '#a0a0a0' }}>(Active Session Lock)</span>}
                                                 </td>
                                                 <td style={{ padding: '12px 15px' }}>
-                                                    {/* Only show reset for local (username/password) content managers */}
+                                                    {/* Only show actions for local (username/password) content managers */}
                                                     {usr.type === 'local' && usr.role === 'content_manager' && (
-                                                        resetTargetId === usr.id ? (
-                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                                                <input
-                                                                    type="password"
-                                                                    value={resetPasswordValue}
-                                                                    onChange={e => setResetPasswordValue(e.target.value)}
-                                                                    placeholder="New password (min 6)"
-                                                                    style={{ padding: '6px 10px', borderRadius: '6px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)', color: 'white', fontSize: '0.8rem' }}
-                                                                />
-                                                                <div style={{ display: 'flex', gap: '6px' }}>
-                                                                    <button onClick={() => handleAdminResetPassword(usr.id)} className="submit-btn" style={{ flex: 1, padding: '5px 8px', fontSize: '0.78rem', borderRadius: '6px', background: '#00c97f' }}>Save</button>
-                                                                    <button onClick={() => { setResetTargetId(''); setResetPasswordValue(''); setResetPasswordStatus(''); }} className="submit-btn" style={{ flex: 1, padding: '5px 8px', fontSize: '0.78rem', borderRadius: '6px', background: 'rgba(255,255,255,0.1)' }}>Cancel</button>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                            {/* Reset Password inline */}
+                                                            {resetTargetId === usr.id ? (
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                                    <input
+                                                                        type="password"
+                                                                        value={resetPasswordValue}
+                                                                        onChange={e => setResetPasswordValue(e.target.value)}
+                                                                        placeholder="New password (min 6)"
+                                                                        style={{ padding: '6px 10px', borderRadius: '6px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)', color: 'white', fontSize: '0.8rem' }}
+                                                                    />
+                                                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                                                        <button onClick={() => handleAdminResetPassword(usr.id)} className="submit-btn" style={{ flex: 1, padding: '5px 8px', fontSize: '0.78rem', borderRadius: '6px', background: '#00c97f' }}>Save</button>
+                                                                        <button onClick={() => { setResetTargetId(''); setResetPasswordValue(''); setResetPasswordStatus(''); }} className="submit-btn" style={{ flex: 1, padding: '5px 8px', fontSize: '0.78rem', borderRadius: '6px', background: 'rgba(255,255,255,0.1)' }}>Cancel</button>
+                                                                    </div>
+                                                                    {resetPasswordStatus && <span style={{ fontSize: '0.75rem', color: resetPasswordStatus.startsWith('Error') ? '#EA4335' : '#00c97f' }}>{resetPasswordStatus}</span>}
                                                                 </div>
-                                                                {resetPasswordStatus && <span style={{ fontSize: '0.75rem', color: resetPasswordStatus.startsWith('Error') ? '#EA4335' : '#00c97f' }}>{resetPasswordStatus}</span>}
-                                                            </div>
-                                                        ) : (
-                                                            <button onClick={() => { setResetTargetId(usr.id); setResetPasswordStatus(''); }} className="submit-btn" style={{ padding: '5px 12px', fontSize: '0.78rem', borderRadius: '6px', background: 'rgba(255,165,0,0.15)', border: '1px solid rgba(255,165,0,0.3)', color: '#f0a500', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                                <i className="fa-solid fa-key"></i> Reset Password
-                                                            </button>
-                                                        )
+                                                            ) : (
+                                                                <button onClick={() => { setResetTargetId(usr.id); setResetPasswordStatus(''); setEditingPermissionsId(''); }} className="submit-btn" style={{ padding: '5px 12px', fontSize: '0.78rem', borderRadius: '6px', background: 'rgba(255,165,0,0.15)', border: '1px solid rgba(255,165,0,0.3)', color: '#f0a500', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                                    <i className="fa-solid fa-key"></i> Reset Password
+                                                                </button>
+                                                            )}
+                                                            {/* Edit Permissions button */}
+                                                            {editingPermissionsId !== usr.id && (
+                                                                <button onClick={() => { setEditingPermissionsId(usr.id); setEditingPermissions({ ...DEFAULT_CM_PERMISSIONS, ...(usr.permissions || {}) }); setResetTargetId(''); }} className="submit-btn" style={{ padding: '5px 12px', fontSize: '0.78rem', borderRadius: '6px', background: 'rgba(66,133,244,0.15)', border: '1px solid rgba(66,133,244,0.3)', color: '#4285F4', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                                    <i className="fa-solid fa-sliders"></i> Edit Permissions
+                                                                </button>
+                                                            )}
+                                                            {editingPermissionsId === usr.id && (
+                                                                <button onClick={() => setEditingPermissionsId('')} className="submit-btn" style={{ padding: '5px 12px', fontSize: '0.78rem', borderRadius: '6px', background: 'rgba(66,133,244,0.25)', border: '1px solid rgba(66,133,244,0.4)', color: '#4285F4', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                                    <i className="fa-solid fa-chevron-up"></i> Close Permissions
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     )}
                                                     {(usr.type !== 'local') && <span style={{ color: '#666', fontSize: '0.78rem' }}>Firebase Auth</span>}
                                                 </td>
                                             </tr>
+                                            {/* Inline permissions editor row */}
+                                            {editingPermissionsId === usr.id && usr.type === 'local' && (
+                                                <tr>
+                                                    <td colSpan="4" style={{ padding: '0 15px 16px' }}>
+                                                        <div style={{ background: 'rgba(66,133,244,0.05)', border: '1px solid rgba(66,133,244,0.15)', borderRadius: '10px', padding: '16px' }}>
+                                                            <p style={{ color: '#c0c0c0', fontSize: '0.82rem', fontWeight: '600', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                <i className="fa-solid fa-sliders" style={{ color: '#4285F4' }}></i> Edit Access Permissions for <strong style={{ color: 'white' }}>{usr.fullName || usr.username}</strong>
+                                                            </p>
+                                                            {/* Tabs */}
+                                                            <p style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Tabs</p>
+                                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+                                                                {[{ key: 'tabContent', label: 'Content', icon: 'fa-pen-to-square' }, { key: 'tabMedia', label: 'Media', icon: 'fa-image' }, { key: 'tabSettings', label: 'Settings', icon: 'fa-gears' }].map(t => (
+                                                                    <label key={t.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: editingPermissions[t.key] ? 'rgba(66,133,244,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${editingPermissions[t.key] ? 'rgba(66,133,244,0.3)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: editingPermissions[t.key] ? '#4285F4' : '#888', transition: 'all 0.2s' }}>
+                                                                        <input type="checkbox" checked={!!editingPermissions[t.key]} onChange={e => setEditingPermissions(p => ({ ...p, [t.key]: e.target.checked, ...(t.key === 'tabSettings' && !e.target.checked ? { settingVisibility: false, settingThemes: false } : {}) }))} style={{ accentColor: '#4285F4' }} />
+                                                                        <i className={`fa-solid ${t.icon}`}></i> {t.label}
+                                                                    </label>
+                                                                ))}
+                                                            </div>
+                                                            {/* Settings sub-sections */}
+                                                            {editingPermissions.tabSettings && (
+                                                                <>
+                                                                    <p style={{ color: '#888', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Settings Sub-sections</p>
+                                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+                                                                        {[{ key: 'settingVisibility', label: 'Section Visibility', icon: 'fa-eye' }, { key: 'settingThemes', label: 'Theme Colors', icon: 'fa-palette' }].map(s => (
+                                                                            <label key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '5px 10px', borderRadius: '6px', background: editingPermissions[s.key] ? 'rgba(0,201,127,0.12)' : 'rgba(255,255,255,0.04)', border: `1px solid ${editingPermissions[s.key] ? 'rgba(0,201,127,0.3)' : 'rgba(255,255,255,0.08)'}`, fontSize: '0.82rem', color: editingPermissions[s.key] ? '#00c97f' : '#888', transition: 'all 0.2s' }}>
+                                                                                <input type="checkbox" checked={!!editingPermissions[s.key]} onChange={e => setEditingPermissions(p => ({ ...p, [s.key]: e.target.checked }))} style={{ accentColor: '#00c97f' }} />
+                                                                                <i className={`fa-solid ${s.icon}`}></i> {s.label}
+                                                                            </label>
+                                                                        ))}
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                            <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                                                                <button onClick={() => handleSavePermissions(usr.id)} className="submit-btn" style={{ padding: '7px 18px', borderRadius: '8px', background: '#4285F4', fontSize: '0.85rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                    <i className="fa-solid fa-floppy-disk"></i> Save Permissions
+                                                                </button>
+                                                                <button onClick={() => setEditingPermissionsId('')} className="submit-btn" style={{ padding: '7px 14px', borderRadius: '8px', background: 'rgba(255,255,255,0.08)', fontSize: '0.85rem' }}>Cancel</button>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                            </React.Fragment>
                                         ))}
                                     </tbody>
                                 </table>
