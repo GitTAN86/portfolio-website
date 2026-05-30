@@ -3,36 +3,43 @@
     inherits: true;
     initial-value: #F9F9FB;
 }
+
 @property --color-text {
     syntax: '<color>';
     inherits: true;
     initial-value: #202124;
 }
+
 @property --color-text-muted {
     syntax: '<color>';
     inherits: true;
     initial-value: #5f6368;
 }
+
 @property --color-primary {
     syntax: '<color>';
     inherits: true;
     initial-value: #4285F4;
 }
+
 @property --color-secondary {
     syntax: '<color>';
     inherits: true;
     initial-value: #EA4335;
 }
+
 @property --color-tertiary {
     syntax: '<color>';
     inherits: true;
     initial-value: #b100ff;
 }
+
 @property --glass-bg {
     syntax: '<color>';
     inherits: true;
     initial-value: rgba(255, 255, 255, 0.65);
 }
+
 @property --glass-border {
     syntax: '<color>';
     inherits: true;
@@ -99,7 +106,7 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     position: relative;
-    transition: 
+    transition:
         --color-bg 1.2s cubic-bezier(0.16, 1, 0.3, 1),
         --color-text 1.2s cubic-bezier(0.16, 1, 0.3, 1),
         --color-text-muted 1.2s cubic-bezier(0.16, 1, 0.3, 1),
@@ -485,7 +492,8 @@ h4 {
 .timeline::before {
     content: '';
     position: absolute;
-    top: 10px; /* Starts exactly at the center of the first dot (latest experience, now at top: 0) */
+    top: 10px;
+    /* Starts exactly at the center of the first dot (latest experience, now at top: 0) */
     left: 20px;
     width: 2px;
     height: calc(100% - 10px);
@@ -501,7 +509,8 @@ h4 {
 .timeline-dot {
     position: absolute;
     left: 11px;
-    top: 0; /* Aligned exactly at the same level as the top of the experience card */
+    top: 0;
+    /* Aligned exactly at the same level as the top of the experience card */
     width: 20px;
     height: 20px;
     background: var(--color-bg);
@@ -752,7 +761,8 @@ h4 {
     margin-top: 20px;
 }
 
-#feedbackForm input, #feedbackForm textarea {
+#feedbackForm input,
+#feedbackForm textarea {
     width: 100%;
     padding: 12px 15px;
     border-radius: 8px;
@@ -764,7 +774,8 @@ h4 {
     transition: border-color 0.3s;
 }
 
-#feedbackForm input:focus, #feedbackForm textarea:focus {
+#feedbackForm input:focus,
+#feedbackForm textarea:focus {
     border-color: var(--color-primary);
 }
 
@@ -813,21 +824,21 @@ h4 {
     .timeline-item {
         padding-left: 45px;
     }
-    
+
     .floating-btn {
         bottom: 15px;
         right: 15px;
         padding: 10px 15px;
         font-size: 0.9rem;
     }
-    
+
     .admin-link-btn {
         bottom: 15px !important;
         left: 15px !important;
         width: 35px !important;
         height: 35px !important;
     }
-    
+
     #dashboardScreen {
         padding: 15px !important;
     }
@@ -932,7 +943,8 @@ body:not(.theme-3, .theme-4) .admin-link-btn:hover {
 .coverflow-container {
     position: relative;
     width: 100%;
-    height: 480px; /* Bigger on desktop */
+    height: 480px;
+    /* Bigger on desktop */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1039,7 +1051,8 @@ body:not(.theme-3, .theme-4) .admin-link-btn:hover {
     right: 20px;
 }
 
-@media (hover: none), (max-width: 1024px) {
+@media (hover: none),
+(max-width: 1024px) {
     .coverflow-nav-btn {
         display: none !important;
     }
@@ -1051,7 +1064,8 @@ body:not(.theme-3, .theme-4) .admin-link-btn:hover {
     flex-direction: column;
     justify-content: center;
     min-height: 250px;
-    height: 380px; /* Locked height on desktop */
+    height: 380px;
+    /* Locked height on desktop */
     padding: 2.5rem !important;
     overflow-y: auto;
 }
@@ -1079,23 +1093,29 @@ body:not(.theme-3, .theme-4) .admin-link-btn:hover {
     .coverflow-container {
         height: 400px;
     }
+
     .coverflow-track {
         width: 280px;
         height: 350px;
     }
+
     .coverflow-slide {
         width: 260px;
         height: 330px;
         border-radius: 20px;
     }
+
     .coverflow-slide.left {
         transform: translate3d(-90px, 0, -120px) scale(0.8) rotateY(30deg);
     }
+
     .coverflow-slide.right {
         transform: translate3d(90px, 0, -120px) scale(0.8) rotateY(-30deg);
     }
+
     .about-text-container {
-        height: auto; /* Allow natural sizing on smaller screens */
+        height: auto;
+        /* Allow natural sizing on smaller screens */
         min-height: 200px;
         padding: 1.8rem !important;
     }
@@ -1106,34 +1126,41 @@ body:not(.theme-3, .theme-4) .admin-link-btn:hover {
     .coverflow-container {
         height: 320px;
     }
+
     .coverflow-track {
         width: 220px;
         height: 280px;
     }
+
     .coverflow-slide {
         width: 200px;
         height: 260px;
         border-radius: 16px;
     }
+
     .coverflow-slide.left {
         transform: translate3d(-60px, 0, -100px) scale(0.8) rotateY(25deg);
         opacity: 0.45;
     }
+
     .coverflow-slide.right {
         transform: translate3d(60px, 0, -100px) scale(0.8) rotateY(-25deg);
         opacity: 0.45;
     }
+
     .about-text-container {
         padding: 1.2rem !important;
     }
 }
 
 /* ── Touch Screens & Small Viewports Skills Layout Fix ── */
-@media (max-width: 1024px), (pointer: coarse) {
+@media (max-width: 1024px),
+(pointer: coarse) {
     #skills {
         height: auto !important;
         padding: 5rem 0 !important;
     }
+
     .skills-pin {
         position: relative !important;
         height: auto !important;
@@ -1164,7 +1191,7 @@ body:not(.theme-3, .theme-4) .admin-link-btn:hover {
     transition: .3s cubic-bezier(0.25, 1, 0.5, 1);
     border-radius: 24px;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .slider:before {
@@ -1177,15 +1204,15 @@ body:not(.theme-3, .theme-4) .admin-link-btn:hover {
     background-color: #B0BEC5;
     transition: .3s cubic-bezier(0.25, 1, 0.5, 1);
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.switch input:checked + .slider {
+.switch input:checked+.slider {
     background-color: var(--color-primary, #4285F4);
     border-color: rgba(66, 133, 244, 0.35);
 }
 
-.switch input:checked + .slider:before {
+.switch input:checked+.slider:before {
     transform: translateX(24px);
     background-color: #ffffff;
 }
@@ -1208,9 +1235,10 @@ body:not(.theme-3, .theme-4) .admin-link-btn:hover {
 }
 
 /* Base Country Paths */
-.country-path, 
+.country-path,
 .world-map-svg-container path {
-    fill: rgba(0, 0, 0, 0.05); /* Light grey for light stage backgrounds */
+    fill: rgba(0, 0, 0, 0.05);
+    /* Light grey for light stage backgrounds */
     stroke: rgba(255, 255, 255, 0.6);
     stroke-width: 0.5px;
     transition: fill 1.2s cubic-bezier(0.16, 1, 0.3, 1), stroke 1.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1241,6 +1269,7 @@ body.theme-4 .world-map-svg-container path {
         opacity: 0;
         transform: translate(-50%, -50%) scale(0.7);
     }
+
     100% {
         opacity: 1;
         transform: translate(-50%, -50%) scale(1);

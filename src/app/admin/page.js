@@ -12,6 +12,7 @@ import {
     doc,
     getDoc,
     setDoc,
+    addDoc,
     collection,
     query,
     orderBy,
@@ -351,6 +352,11 @@ export default function AdminPage() {
     // Reporting State
     const [reportRange, setReportRange] = useState("monthly"); // daily, weekly, monthly, yearly
     const [isExporting, setIsExporting] = useState(false);
+
+    // Change Log State
+    const [changelog, setChangelog] = useState([]);
+    const [changelogLoading, setChangelogLoading] = useState(false);
+    const [undoingId, setUndoingId] = useState(null);
 
     // Media State
     const [uploading, setUploading] = useState(false);
