@@ -152,7 +152,7 @@ export default function About({ data }) {
                                             }}
                                         >
                                             <img
-                                                src={slide.image}
+                                                src={slide.image || null}
                                                 alt={slide.title}
                                                 draggable={false}
                                             />

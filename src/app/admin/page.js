@@ -975,11 +975,187 @@ export default function AdminPage() {
         setGallery(newGallery);
     };
 
+    const recordChange = async (action, newPayload) => {
+        if (!db) return;
+        try {
+            // 1. Get the current live snapshot to compute the diff
+            let oldData = null;
+            const mainRef = doc(db, "content", "main");
+            const mainSnap = await getDoc(mainRef);
+            if (mainSnap.exists()) {
+                oldData = mainSnap.data();
+            }
+
+            // 2. Compute diff
+            const changes = [];
+            if (!oldData) {
+                changes.push("Initial creation");
+            } else {
+                const keys = new Set([...Object.keys(oldData), ...Object.keys(newPayload)]);
+                for (const key of keys) {
+                    if (key === "timestamp") continue;
+                    if (JSON.stringify(oldData[key]) !== JSON.stringify(newPayload[key])) {
+                        changes.push(key);
+                    }
+                }
+            }
+
+            if (changes.length === 0) {
+                changes.push("No metadata fields changed");
+            }
+
+            // 3. Write to changelog collection
+            const userIdentifier = currentUserDoc ? (currentUserDoc.email || currentUserDoc.username || user?.email || "Unknown User") : (user?.email || "Unknown User");
+            const userName = currentUserDoc ? (currentUserDoc.name || currentUserDoc.fullName || "Admin") : "Admin";
+
+            await addDoc(collection(db, "changelog"), {
+                action,
+                performedBy: {
+                    uid: user?.uid || "unknown",
+                    name: userName,
+                    email: userIdentifier
+                },
+                timestamp: Timestamp.now(),
+                changes,
+                snapshot: newPayload
+            });
+
+            // Reload the changelog if we are on the reports tab
+            if (activeTab === "reports") {
+                loadChangelog();
+            }
+        } catch (e) {
+            console.error("Failed to record change log:", e);
+        }
+    };
+
+    const loadChangelog = async () => {
+        if (!db) return;
+        setChangelogLoading(true);
+        try {
+            const q = query(
+                collection(db, "changelog"),
+                orderBy("timestamp", "desc"),
+                limit(50)
+            );
+            const querySnapshot = await getDocs(q);
+            const logs = [];
+            querySnapshot.forEach((doc) => {
+                logs.push({ id: doc.id, ...doc.data() });
+            });
+            setChangelog(logs);
+        } catch (e) {
+            console.error("Error loading changelog:", e);
+            showToast("Failed to load change log history.", "error");
+        } finally {
+            setChangelogLoading(false);
+        }
+    };
+
+    const handleUndo = async (entry) => {
+        if (!db) return;
+        if (userRole !== "super_admin") {
+            alert("Permission Denied: Only Super Admins can undo changes.");
+            return;
+        }
+        if (!entry.snapshot) {
+            alert("Cannot undo: Snapshot data is missing in this log entry.");
+            return;
+        }
+        
+        const confirmUndo = window.confirm(
+            `Are you sure you want to undo changes from ${new Date(entry.timestamp.seconds * 1000).toLocaleString()} by ${entry.performedBy.name}? This will restore all content to that point in time.`
+        );
+        if (!confirmUndo) return;
+
+        setUndoingId(entry.id);
+        setCmsStatus("Undoing changes...");
+        try {
+            const snapshot = entry.snapshot;
+            
+            // 1. Write the snapshot to 'main' and 'main_draft'
+            await setDoc(doc(db, "content", "main"), snapshot);
+            await setDoc(doc(db, "content", "main_draft"), snapshot);
+            
+            // 2. Load the restored data into local React state
+            setHeroName(snapshot.heroName || "");
+            setHeroTagline(snapshot.heroTagline || "");
+            setHeroHeadline(snapshot.heroHeadline || "");
+            setAboutText(snapshot.aboutText || "");
+            setLinkedin(snapshot.linkedin || "");
+            setEmailLink(snapshot.email || "");
+            setWhatsapp(snapshot.whatsapp || "");
+            setSkills(snapshot.skills || []);
+            setExperience(snapshot.experience || []);
+            setAboutSlides(snapshot.aboutSlides || []);
+            setProfileImage(snapshot.profileImage || "");
+            setGallery(snapshot.gallery || []);
+            setCvUrl(snapshot.cvUrl || "");
+            setNationality(snapshot.nationality || "ir");
+
+            if (snapshot.sectionVisibility) {
+                setSectionVisibility({
+                    hero: snapshot.sectionVisibility.hero !== false,
+                    heroWordCloud: snapshot.sectionVisibility.heroWordCloud !== false,
+                    heroMap: snapshot.sectionVisibility.heroMap !== false,
+                    about: snapshot.sectionVisibility.about !== false,
+                    aboutCarousel: snapshot.sectionVisibility.aboutCarousel !== false,
+                    aboutTextPanel: snapshot.sectionVisibility.aboutTextPanel !== false,
+                    skills: snapshot.sectionVisibility.skills !== false,
+                    skillsGrid: snapshot.sectionVisibility.skillsGrid !== false,
+                    experience: snapshot.sectionVisibility.experience !== false,
+                    experienceTimeline: snapshot.sectionVisibility.experienceTimeline !== false,
+                });
+            }
+
+            if (snapshot.securitySettings) {
+                setCaptchaEnabled(snapshot.securitySettings.captchaEnabled !== false);
+            }
+
+            if (snapshot.themes) {
+                setThemes({
+                    theme1: { ...DEFAULT_THEMES.theme1, ...snapshot.themes.theme1 },
+                    theme2: { ...DEFAULT_THEMES.theme2, ...snapshot.themes.theme2 },
+                    theme3: { ...DEFAULT_THEMES.theme3, ...snapshot.themes.theme3 },
+                    theme4: { ...DEFAULT_THEMES.theme4, ...snapshot.themes.theme4 },
+                });
+            }
+
+            // 3. Record the undo action in the changelog
+            const userIdentifier = currentUserDoc ? (currentUserDoc.email || currentUserDoc.username || user?.email || "Unknown User") : (user?.email || "Unknown User");
+            const userName = currentUserDoc ? (currentUserDoc.name || currentUserDoc.fullName || "Admin") : "Admin";
+
+            await addDoc(collection(db, "changelog"), {
+                action: "undo",
+                performedBy: {
+                    uid: user?.uid || "unknown",
+                    name: userName,
+                    email: userIdentifier
+                },
+                timestamp: Timestamp.now(),
+                changes: [`Restored to snapshot from ${new Date(entry.timestamp.seconds * 1000).toLocaleString()}`],
+                snapshot: snapshot
+            });
+
+            setCmsStatus("Successfully restored changes!");
+            showToast("Successfully restored changes!", "success");
+            
+            // Reload the changelog to show the new 'undo' entry
+            await loadChangelog();
+        } catch (err) {
+            console.error("Undo failed:", err);
+            setCmsStatus("Error undoing changes.");
+            showToast("Failed to undo changes.", "error");
+        } finally {
+            setUndoingId(null);
+        }
+    };
+
     const handleSaveDraft = async (e) => {
         if (e) e.preventDefault();
         setCmsStatus("Saving Draft...");
         try {
-            await setDoc(doc(db, "content", "main_draft"), {
+            const dataPayload = {
                 heroName, heroTagline, heroHeadline, aboutText,
                 linkedin, email: emailLink, whatsapp,
                 skills, experience, aboutSlides,
@@ -988,9 +1164,11 @@ export default function AdminPage() {
                 sectionVisibility,
                 securitySettings: { captchaEnabled },
                 themes
-            });
+            };
+            await setDoc(doc(db, "content", "main_draft"), dataPayload);
             setCmsStatus("Draft saved successfully! (Not yet live)");
             showToast("Draft saved successfully! (Not yet live)", "success");
+            await recordChange("draft_saved", dataPayload);
         } catch (err) {
             console.error("Draft save failed", err);
             setCmsStatus("Error saving draft.");
@@ -1018,6 +1196,7 @@ export default function AdminPage() {
             await setDoc(doc(db, "content", "main_draft"), dataPayload);
             setCmsStatus("Published successfully! Changes are now live.");
             showToast("Published successfully! Changes are now live.", "success");
+            await recordChange("published", dataPayload);
         } catch (err) {
             console.error("Publish failed", err);
             setCmsStatus("Error publishing changes.");
@@ -1109,6 +1288,12 @@ export default function AdminPage() {
             });
         }
     }, [activeTab, visitsData]);
+
+    useEffect(() => {
+        if (activeTab === "reports") {
+            loadChangelog();
+        }
+    }, [activeTab]);
 
     const updateSkill = (index, field, value) => {
         const newSkills = [...skills];
@@ -1791,6 +1976,124 @@ export default function AdminPage() {
                                 <button onClick={() => exportReport('feedback', 'xlsx')} disabled={isExporting} className="submit-btn">Export XLSX</button>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Change Log Card */}
+                    <div className="glass-card" style={{ padding: '30px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <div>
+                                <h3 style={{ color: 'var(--color-secondary, #FBBC05)', margin: 0 }}>
+                                    <i className="fa-solid fa-clock-rotate-left" style={{ marginRight: '10px' }}></i> Change Log History
+                                </h3>
+                                <p style={{ color: '#a0a0a0', fontSize: '0.9rem', marginTop: '5px' }}>
+                                    Record of content changes, published versions, and drafts. Super Admins can undo changes to revert the website state.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={loadChangelog}
+                                disabled={changelogLoading}
+                                className="submit-btn"
+                                style={{ background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255,255,255,0.15)', padding: '8px 16px', fontSize: '0.85rem' }}
+                            >
+                                {changelogLoading ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-arrows-rotate"></i>} Refresh
+                            </button>
+                        </div>
+
+                        {changelogLoading ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '150px', color: '#a0a0a0', gap: '10px' }}>
+                                <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', color: 'var(--color-secondary, #FBBC05)' }}></i>
+                                <span>Loading change log history...</span>
+                            </div>
+                        ) : changelog.length === 0 ? (
+                            <div style={{ padding: '40px', textAlign: 'center', color: '#a0a0a0', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                                <i className="fa-solid fa-history" style={{ fontSize: '2rem', marginBottom: '10px', display: 'block', color: '#666' }}></i>
+                                No changes have been recorded in the change log yet.
+                            </div>
+                        ) : (
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white' }}>
+                                    <thead>
+                                        <tr style={{ textAlign: 'left', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                                            <th style={{ padding: '15px' }}>Timestamp</th>
+                                            <th style={{ padding: '15px' }}>Action</th>
+                                            <th style={{ padding: '15px' }}>Performed By</th>
+                                            <th style={{ padding: '15px' }}>Fields Changed</th>
+                                            <th style={{ padding: '15px', textAlign: 'right' }}>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {changelog.map((log) => {
+                                            const isUndo = log.action === 'undo';
+                                            const isPublish = log.action === 'published';
+                                            const isDraft = log.action === 'draft_saved';
+                                            
+                                            let badgeBg = 'rgba(251, 188, 5, 0.15)';
+                                            let badgeColor = '#FBBC05';
+                                            let badgeText = log.action;
+                                            
+                                            if (isPublish) {
+                                                badgeBg = 'rgba(52, 168, 83, 0.15)';
+                                                badgeColor = '#34A853';
+                                                badgeText = 'PUBLISHED';
+                                            } else if (isDraft) {
+                                                badgeBg = 'rgba(66, 133, 244, 0.15)';
+                                                badgeColor = '#4285F4';
+                                                badgeText = 'DRAFT';
+                                            } else if (isUndo) {
+                                                badgeBg = 'rgba(234, 67, 53, 0.15)';
+                                                badgeColor = '#EA4335';
+                                                badgeText = 'UNDO';
+                                            }
+
+                                            return (
+                                                <tr key={log.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                                                    <td style={{ padding: '12px 15px', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+                                                        {log.timestamp ? new Date(log.timestamp.seconds * 1000).toLocaleString() : 'N/A'}
+                                                    </td>
+                                                    <td style={{ padding: '12px 15px' }}>
+                                                        <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold', background: badgeBg, color: badgeColor }}>
+                                                            {badgeText}
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ padding: '12px 15px', fontSize: '0.85rem' }}>
+                                                        <div style={{ fontWeight: '500' }}>{log.performedBy?.name || 'Unknown'}</div>
+                                                        <div style={{ color: '#a0a0a0', fontSize: '0.75rem' }}>{log.performedBy?.email || ''}</div>
+                                                    </td>
+                                                    <td style={{ padding: '12px 15px', fontSize: '0.85rem', maxWidth: '300px' }}>
+                                                        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={log.changes ? log.changes.join(', ') : ''}>
+                                                            {log.changes ? log.changes.join(', ') : 'N/A'}
+                                                        </div>
+                                                    </td>
+                                                    <td style={{ padding: '12px 15px', textAlign: 'right' }}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleUndo(log)}
+                                                            disabled={undoingId !== null}
+                                                            className="submit-btn"
+                                                            style={{
+                                                                background: isUndo ? 'rgba(255,255,255,0.05)' : 'rgba(234, 67, 53, 0.1)',
+                                                                color: isUndo ? '#666' : '#EA4335',
+                                                                border: isUndo ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(234, 67, 53, 0.2)',
+                                                                padding: '6px 12px',
+                                                                fontSize: '0.8rem',
+                                                                borderRadius: '6px'
+                                                            }}
+                                                        >
+                                                            {undoingId === log.id ? (
+                                                                <span><i className="fa-solid fa-spinner fa-spin"></i> Undoing...</span>
+                                                            ) : (
+                                                                <span><i className="fa-solid fa-rotate-left"></i> Undo</span>
+                                                            )}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
