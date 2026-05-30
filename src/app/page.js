@@ -10,6 +10,7 @@ import Experience from "@/components/Experience";
 import Footer from "@/components/Footer";
 import FeedbackModal from "@/components/FeedbackModal";
 import AdminLink from "@/components/AdminLink";
+import WorldMapSVG from "@/components/WorldMapSVG";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -120,6 +121,7 @@ const DEFAULT_CMS_DATA = {
   whatsapp: "1234567890",
   cvUrl: "#",
   aboutSlides: [],
+  nationality: "ir",
 };
 
 function WordSplit({ text }) {
@@ -214,6 +216,7 @@ export default function Home() {
           aboutSlides: ex(f.aboutSlides) || DEFAULT_CMS_DATA.aboutSlides,
           sectionVisibility: ex(f.sectionVisibility) || {},
           themes: ex(f.themes) || {},
+          nationality: ex(f.nationality) || DEFAULT_CMS_DATA.nationality,
         });
       } catch (e) {
         console.warn("CMS fetch failed, using defaults:", e);
@@ -225,75 +228,118 @@ export default function Home() {
   // ── Word Cloud: auto appear + float (time-based, not scroll-driven) ──
   useEffect(() => {
     const cloud = wordCloudRef.current;
-    if (!cloud) return;
+    const worldMap = worldMapRef.current;
+    if (!cloud || !worldMap) return;
 
     const spans = Array.from(cloud.querySelectorAll(".hello-word"));
     if (spans.length === 0) return;
 
-    // 1. All words start invisible, slightly blurred and scaled down.
-    //    xPercent/yPercent centre each span (replaces CSS translate(-50%,-50%)).
-    //    rotation is set per-word so GSAP owns the full transform matrix.
-    gsap.set(spans, {
-      opacity: 0,
-      scale: 0.5,
-      y: 15,
-      xPercent: -50,
-      yPercent: -50,
-      rotation: (i) => HELLO_CLOUD[i]?.rotate ? 0 : 0
+    // Immediately hide all spans so they are not visible before shooting out
+    gsap.set(spans, { opacity: 0 });
+
+    // 1. Fade the map in quickly at the start so the country becomes visible first
+    gsap.set(worldMap, { opacity: 0 });
+    gsap.to(worldMap, {
+      opacity: 1,
+      duration: 1.0,
+      delay: 0.1,
+      ease: "power2.out",
     });
 
-    // 2. Each word pops in every 0.25 s with a spring entrance
-    //    Use function-based opacity so each word lands at its own target opacity
-    gsap.to(spans, {
-      opacity: (i) => HELLO_CLOUD[i].opacity,
-      scale: 1,
-      y: 0,
-      duration: 1.65,
-      stagger: 0.35,          // one new word every 0.35 s
-      ease: "back.out(1.4)",
-    });
-
-    // 3. After all words are visible, each bobs gently at its own pace.
-    //    allVisibleAt must match the stagger + duration used in step 2.
-    const staggerVal = 0.35;
-    const durationVal = 1.65;
-    const allVisibleAt = (spans.length - 1) * staggerVal + durationVal;
-
-    spans.forEach((span, i) => {
-      const amt = HELLO_CLOUD[i]?.floatAmt ?? 10;
-      const dur = 2.0 + (i % 5) * 0.45;
-      const delay = allVisibleAt + (i % 7) * 0.38;
-      gsap.to(span, {
-        y: -amt,
-        duration: dur,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay,
-      });
-    });
-
-    // 4. World map fades in sync with the words:
-    //    - starts invisible when the FIRST word pops in (delay: 0)
-    //    - reaches full opacity when the LAST word finishes (duration: allVisibleAt)
-    //    The composite image encodes the contrast: pale-gray continents (≈10%)
-    //    vs vivid red-orange Iran (≈60%), so one animation does the job.
-    const worldMap = worldMapRef.current;
-    if (worldMap) {
-      gsap.set(worldMap, { opacity: 0 });
-      gsap.to(worldMap, {
-        opacity: 1,               // composite image already has the right contrast baked in
-        duration: allVisibleAt,   // finishes exactly when last word appears
-        delay: 0,                 // starts with first word
-        ease: "power1.out",
+    // 2. Set the glowing border on the active country immediately so the starting point is fully visible
+    const activePaths = worldMap.querySelectorAll(".active-nationality, .active-nationality path");
+    if (activePaths.length > 0) {
+      gsap.set(activePaths, {
+        stroke: "#ffcc00",
+        strokeWidth: 1.5,
+        filter: "drop-shadow(0 0 8px rgba(255, 204, 0, 0.6))"
       });
     }
 
+    // 3. Run the radiating words animation after the map is highly visible (1.0s delay)
+    const timer = setTimeout(() => {
+      const cloudRect = cloud.getBoundingClientRect();
+      const activeEl = worldMap.querySelector(".active-nationality");
+      
+      let originPixelX = cloudRect.width / 2;
+      let originPixelY = cloudRect.height / 2;
+
+      if (activeEl) {
+        const rect = activeEl.getBoundingClientRect();
+        originPixelX = rect.left + rect.width / 2 - cloudRect.left;
+        originPixelY = rect.top + rect.height / 2 - cloudRect.top;
+      }
+
+      // Slower, majestic stagger and glide duration
+      const staggerVal = 0.075; // 75ms stagger between words (graceful majestic launch)
+      const durationVal = 2.4;  // 2.4s glide duration (luxurious organic flow)
+
+      spans.forEach((span, i) => {
+        const spanRect = span.getBoundingClientRect();
+        // Calculate the span center relative to cloud container
+        const spanCenterX = spanRect.left + spanRect.width / 2 - cloudRect.left;
+        const spanCenterY = spanRect.top + spanRect.height / 2 - cloudRect.top;
+
+        // Start coordinate offset relative to final position
+        const startX = originPixelX - spanCenterX;
+        const startY = originPixelY - spanCenterY;
+
+        // Target opacity for this specific word
+        const targetOpacity = HELLO_CLOUD[i]?.opacity ?? 0.8;
+
+        // Entrance animation shooting out from the perfectly visible glowing country center
+        gsap.fromTo(span,
+          {
+            x: startX,
+            y: startY,
+            scale: 0.05,
+            opacity: 0,
+            xPercent: -50,
+            yPercent: -50,
+            rotation: 0
+          },
+          {
+            x: 0,
+            y: 0,
+            scale: 1,
+            opacity: targetOpacity,
+            duration: durationVal,
+            delay: i * staggerVal,
+            ease: "power2.out", // smooth deceleration
+            onComplete: () => {
+              // Immediately start its gentle floating loop
+              const amt = HELLO_CLOUD[i]?.floatAmt ?? 10;
+              const dur = 2.5 + (i % 5) * 0.5;
+              gsap.to(span, {
+                y: -amt,
+                duration: dur,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+              });
+            }
+          }
+        );
+      });
+
+      // 4. Once all greetings have launched, transition the country to its final flat flag gradient fill!
+      const totalLaunchTime = (spans.length - 1) * staggerVal + 0.5;
+      gsap.delayedCall(totalLaunchTime, () => {
+        const activeElements = worldMap.querySelectorAll(".active-nationality");
+        activeElements.forEach(el => {
+          el.classList.add("flag-active");
+        });
+        gsap.set(activePaths, { clearProps: "stroke,strokeWidth,filter" });
+      });
+
+    }, 1000); // 1.0 second delay (exactly when the map is fully visible)
+
     return () => {
+      clearTimeout(timer);
       gsap.killTweensOf(spans);
       if (worldMap) gsap.killTweensOf(worldMap);
     };
-  }, []);
+  }, [data.nationality]);
 
   // ── Hero Timeline (scroll-driven scrub + auto-reveal) ────────
   useEffect(() => {
@@ -639,32 +685,21 @@ export default function Home() {
               >
                 {/* World map — fades in after last word appears, zooms out with cloud on scroll */}
                 {data.sectionVisibility?.heroMap !== false && (
-                  <img
+                  <div
                     ref={worldMapRef}
-                    src="/images/world-map.png"
-                    alt=""
-                    aria-hidden="true"
-                    draggable={false}
-                    fetchPriority="high"
-                    decoding="async"
                     style={{
                       position: "absolute",
                       inset: 0,
                       width: "100%",
                       height: "100%",
-                      objectFit: "cover",         // fills container edge-to-edge
-                      objectPosition: "center",
                       opacity: 0,                 // GSAP animates this 0→1 in sync with words
                       pointerEvents: "none",
                       userSelect: "none",
-                      // multiply makes white pixels transparent on any background:
-                      // white(255) × bg = bg  →  ocean/white areas become invisible
-                      // gray(#C8C8C8) × bg  →  faint continent tint on bg
-                      // red(#E63946) × bg   →  vivid Iran tint on bg
-                      mixBlendMode: "multiply",
                       willChange: "opacity",
                     }}
-                  />
+                  >
+                    <WorldMapSVG highlight={data.nationality || "ir"} />
+                  </div>
                 )}
                 {HELLO_CLOUD.map((word, i) => (
                   <span

@@ -25,6 +25,189 @@ import Link from "next/link";
 import Chart from "chart.js/auto";
 import * as XLSX from "xlsx";
 
+// Comprehensive list of all countries supported by the WorldMapSVG component
+const SUPPORTED_COUNTRIES = [
+    { code: "af", name: "Afghanistan" },
+    { code: "al", name: "Albania" },
+    { code: "dz", name: "Algeria" },
+    { code: "ao", name: "Angola" },
+    { code: "ar", name: "Argentina" },
+    { code: "am", name: "Armenia" },
+    { code: "au", name: "Australia" },
+    { code: "at", name: "Austria" },
+    { code: "az", name: "Azerbaijan" },
+    { code: "bs", name: "Bahamas" },
+    { code: "bd", name: "Bangladesh" },
+    { code: "by", name: "Belarus" },
+    { code: "be", name: "Belgium" },
+    { code: "bz", name: "Belize" },
+    { code: "bj", name: "Benin" },
+    { code: "bt", name: "Bhutan" },
+    { code: "bo", name: "Bolivia" },
+    { code: "ba", name: "Bosnia and Herzegovina" },
+    { code: "bw", name: "Botswana" },
+    { code: "br", name: "Brazil" },
+    { code: "bn", name: "Brunei" },
+    { code: "bg", name: "Bulgaria" },
+    { code: "bf", name: "Burkina Faso" },
+    { code: "bi", name: "Burundi" },
+    { code: "kh", name: "Cambodia" },
+    { code: "cm", name: "Cameroon" },
+    { code: "ca", name: "Canada" },
+    { code: "cv", name: "Cape Verde" },
+    { code: "cf", name: "Central African Republic" },
+    { code: "td", name: "Chad" },
+    { code: "cl", name: "Chile" },
+    { code: "cn", name: "China" },
+    { code: "co", name: "Colombia" },
+    { code: "km", name: "Comoros" },
+    { code: "cr", name: "Costa Rica" },
+    { code: "hr", name: "Croatia" },
+    { code: "cu", name: "Cuba" },
+    { code: "cy", name: "Cyprus" },
+    { code: "cz", name: "Czech Republic" },
+    { code: "cd", name: "Democratic Republic of the Congo" },
+    { code: "dk", name: "Denmark" },
+    { code: "dj", name: "Djibouti" },
+    { code: "dm", name: "Dominica" },
+    { code: "do", name: "Dominican Republic" },
+    { code: "ec", name: "Ecuador" },
+    { code: "eg", name: "Egypt" },
+    { code: "sv", name: "El Salvador" },
+    { code: "gq", name: "Equatorial Guinea" },
+    { code: "er", name: "Eritrea" },
+    { code: "ee", name: "Estonia" },
+    { code: "sz", name: "Eswatini" },
+    { code: "et", name: "Ethiopia" },
+    { code: "fk", name: "Falkland Islands" },
+    { code: "fi", name: "Finland" },
+    { code: "fr", name: "France" },
+    { code: "ga", name: "Gabon" },
+    { code: "gm", name: "Gambia" },
+    { code: "ge", name: "Georgia" },
+    { code: "de", name: "Germany" },
+    { code: "gh", name: "Ghana" },
+    { code: "gr", name: "Greece" },
+    { code: "gl", name: "Greenland" },
+    { code: "gt", name: "Guatemala" },
+    { code: "gn", name: "Guinea" },
+    { code: "gw", name: "Guinea-Bissau" },
+    { code: "gy", name: "Guyana" },
+    { code: "ht", name: "Haiti" },
+    { code: "hn", name: "Honduras" },
+    { code: "hu", name: "Hungary" },
+    { code: "is", name: "Iceland" },
+    { code: "in", name: "India" },
+    { code: "id", name: "Indonesia" },
+    { code: "ir", name: "Iran" },
+    { code: "iq", name: "Iraq" },
+    { code: "ie", name: "Ireland" },
+    { code: "il", name: "Israel" },
+    { code: "it", name: "Italy" },
+    { code: "ci", name: "Ivory Coast" },
+    { code: "jm", name: "Jamaica" },
+    { code: "jp", name: "Japan" },
+    { code: "jo", name: "Jordan" },
+    { code: "kz", name: "Kazakhstan" },
+    { code: "ke", name: "Kenya" },
+    { code: "kw", name: "Kuwait" },
+    { code: "kg", name: "Kyrgyzstan" },
+    { code: "la", name: "Laos" },
+    { code: "lv", name: "Latvia" },
+    { code: "lb", name: "Lebanon" },
+    { code: "ls", name: "Lesotho" },
+    { code: "lr", name: "Liberia" },
+    { code: "ly", name: "Libya" },
+    { code: "lt", name: "Lithuania" },
+    { code: "lu", name: "Luxembourg" },
+    { code: "mg", name: "Madagascar" },
+    { code: "mw", name: "Malawi" },
+    { code: "my", name: "Malaysia" },
+    { code: "mv", name: "Maldives" },
+    { code: "ml", name: "Mali" },
+    { code: "mt", name: "Malta" },
+    { code: "mr", name: "Mauritania" },
+    { code: "mu", name: "Mauritius" },
+    { code: "mx", name: "Mexico" },
+    { code: "md", name: "Moldova" },
+    { code: "mn", name: "Mongolia" },
+    { code: "me", name: "Montenegro" },
+    { code: "ma", name: "Morocco" },
+    { code: "mz", name: "Mozambique" },
+    { code: "mm", name: "Myanmar" },
+    { code: "na", name: "Namibia" },
+    { code: "np", name: "Nepal" },
+    { code: "nl", name: "Netherlands" },
+    { code: "nc", name: "New Caledonia" },
+    { code: "nz", name: "New Zealand" },
+    { code: "ni", name: "Nicaragua" },
+    { code: "ne", name: "Niger" },
+    { code: "ng", name: "Nigeria" },
+    { code: "kp", name: "North Korea" },
+    { code: "mk", name: "North Macedonia" },
+    { code: "no", name: "Norway" },
+    { code: "om", name: "Oman" },
+    { code: "pk", name: "Pakistan" },
+    { code: "pa", name: "Panama" },
+    { code: "pg", name: "Papua New Guinea" },
+    { code: "py", name: "Paraguay" },
+    { code: "pe", name: "Peru" },
+    { code: "ph", name: "Philippines" },
+    { code: "pl", name: "Poland" },
+    { code: "pt", name: "Portugal" },
+    { code: "pr", name: "Puerto Rico" },
+    { code: "qa", name: "Qatar" },
+    { code: "cg", name: "Republic of the Congo" },
+    { code: "ro", name: "Romania" },
+    { code: "ru", name: "Russia" },
+    { code: "rw", name: "Rwanda" },
+    { code: "lc", name: "Saint Lucia" },
+    { code: "vc", name: "Saint Vincent and the Grenadines" },
+    { code: "st", name: "São Tomé and Príncipe" },
+    { code: "sa", name: "Saudi Arabia" },
+    { code: "sn", name: "Senegal" },
+    { code: "rs", name: "Serbia" },
+    { code: "sc", name: "Seychelles" },
+    { code: "sl", name: "Sierra Leone" },
+    { code: "sg", name: "Singapore" },
+    { code: "sk", name: "Slovakia" },
+    { code: "si", name: "Slovenia" },
+    { code: "sb", name: "Solomon Islands" },
+    { code: "so", name: "Somalia" },
+    { code: "_somaliland", name: "Somaliland" },
+    { code: "za", name: "South Africa" },
+    { code: "kr", name: "South Korea" },
+    { code: "ss", name: "South Sudan" },
+    { code: "es", name: "Spain" },
+    { code: "lk", name: "Sri Lanka" },
+    { code: "sd", name: "Sudan" },
+    { code: "sr", name: "Suriname" },
+    { code: "se", name: "Sweden" },
+    { code: "ch", name: "Switzerland" },
+    { code: "sy", name: "Syria" },
+    { code: "tw", name: "Taiwan" },
+    { code: "tj", name: "Tajikistan" },
+    { code: "tz", name: "Tanzania" },
+    { code: "th", name: "Thailand" },
+    { code: "tg", name: "Togo" },
+    { code: "tt", name: "Trinidad and Tobago" },
+    { code: "tn", name: "Tunisia" },
+    { code: "tr", name: "Turkey" },
+    { code: "tm", name: "Turkmenistan" },
+    { code: "ua", name: "Ukraine" },
+    { code: "ae", name: "United Arab Emirates" },
+    { code: "gb", name: "United Kingdom" },
+    { code: "us", name: "United States" },
+    { code: "uy", name: "Uruguay" },
+    { code: "uz", name: "Uzbekistan" },
+    { code: "vu", name: "Vanuatu" },
+    { code: "ve", name: "Venezuela" },
+    { code: "vn", name: "Vietnam" },
+    { code: "ye", name: "Yemen" },
+    { code: "zm", name: "Zambia" },
+    { code: "zw", name: "Zimbabwe" }
+];
+
 // Dynamic Themes Defaults
 const DEFAULT_THEMES = {
     theme1: { bg: "#F9F9FB", text: "#202124", textMuted: "#5f6368", primary: "#4285F4", secondary: "#EA4335", tertiary: "#b100ff" },
@@ -79,6 +262,7 @@ export default function AdminPage() {
     const [skills, setSkills] = useState([]);
     const [experience, setExperience] = useState([]);
     const [aboutSlides, setAboutSlides] = useState([]);
+    const [nationality, setNationality] = useState("ir");
 
     const [cmsStatus, setCmsStatus] = useState("");
 
@@ -532,6 +716,7 @@ export default function AdminPage() {
                 setProfileImage(data.profileImage || "");
                 setGallery(data.gallery || []);
                 setCvUrl(data.cvUrl || "");
+                setNationality(data.nationality || "ir");
 
                 // Fetch new visibility states
                 if (data.sectionVisibility) {
@@ -793,6 +978,7 @@ export default function AdminPage() {
                 linkedin, email: emailLink, whatsapp,
                 skills, experience, aboutSlides,
                 profileImage, gallery, cvUrl,
+                nationality,
                 sectionVisibility,
                 securitySettings: { captchaEnabled },
                 themes
@@ -815,6 +1001,7 @@ export default function AdminPage() {
                 linkedin, email: emailLink, whatsapp,
                 skills, experience, aboutSlides,
                 profileImage, gallery, cvUrl,
+                nationality,
                 sectionVisibility,
                 securitySettings: { captchaEnabled },
                 themes
@@ -1619,6 +1806,48 @@ export default function AdminPage() {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Profile Settings Card - Nationality Highlight */}
+                        <div className="glass-card" style={{ padding: '30px' }}>
+                            <div onClick={() => toggleSection('profileSettingsCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.profileSettingsCard ? 0 : '20px' }}>
+                                <h3 style={{ color: 'var(--color-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-earth-americas"></i> Map Highlight Preferences
+                                </h3>
+                                <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.profileSettingsCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                            </div>
+                            {!collapsedSections.profileSettingsCard && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                <p style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>
+                                    Choose your nationality to dynamically highlight and glow that specific country on the interactive world map overlay in the Hero section.
+                                </p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '380px' }}>
+                                    <label style={{ fontSize: '0.85rem', color: '#c0c0c0', fontWeight: '500' }}>Select Nationality Country Highlight:</label>
+                                    <select
+                                        value={nationality}
+                                        onChange={(e) => setNationality(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '8px',
+                                            background: 'rgba(0,0,0,0.3)',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            color: 'white',
+                                            fontSize: '0.9rem',
+                                            outline: 'none',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        {SUPPORTED_COUNTRIES.map((c) => (
+                                            <option key={c.code} value={c.code}>
+                                                {c.name} ({c.code})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            )}
+                        </div>
+
                         {/* Section Visibility toggles - permission guarded */}
                         {(userRole === 'super_admin' || userPermissions.settingVisibility !== false) && (
                         <div className="glass-card" style={{ padding: '30px' }}>

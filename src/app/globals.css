@@ -1189,3 +1189,60 @@ body:not(.theme-3, .theme-4) .admin-link-btn:hover {
     transform: translateX(24px);
     background-color: #ffffff;
 }
+
+/* ── Vector World Map SVG Styling ── */
+.world-map-svg-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    user-select: none;
+    z-index: 1;
+}
+
+.world-map-svg-container svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Base Country Paths */
+.country-path, 
+.world-map-svg-container path {
+    fill: rgba(0, 0, 0, 0.05); /* Light grey for light stage backgrounds */
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-width: 0.5px;
+    transition: fill 1.2s cubic-bezier(0.16, 1, 0.3, 1), stroke 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* In dark themes (Theme 3 & 4), adapt map base colors for visibility */
+body.theme-3 .world-map-svg-container path,
+body.theme-4 .world-map-svg-container path {
+    fill: rgba(255, 255, 255, 0.035);
+    stroke: rgba(255, 255, 255, 0.08);
+}
+
+/* Selected Country Highlight — Red fill with black border */
+.active-nationality,
+.world-map-svg-container .active-nationality,
+.world-map-svg-container .active-nationality path {
+    fill: #e53935 !important;
+    stroke: #000000 !important;
+    stroke-width: 1.5px !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transition: fill 0.4s ease, stroke 0.4s ease;
+}
+
+/* Floating Country Abbreviation Label Fade-In Keyframes */
+@keyframes labelFadeIn {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.7);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
