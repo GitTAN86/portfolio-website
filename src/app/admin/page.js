@@ -274,6 +274,7 @@ export default function AdminPage() {
     const [copilotPrompt, setCopilotPrompt] = useState("");
     const [copilotLoading, setCopilotLoading] = useState(false);
     const [copilotResult, setCopilotResult] = useState("");
+    const [geminiTestStatus, setGeminiTestStatus] = useState(null); // { loading, ok, msg }
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -345,7 +346,9 @@ export default function AdminPage() {
         }
         
         try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            // Try gemini-2.0-flash first (required for newer AQ. prefix keys), fallback to 1.5-flash
+            const model = "gemini-2.0-flash";
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
             const response = await fetch(url, {
                 method: "POST",
                 headers: {
@@ -365,19 +368,58 @@ export default function AdminPage() {
             });
             
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Gemini API error data:", errorData);
-                throw new Error(errorData.error?.message || "Failed to contact Gemini API");
+                // Use warn instead of error so Next.js DevTools doesn't show a fatal call stack overlay
+                let errMsg = `Gemini API error: HTTP ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    console.warn("Gemini API error response:", errorData);
+                    errMsg = errorData.error?.message || errMsg;
+                } catch (_) {
+                    // Response body wasn't JSON (e.g. 429 rate limit plain text)
+                    const rawText = await response.text().catch(() => "");
+                    console.warn("Gemini API error (non-JSON):", response.status, rawText);
+                    if (rawText) errMsg = `${errMsg} — ${rawText.slice(0, 120)}`;
+                }
+                throw new Error(errMsg);
             }
             
             const data = await response.json();
-            const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            
+            // Handle both new response format (2026+) with 'steps' array
+            // and legacy format with 'candidates' array
+            let replyText = null;
+            
+            if (data.steps && Array.isArray(data.steps)) {
+                // New 2026+ response format: iterate steps to find model_output
+                for (const step of data.steps) {
+                    if (step.type === "model_output" || step.model_output) {
+                        const parts = step.model_output?.parts || step.parts || [];
+                        replyText = parts.find(p => p.text)?.text || null;
+                        if (replyText) break;
+                    }
+                }
+            }
+            
+            if (!replyText && data.candidates) {
+                // Legacy candidates format
+                replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+            }
+            
             if (!replyText) {
-                throw new Error("No response content generated from Gemini model.");
+                // Final fallback: search entire response for any text part
+                const rawText = JSON.stringify(data);
+                const match = rawText.match(/"text":"([^"]+)"/);
+                replyText = match ? match[1] : null;
+            }
+            
+            if (!replyText) {
+                console.warn("Unexpected Gemini response structure:", JSON.stringify(data).slice(0, 300));
+                throw new Error("No response content generated. The API response format may have changed.");
             }
             return replyText;
         } catch (error) {
-            console.error("Gemini call error:", error);
+            // Use warn so Next.js dev overlay doesn't treat it as a fatal render error
+            console.warn("Gemini call error:", error.message);
             showToast("Gemini error: " + error.message, "error");
             throw error;
         }
@@ -409,16 +451,15 @@ ${englishText}`;
             const translations = JSON.parse(cleanJsonText);
             
             if (translations.fa && translations.de && translations.ms) {
-                setFieldState(prev => {
-                    const currentObj = typeof prev === 'object' ? prev : { en: prev };
-                    return {
-                        ...currentObj,
-                        en: englishText,
-                        fa: translations.fa,
-                        de: translations.de,
-                        ms: translations.ms
-                    };
-                });
+                const translationsMap = {
+                    en: englishText,
+                    fa: translations.fa,
+                    de: translations.de,
+                    ms: translations.ms
+                };
+                if (typeof setFieldState === 'function') {
+                    setFieldState(translationsMap);
+                }
                 showToast("✨ Translated successfully to all languages!", "success");
             } else {
                 throw new Error("Translation payload did not return all language keys.");
@@ -1608,8 +1649,10 @@ Please edit the context text according to the instructions. Ensure you keep the 
 
     const updateSkill = (index, field, value) => {
         const newSkills = [...skills];
-        if (field === 'title' || field === 'description') {
-            const currentLocalized = newSkills[index][field] || { en: "", fa: "", de: "", ms: "" };
+        if (typeof value === 'object') {
+            newSkills[index][field] = value;
+        } else if (field === 'title' || field === 'description') {
+            const currentLocalized = parseLocalized(newSkills[index][field], { en: "", fa: "", de: "", ms: "" });
             newSkills[index][field] = {
                 ...currentLocalized,
                 [adminLocale]: value
@@ -1622,23 +1665,44 @@ Please edit the context text according to the instructions. Ensure you keep the 
 
     const updateExperience = (index, field, value) => {
         const newExp = [...experience];
-        if (field === 'title' || field === 'company') {
-            const currentLocalized = newExp[index][field] || { en: "", fa: "", de: "", ms: "" };
+        if (field === 'bullets') {
+            if (typeof value === 'object') {
+                const enLines = (value.en || "").split('\n');
+                const faLines = (value.fa || "").split('\n');
+                const deLines = (value.de || "").split('\n');
+                const msLines = (value.ms || "").split('\n');
+                
+                const maxLen = Math.max(enLines.length, faLines.length, deLines.length, msLines.length);
+                const newBullets = [];
+                for (let lIdx = 0; lIdx < maxLen; lIdx++) {
+                    newBullets.push({
+                        en: enLines[lIdx]?.trim() || "",
+                        fa: faLines[lIdx]?.trim() || "",
+                        de: deLines[lIdx]?.trim() || "",
+                        ms: msLines[lIdx]?.trim() || ""
+                    });
+                }
+                newExp[index].bullets = newBullets;
+            } else {
+                const lines = value.includes('\n') ? value.split('\n') : value.split('\\n');
+                const currentBullets = newExp[index].bullets || [];
+                const newBullets = lines.map((line, lIdx) => {
+                    const currentBulletLocalized = parseLocalized(currentBullets[lIdx], { en: "", fa: "", de: "", ms: "" });
+                    return {
+                        ...currentBulletLocalized,
+                        [adminLocale]: line
+                    };
+                });
+                newExp[index].bullets = newBullets;
+            }
+        } else if (typeof value === 'object') {
+            newExp[index][field] = value;
+        } else if (field === 'title' || field === 'company') {
+            const currentLocalized = parseLocalized(newExp[index][field], { en: "", fa: "", de: "", ms: "" });
             newExp[index][field] = {
                 ...currentLocalized,
                 [adminLocale]: value
             };
-        } else if (field === 'bullets') {
-            const lines = value.split('\\n');
-            const currentBullets = newExp[index].bullets || [];
-            const newBullets = lines.map((line, lIdx) => {
-                const currentBulletLocalized = parseLocalized(currentBullets[lIdx], { en: "", fa: "", de: "", ms: "" });
-                return {
-                    ...currentBulletLocalized,
-                    [adminLocale]: line
-                };
-            });
-            newExp[index].bullets = newBullets;
         } else {
             newExp[index][field] = value;
         }
@@ -1647,8 +1711,10 @@ Please edit the context text according to the instructions. Ensure you keep the 
 
     const updateAboutSlide = (index, field, value) => {
         const newSlides = [...aboutSlides];
-        if (field === 'title' || field === 'text') {
-            const currentLocalized = newSlides[index][field] || { en: "", fa: "", de: "", ms: "" };
+        if (typeof value === 'object') {
+            newSlides[index][field] = value;
+        } else if (field === 'title' || field === 'text') {
+            const currentLocalized = parseLocalized(newSlides[index][field], { en: "", fa: "", de: "", ms: "" });
             newSlides[index][field] = {
                 ...currentLocalized,
                 [adminLocale]: value
@@ -1929,7 +1995,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                                                 <label style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>Tagline</label>
                                                 <div style={{ display: 'flex', gap: '8px' }}>
-                                                    <button type="button" onClick={() => handleAutoTranslate('heroTagline', heroTagline.en, setHeroTagline)} disabled={translatingField === 'heroTagline'} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(0, 255, 136, 0.12)', border: '1px solid rgba(0, 255, 136, 0.25)', color: '#00ff88' }}>
+                                                    <button type="button" onClick={() => handleAutoTranslate('heroTagline', typeof heroTagline === 'object' ? heroTagline.en : heroTagline, setHeroTagline)} disabled={translatingField === 'heroTagline'} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(0, 255, 136, 0.12)', border: '1px solid rgba(0, 255, 136, 0.25)', color: '#00ff88' }}>
                                                         {translatingField === 'heroTagline' ? 'Translating...' : '✨ Translate to All'}
                                                     </button>
                                                     <button type="button" onClick={() => { setCopilotField('heroTagline'); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
@@ -1943,7 +2009,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                                                 <label style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>Headline</label>
                                                 <div style={{ display: 'flex', gap: '8px' }}>
-                                                    <button type="button" onClick={() => handleAutoTranslate('heroHeadline', heroHeadline.en, setHeroHeadline)} disabled={translatingField === 'heroHeadline'} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(0, 255, 136, 0.12)', border: '1px solid rgba(0, 255, 136, 0.25)', color: '#00ff88' }}>
+                                                    <button type="button" onClick={() => handleAutoTranslate('heroHeadline', typeof heroHeadline === 'object' ? heroHeadline.en : heroHeadline, setHeroHeadline)} disabled={translatingField === 'heroHeadline'} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(0, 255, 136, 0.12)', border: '1px solid rgba(0, 255, 136, 0.25)', color: '#00ff88' }}>
                                                         {translatingField === 'heroHeadline' ? 'Translating...' : '✨ Translate to All'}
                                                     </button>
                                                     <button type="button" onClick={() => { setCopilotField('heroHeadline'); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
@@ -2020,7 +2086,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                                             <label style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>About Biography (HTML Support)</label>
                                             <div style={{ display: 'flex', gap: '8px' }}>
-                                                <button type="button" onClick={() => handleAutoTranslate('aboutText', aboutText.en, setAboutText)} disabled={translatingField === 'aboutText'} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(0, 255, 136, 0.12)', border: '1px solid rgba(0, 255, 136, 0.25)', color: '#00ff88' }}>
+                                                <button type="button" onClick={() => handleAutoTranslate('aboutText', typeof aboutText === 'object' ? aboutText.en : aboutText, setAboutText)} disabled={translatingField === 'aboutText'} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(0, 255, 136, 0.12)', border: '1px solid rgba(0, 255, 136, 0.25)', color: '#00ff88' }}>
                                                     {translatingField === 'aboutText' ? 'Translating...' : '✨ Translate to All'}
                                                 </button>
                                                 <button type="button" onClick={() => { setCopilotField('aboutText'); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
@@ -2109,7 +2175,12 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                     </button>
                                                     <div style={{ flexGrow: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                                         <div>
-                                                            <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Title</label>
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                                                                <label style={{ color: '#a0a0a0', fontSize: '0.8rem', margin: 0 }}>Slide Title</label>
+                                                                <button type="button" onClick={() => handleAutoTranslate(`slide_title_${index}`, typeof slide.title === 'object' ? slide.title.en : slide.title, (val) => updateAboutSlide(index, 'title', val))} disabled={translatingField === `slide_title_${index}`} className="submit-btn" style={{ padding: '1px 6px', fontSize: '0.65rem', borderRadius: '3px', background: 'rgba(0, 255, 136, 0.1)', border: '1px solid rgba(0, 255, 136, 0.2)', color: '#00ff88' }}>
+                                                                    {translatingField === `slide_title_${index}` ? '...' : '✨ Translate'}
+                                                                </button>
+                                                            </div>
                                                             <input type="text" value={typeof slide.title === 'object' ? (slide.title[adminLocale] || "") : (slide.title || "")} onChange={e => updateAboutSlide(index, 'title', e.target.value)} placeholder="Slide Title (e.g. Technology Leadership)" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                         </div>
                                                         <div>
@@ -2126,9 +2197,14 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                         <div style={{ gridColumn: 'span 2' }}>
                                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
                                                                 <label style={{ color: '#a0a0a0', fontSize: '0.8rem', margin: 0 }}>Slide Description (HTML supported)</label>
-                                                                <button type="button" onClick={() => { setCopilotField({ type: 'aboutSlide', index, field: 'text' }); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
-                                                                    ✨ AI Copilot
-                                                                </button>
+                                                                <div style={{ display: 'flex', gap: '6px' }}>
+                                                                    <button type="button" onClick={() => handleAutoTranslate(`slide_text_${index}`, typeof slide.text === 'object' ? slide.text.en : slide.text, (val) => updateAboutSlide(index, 'text', val))} disabled={translatingField === `slide_text_${index}`} className="submit-btn" style={{ padding: '1px 6px', fontSize: '0.65rem', borderRadius: '3px', background: 'rgba(0, 255, 136, 0.1)', border: '1px solid rgba(0, 255, 136, 0.2)', color: '#00ff88' }}>
+                                                                        {translatingField === `slide_text_${index}` ? '...' : '✨ Translate'}
+                                                                    </button>
+                                                                    <button type="button" onClick={() => { setCopilotField({ type: 'aboutSlide', index, field: 'text' }); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
+                                                                        ✨ AI Copilot
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                             <textarea value={typeof slide.text === 'object' ? (slide.text[adminLocale] || "") : (slide.text || "")} onChange={e => updateAboutSlide(index, 'text', e.target.value)} placeholder="HTML content here (e.g. <p>Description...</p>)" rows="3" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
                                                         </div>
@@ -2238,7 +2314,12 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                             <div key={index} style={{ display: 'flex', gap: '15px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                                 <div style={{ flexGrow: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                                                     <div>
-                                                        <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Skill Title</label>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                                                            <label style={{ color: '#a0a0a0', fontSize: '0.8rem', margin: 0 }}>Skill Title</label>
+                                                            <button type="button" onClick={() => handleAutoTranslate(`skill_title_${index}`, skill.title.en, (val) => updateSkill(index, 'title', val))} disabled={translatingField === `skill_title_${index}`} className="submit-btn" style={{ padding: '1px 6px', fontSize: '0.65rem', borderRadius: '3px', background: 'rgba(0, 255, 136, 0.1)', border: '1px solid rgba(0, 255, 136, 0.2)', color: '#00ff88' }}>
+                                                                {translatingField === `skill_title_${index}` ? '...' : '✨ Translate'}
+                                                            </button>
+                                                        </div>
                                                         <input type="text" value={typeof skill.title === 'object' ? (skill.title[adminLocale] || "") : (skill.title || "")} onChange={e => updateSkill(index, 'title', e.target.value)} placeholder="Skill Title" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
                                                     <div>
@@ -2248,9 +2329,14 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                     <div style={{ gridColumn: 'span 2' }}>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
                                                             <label style={{ color: '#a0a0a0', fontSize: '0.8rem', margin: 0 }}>Description</label>
-                                                            <button type="button" onClick={() => { setCopilotField({ type: 'skill', index, field: 'description' }); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
-                                                                ✨ AI Copilot
-                                                            </button>
+                                                            <div style={{ display: 'flex', gap: '6px' }}>
+                                                                <button type="button" onClick={() => handleAutoTranslate(`skill_desc_${index}`, skill.description.en, (val) => updateSkill(index, 'description', val))} disabled={translatingField === `skill_desc_${index}`} className="submit-btn" style={{ padding: '1px 6px', fontSize: '0.65rem', borderRadius: '3px', background: 'rgba(0, 255, 136, 0.1)', border: '1px solid rgba(0, 255, 136, 0.2)', color: '#00ff88' }}>
+                                                                    {translatingField === `skill_desc_${index}` ? '...' : '✨ Translate'}
+                                                                </button>
+                                                                <button type="button" onClick={() => { setCopilotField({ type: 'skill', index, field: 'description' }); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
+                                                                    ✨ AI Copilot
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                         <textarea value={typeof skill.description === 'object' ? (skill.description[adminLocale] || "") : (skill.description || "")} onChange={e => updateSkill(index, 'description', e.target.value)} placeholder="Description..." rows="2" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
@@ -2337,11 +2423,21 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                 </button>
                                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '15px' }}>
                                                     <div>
-                                                        <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Job Title</label>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                                                            <label style={{ color: '#a0a0a0', fontSize: '0.8rem', margin: 0 }}>Job Title</label>
+                                                            <button type="button" onClick={() => handleAutoTranslate(`exp_title_${index}`, typeof exp.title === 'object' ? exp.title.en : exp.title, (val) => updateExperience(index, 'title', val))} disabled={translatingField === `exp_title_${index}`} className="submit-btn" style={{ padding: '1px 6px', fontSize: '0.65rem', borderRadius: '3px', background: 'rgba(0, 255, 136, 0.1)', border: '1px solid rgba(0, 255, 136, 0.2)', color: '#00ff88' }}>
+                                                                {translatingField === `exp_title_${index}` ? '...' : '✨ Translate'}
+                                                            </button>
+                                                        </div>
                                                         <input type="text" value={typeof exp.title === 'object' ? (exp.title[adminLocale] || "") : (exp.title || "")} onChange={e => updateExperience(index, 'title', e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
                                                     <div>
-                                                        <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Company</label>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                                                            <label style={{ color: '#a0a0a0', fontSize: '0.8rem', margin: 0 }}>Company</label>
+                                                            <button type="button" onClick={() => handleAutoTranslate(`exp_company_${index}`, typeof exp.company === 'object' ? exp.company.en : exp.company, (val) => updateExperience(index, 'company', val))} disabled={translatingField === `exp_company_${index}`} className="submit-btn" style={{ padding: '1px 6px', fontSize: '0.65rem', borderRadius: '3px', background: 'rgba(0, 255, 136, 0.1)', border: '1px solid rgba(0, 255, 136, 0.2)', color: '#00ff88' }}>
+                                                                {translatingField === `exp_company_${index}` ? '...' : '✨ Translate'}
+                                                            </button>
+                                                        </div>
                                                         <input type="text" value={typeof exp.company === 'object' ? (exp.company[adminLocale] || "") : (exp.company || "")} onChange={e => updateExperience(index, 'company', e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
                                                     <div style={{ gridColumn: 'span 2' }}>
@@ -2351,9 +2447,17 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                     <div style={{ gridColumn: 'span 2' }}>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
                                                             <label style={{ color: '#a0a0a0', fontSize: '0.8rem', margin: 0 }}>Key Responsibilities (One per line)</label>
-                                                            <button type="button" onClick={() => { setCopilotField({ type: 'experience', index, field: 'bullets' }); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
-                                                                ✨ AI Copilot
-                                                            </button>
+                                                            <div style={{ display: 'flex', gap: '6px' }}>
+                                                                <button type="button" onClick={() => {
+                                                                    const englishBullets = exp.bullets ? exp.bullets.map(b => (typeof b === 'object' ? (b.en || "") : (b || ""))).join('\n') : '';
+                                                                    handleAutoTranslate(`exp_bullets_${index}`, englishBullets, (val) => updateExperience(index, 'bullets', val));
+                                                                }} disabled={translatingField === `exp_bullets_${index}`} className="submit-btn" style={{ padding: '1px 6px', fontSize: '0.65rem', borderRadius: '3px', background: 'rgba(0, 255, 136, 0.1)', border: '1px solid rgba(0, 255, 136, 0.2)', color: '#00ff88' }}>
+                                                                    {translatingField === `exp_bullets_${index}` ? '...' : '✨ Translate'}
+                                                                </button>
+                                                                <button type="button" onClick={() => { setCopilotField({ type: 'experience', index, field: 'bullets' }); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
+                                                                    ✨ AI Copilot
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                         <textarea value={exp.bullets ? exp.bullets.map(b => (typeof b === 'object' ? (b[adminLocale] || "") : (b || ""))).join('\\n') : ''} onChange={e => updateExperience(index, 'bullets', e.target.value)} rows="5" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
                                                     </div>
@@ -2808,7 +2912,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                             {!collapsedSections.aiConfigCard && (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                                     <p style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>
-                                        To enable the client-side Gemini AI features (such as ✨ Auto-Translate and the ✨ AI Copilot writing helper), paste your personal **Gemini Developer API Key** below. This key is saved 100% securely inside your local browser's storage and never sent to any third-party server.
+                                        To enable the client-side Gemini AI features (such as ✨ Auto-Translate and the ✨ AI Copilot writing helper), paste your <strong style={{ color: '#e0e0e0' }}>Gemini API Key</strong> from Google AI Studio below. Keys starting with either <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: '3px', fontSize: '0.8rem' }}>AQ.</code> or <code style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: '3px', fontSize: '0.8rem' }}>AIzaSy</code> are both supported. This key is saved securely in your local browser's storage and never sent to any third-party server.
                                     </p>
                                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                         <input
@@ -2818,24 +2922,58 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                 setGeminiApiKey(e.target.value);
                                                 localStorage.setItem("gemini_api_key", e.target.value);
                                             }}
-                                            placeholder="AIzaSy..."
+                                            placeholder="AQ. or AIzaSy..."
                                             style={{ flexGrow: 1, padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'monospace' }}
                                         />
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                const key = geminiApiKey || localStorage.getItem("gemini_api_key");
+                                                if (!key) { showToast("Paste a key first!", "error"); return; }
+                                                setGeminiTestStatus({ loading: true, ok: null, msg: "Testing..." });
+                                                try {
+                                                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+                                                        method: "POST",
+                                                        headers: { "Content-Type": "application/json" },
+                                                        body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] })
+                                                    });
+                                                    if (res.ok) {
+                                                        setGeminiTestStatus({ loading: false, ok: true, msg: "✅ API Key is valid and working!" });
+                                                    } else {
+                                                        let errMsg = `HTTP ${res.status}`;
+                                                        try { const d = await res.json(); errMsg = d.error?.message || errMsg; } catch (_) { const t = await res.text().catch(() => ""); errMsg = t.slice(0, 120) || errMsg; }
+                                                        setGeminiTestStatus({ loading: false, ok: false, msg: `❌ Error: ${errMsg}` });
+                                                    }
+                                                } catch (e) {
+                                                    setGeminiTestStatus({ loading: false, ok: false, msg: `❌ Network error: ${e.message}` });
+                                                }
+                                            }}
+                                            className="submit-btn"
+                                            style={{ background: 'rgba(66,133,244,0.15)', border: '1px solid rgba(66,133,244,0.3)', color: '#4285F4', padding: '12px 16px', borderRadius: '8px', whiteSpace: 'nowrap' }}
+                                        >
+                                            {geminiTestStatus?.loading ? '...' : 'Test Key'}
+                                        </button>
                                         <button
                                             type="button"
                                             onClick={() => {
                                                 setGeminiApiKey("");
                                                 localStorage.removeItem("gemini_api_key");
+                                                setGeminiTestStatus(null);
                                                 showToast("API Key removed.", "success");
                                             }}
                                             className="submit-btn"
                                             style={{ background: '#EA4335', padding: '12px', borderRadius: '8px' }}
                                         >
-                                            Clear Key
+                                            Clear
                                         </button>
                                     </div>
+                                    {geminiTestStatus && !geminiTestStatus.loading && (
+                                        <div style={{ padding: '10px 14px', borderRadius: '8px', fontSize: '0.83rem', background: geminiTestStatus.ok ? 'rgba(0,255,136,0.08)' : 'rgba(234,67,53,0.1)', border: `1px solid ${geminiTestStatus.ok ? 'rgba(0,255,136,0.25)' : 'rgba(234,67,53,0.25)'}`, color: geminiTestStatus.ok ? '#00ff88' : '#EA4335', wordBreak: 'break-word' }}>
+                                            {geminiTestStatus.msg}
+                                        </div>
+                                    )}
                                     <div style={{ fontSize: '0.78rem', color: '#888' }}>
-                                        Get a free Gemini API Key from <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>Google AI Studio</a>.
+                                        Get a free Gemini API Key from <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>Google AI Studio</a>. Both key formats (<code style={{ background: 'rgba(255,255,255,0.05)', padding: '1px 4px', borderRadius: '3px' }}>AQ.</code> and <code style={{ background: 'rgba(255,255,255,0.05)', padding: '1px 4px', borderRadius: '3px' }}>AIzaSy</code>) work equally.
                                     </div>
                                 </div>
                             )}
