@@ -830,26 +830,12 @@ export default function Home() {
         <select
           value={locale}
           onChange={e => setLocale(e.target.value)}
-          style={{
-            padding: "8px 14px",
-            borderRadius: "20px",
-            background: "rgba(255, 255, 255, 0.08)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-            border: "1px solid rgba(255, 255, 255, 0.18)",
-            boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
-            color: "white",
-            fontSize: "0.85rem",
-            fontWeight: "700",
-            cursor: "pointer",
-            outline: "none",
-            letterSpacing: "0.03em"
-          }}
+          className="lang-switcher-select"
         >
-          <option value="en" style={{ background: "#111", color: "white" }}>🇬🇧  English</option>
-          <option value="fa" style={{ background: "#111", color: "white" }}>🇮🇷  فارسی</option>
-          <option value="de" style={{ background: "#111", color: "white" }}>🇩🇪  Deutsch</option>
-          <option value="ms" style={{ background: "#111", color: "white" }}>🇲🇾  Melayu</option>
+          <option value="en">🇬🇧  English</option>
+          <option value="fa">🇮🇷  فارسی</option>
+          <option value="de">🇩🇪  Deutsch</option>
+          <option value="ms">🇲🇾  Melayu</option>
         </select>
       </div>
 

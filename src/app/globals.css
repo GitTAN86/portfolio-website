@@ -928,6 +928,56 @@ body:not(.theme-3, .theme-4) .admin-link-btn:hover {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
+/* Premium Floating Language Switcher Dropdown */
+.lang-switcher-select {
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    outline: none;
+    letter-spacing: 0.03em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lang-switcher-select:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.lang-switcher-select option {
+    background: #111;
+    color: white;
+}
+
+/* Make language switcher visible on light backgrounds (Themes 1 & 2) */
+body:not(.theme-3, .theme-4) .lang-switcher-select {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+}
+
+body:not(.theme-3, .theme-4) .lang-switcher-select:hover {
+    background: rgba(0, 0, 0, 0.12);
+    color: var(--color-primary);
+    border-color: rgba(0, 0, 0, 0.25);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+body:not(.theme-3, .theme-4) .lang-switcher-select option {
+    background: white;
+    color: #222;
+}
+
 /* Admin Portal Inputs Box Sizing Fix */
 #contentView input,
 #contentView textarea,
