@@ -346,8 +346,8 @@ export default function AdminPage() {
         }
         
         try {
-            // Try gemini-2.0-flash first (required for newer AQ. prefix keys), fallback to 1.5-flash
-            const model = "gemini-2.0-flash";
+            // Try gemini-2.5-flash first (required for newer AQ. prefix keys), fallback to 1.5-flash
+            const model = "gemini-2.5-flash";
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
             const response = await fetch(url, {
                 method: "POST",
@@ -2918,7 +2918,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                 if (!key) { showToast("Paste a key first!", "error"); return; }
                                                 setGeminiTestStatus({ loading: true, ok: null, msg: "Testing..." });
                                                 try {
-                                                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+                                                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
                                                         method: "POST",
                                                         headers: { "Content-Type": "application/json" },
                                                         body: JSON.stringify({ contents: [{ parts: [{ text: "Say OK" }] }] })
