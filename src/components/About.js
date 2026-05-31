@@ -230,7 +230,10 @@ export default function About({ data }) {
                             </h3>
                             <div
                                 className="about-paragraph"
-                                style={{ textAlign: "justify" }}
+                                style={{
+                                    textAlign: data?.aboutTextAlign || "justify",
+                                    fontFamily: data?.aboutFontFamily || "inherit"
+                                }}
                                 dangerouslySetInnerHTML={{ __html: slides[displayedIndex]?.text || "" }}
                             />
                         </div>

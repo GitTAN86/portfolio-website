@@ -122,6 +122,15 @@ const DEFAULT_CMS_DATA = {
   cvUrl: "#",
   aboutSlides: [],
   nationality: "ir",
+  overrideTheme: "dynamic",
+  aboutFontFamily: "'Space Grotesk', sans-serif",
+  aboutTextAlign: "justify",
+  heroFontFamily: "'Space Grotesk', sans-serif",
+  heroTextAlign: "center",
+  skillsFontFamily: "'Outfit', sans-serif",
+  skillsTextAlign: "left",
+  experienceFontFamily: "'Outfit', sans-serif",
+  experienceTextAlign: "left",
 };
 
 function WordSplit({ text }) {
@@ -217,6 +226,15 @@ export default function Home() {
           sectionVisibility: ex(f.sectionVisibility) || {},
           themes: ex(f.themes) || {},
           nationality: ex(f.nationality) || DEFAULT_CMS_DATA.nationality,
+          overrideTheme: ex(f.overrideTheme) || DEFAULT_CMS_DATA.overrideTheme,
+          aboutFontFamily: ex(f.aboutFontFamily) || DEFAULT_CMS_DATA.aboutFontFamily,
+          aboutTextAlign: ex(f.aboutTextAlign) || DEFAULT_CMS_DATA.aboutTextAlign,
+          heroFontFamily: ex(f.heroFontFamily) || DEFAULT_CMS_DATA.heroFontFamily,
+          heroTextAlign: ex(f.heroTextAlign) || DEFAULT_CMS_DATA.heroTextAlign,
+          skillsFontFamily: ex(f.skillsFontFamily) || DEFAULT_CMS_DATA.skillsFontFamily,
+          skillsTextAlign: ex(f.skillsTextAlign) || DEFAULT_CMS_DATA.skillsTextAlign,
+          experienceFontFamily: ex(f.experienceFontFamily) || DEFAULT_CMS_DATA.experienceFontFamily,
+          experienceTextAlign: ex(f.experienceTextAlign) || DEFAULT_CMS_DATA.experienceTextAlign,
         });
       } catch (e) {
         console.warn("CMS fetch failed, using defaults:", e);
@@ -260,7 +278,7 @@ export default function Home() {
     const timer = setTimeout(() => {
       const cloudRect = cloud.getBoundingClientRect();
       const activeEl = worldMap.querySelector(".active-nationality");
-      
+
       let originPixelX = cloudRect.width / 2;
       let originPixelY = cloudRect.height / 2;
 
@@ -601,7 +619,7 @@ export default function Home() {
 
   return (
     <>
-      <ScrollThemeManager />
+      <ScrollThemeManager overrideTheme={data.overrideTheme} />
       {<ParticleBackground />}
 
       {/* Dynamic Theme Colors Injection */}
@@ -670,7 +688,7 @@ export default function Home() {
               overflow: "hidden",
             }}
           >
-             {/* ── Hello Word Cloud ── */}
+            {/* ── Hello Word Cloud ── */}
             {data.sectionVisibility?.heroWordCloud !== false && (
               <div
                 ref={wordCloudRef}
@@ -753,14 +771,15 @@ export default function Home() {
             <div
               ref={textRef}
               style={{
-                textAlign: "center",
+                textAlign: data?.heroTextAlign || "center",
+                fontFamily: data?.heroFontFamily || "inherit",
                 maxWidth: "820px",
                 padding: "0 24px",
                 userSelect: "none",
                 opacity: 0,
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: data?.heroTextAlign === "left" ? "flex-start" : data?.heroTextAlign === "right" ? "flex-end" : "center",
                 gap: "0.3rem",
                 position: "relative",
                 zIndex: 2,
@@ -826,17 +845,36 @@ export default function Home() {
             <h2
               ref={skillsTitleRef}
               className="section-title"
-              style={{ marginBottom: "2.5rem", willChange: "transform, opacity" }}
+              style={{
+                marginBottom: "2.5rem",
+                willChange: "transform, opacity",
+                fontFamily: data?.skillsFontFamily || "inherit"
+              }}
             >
               Core Competencies
             </h2>
             {data.sectionVisibility?.skillsGrid !== false && (
               <div className="skills-grid" style={{ width: "100%", maxWidth: "1200px" }}>
                 {data.skills.map((skill, index) => (
-                  <div key={index} className="glass-card skill-card" style={{ willChange: "transform, opacity" }}>
+                  <div
+                    key={index}
+                    className="glass-card skill-card"
+                    style={{
+                      willChange: "transform, opacity",
+                      fontFamily: data?.skillsFontFamily || "inherit",
+                      textAlign: data?.skillsTextAlign || "left"
+                    }}
+                  >
                     <i className={`${skill.icon || "fa-solid fa-star"} skill-icon`}></i>
-                    <h3>{skill.title}</h3>
-                    <p>{skill.description}</p>
+                    <h3 style={{ fontFamily: data?.skillsFontFamily || "inherit" }}>{skill.title}</h3>
+                    <p
+                      style={{
+                        fontFamily: data?.skillsFontFamily || "inherit",
+                        textAlign: data?.skillsTextAlign || "left"
+                      }}
+                    >
+                      {skill.description}
+                    </p>
                   </div>
                 ))}
               </div>

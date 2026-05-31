@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-export default function ScrollThemeManager() {
+export default function ScrollThemeManager({ overrideTheme }) {
     useEffect(() => {
         // Track visit securely
         const trackVisit = async () => {
@@ -56,7 +56,46 @@ export default function ScrollThemeManager() {
         };
         trackVisit();
 
-        // Theme intersection observer logic
+        // If theme override is active, force the targeted theme class and skip scroll theme switching
+        if (overrideTheme && overrideTheme !== "dynamic") {
+            const themeMap = {
+                'theme1': 'theme-1',
+                'theme2': 'theme-2',
+                'theme3': 'theme-3',
+                'theme4': 'theme-4'
+            };
+            const targetClass = themeMap[overrideTheme] || 'theme-1';
+            document.body.className = targetClass;
+
+            // Still register visibility triggers for animations, but without changing the body class
+            const observerOptions = { root: null, rootMargin: '0px 0px -100px 0px', threshold: 0 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    } else {
+                        entry.target.classList.remove('is-visible');
+                    }
+                });
+            }, observerOptions);
+
+            const initObserver = () => {
+                const sections = document.querySelectorAll('.scroll-section');
+                if(sections.length > 0) {
+                    sections.forEach(sec => observer.observe(sec));
+                } else {
+                    setTimeout(initObserver, 100);
+                }
+            };
+            initObserver();
+
+            return () => {
+                const sections = document.querySelectorAll('.scroll-section');
+                sections.forEach(sec => observer.unobserve(sec));
+            };
+        }
+
+        // Theme intersection observer logic for dynamic scrolling mode
         const observerOptions = { root: null, rootMargin: '0px 0px -100px 0px', threshold: 0 };
         
         const observer = new IntersectionObserver((entries) => {
@@ -89,19 +128,11 @@ export default function ScrollThemeManager() {
         };
         initObserver();
 
-        // Global mouse move for flashlight pattern
-       /* const handleBodyMouseMove = (e) => {
-            document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
-            document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
-        };
-        document.addEventListener('mousemove', handleBodyMouseMove);
-
         return () => {
             const sections = document.querySelectorAll('.scroll-section');
             sections.forEach(sec => observer.unobserve(sec));
-            document.removeEventListener('mousemove', handleBodyMouseMove);
-        };*/
-    }, []);
+        };
+    }, [overrideTheme]);
 
     return null;
 }

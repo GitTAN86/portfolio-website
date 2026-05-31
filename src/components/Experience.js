@@ -15,7 +15,12 @@ export default function Experience({ data }) {
                                     <h4>{exp.company}</h4>
                                     <span className="timeline-date">{exp.date}</span>
                                     {exp.bullets && exp.bullets.length > 0 && (
-                                        <ul>
+                                        <ul
+                                            style={{
+                                                fontFamily: data?.experienceFontFamily || "inherit",
+                                                textAlign: data?.experienceTextAlign || "left"
+                                            }}
+                                        >
                                             {exp.bullets.map((bullet, bIndex) => {
                                                 // Make bold text before colon if it exists
                                                 const parts = bullet.split(':');
