@@ -1922,52 +1922,38 @@ Please edit the context text according to the instructions. Ensure you keep the 
                             </div>
                         </div>
 
-                        {/* Language Selection Bar for Admin Editor */}
+                        {/* Language Selection Dropdown for Admin Editor */}
                         <div style={{
                             display: 'flex',
-                            background: 'rgba(255, 255, 255, 0.03)',
-                            borderRadius: '16px',
-                            padding: '6px',
-                            border: '1px solid rgba(255, 255, 255, 0.08)',
-                            backdropFilter: 'blur(10px)',
-                            gap: '8px',
-                            justifyContent: 'space-around',
                             alignItems: 'center',
+                            gap: '10px',
                             marginBottom: '10px'
                         }}>
-                            {[
-                                { code: "en", label: "English", flag: "🇬🇧" },
-                                { code: "fa", label: "Farsi / فارسی", flag: "🇮🇷" },
-                                { code: "de", label: "German", flag: "🇩🇪" },
-                                { code: "ms", label: "Malay / Melayu", flag: "🇲🇾" }
-                            ].map((lang) => (
-                                <button
-                                    key={lang.code}
-                                    type="button"
-                                    onClick={() => setAdminLocale(lang.code)}
-                                    style={{
-                                        flex: 1,
-                                        padding: '10px 16px',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '0.9rem',
-                                        fontWeight: '600',
-                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '8px',
-                                        background: adminLocale === lang.code ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-                                        color: adminLocale === lang.code ? 'white' : '#a0a0a0',
-                                        boxShadow: adminLocale === lang.code ? '0 4px 15px rgba(0,0,0,0.2)' : 'none',
-                                        border: adminLocale === lang.code ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent'
-                                    }}
-                                >
-                                    <span style={{ fontSize: '1.2rem' }}>{lang.flag}</span>
-                                    <span>{lang.label}</span>
-                                </button>
-                            ))}
+                            <span style={{ color: '#a0a0a0', fontSize: '0.82rem', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                                <i className="fa-solid fa-language" style={{ marginRight: '6px' }}></i>Editing language:
+                            </span>
+                            <select
+                                value={adminLocale}
+                                onChange={e => setAdminLocale(e.target.value)}
+                                style={{
+                                    padding: '8px 14px',
+                                    borderRadius: '10px',
+                                    background: 'rgba(255,255,255,0.07)',
+                                    border: '1px solid rgba(255,255,255,0.12)',
+                                    backdropFilter: 'blur(10px)',
+                                    color: 'white',
+                                    fontSize: '0.9rem',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    outline: 'none',
+                                    minWidth: '200px'
+                                }}
+                            >
+                                <option value="en" style={{ background: '#1a1a2e', color: 'white' }}>🇬🇧  English (EN)</option>
+                                <option value="fa" style={{ background: '#1a1a2e', color: 'white' }}>🇮🇷  Farsi / فارسی (FA)</option>
+                                <option value="de" style={{ background: '#1a1a2e', color: 'white' }}>🇩🇪  German (DE)</option>
+                                <option value="ms" style={{ background: '#1a1a2e', color: 'white' }}>🇲🇾  Malay / Melayu (MS)</option>
+                            </select>
                         </div>
                         {/* Hero Section Card */}
                         {(userRole === 'super_admin' || userPermissions.contentHero !== false) && (

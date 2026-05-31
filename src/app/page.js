@@ -817,53 +817,40 @@ export default function Home() {
       <ScrollThemeManager overrideTheme={data.overrideTheme} />
       {<ParticleBackground />}
 
-      {/* Floating Premium Language Switcher */}
+      {/* Floating Language Switcher Dropdown */}
       <div
         style={{
           position: "fixed",
           top: "24px",
           right: "24px",
           zIndex: 100,
-          display: "flex",
-          gap: "8px",
-          background: "rgba(255, 255, 255, 0.08)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          border: "1px solid rgba(255, 255, 255, 0.15)",
-          padding: "6px",
-          borderRadius: "30px",
-          boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
           direction: "ltr"
         }}
       >
-        {[
-          { code: "en", flag: "🇬🇧", label: "EN" },
-          { code: "fa", flag: "🇮🇷", label: "FA" },
-          { code: "de", flag: "🇩🇪", label: "DE" },
-          { code: "ms", flag: "🇲🇾", label: "MS" }
-        ].map((lang) => (
-          <button
-            key={lang.code}
-            onClick={() => setLocale(lang.code)}
-            style={{
-              background: locale === lang.code ? "var(--color-primary, #4285F4)" : "transparent",
-              color: "white",
-              border: "none",
-              padding: "6px 12px",
-              borderRadius: "20px",
-              fontSize: "0.8rem",
-              fontWeight: "600",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-              transition: "all 0.3s ease"
-            }}
-          >
-            <span>{lang.flag}</span>
-            <span>{lang.label}</span>
-          </button>
-        ))}
+        <select
+          value={locale}
+          onChange={e => setLocale(e.target.value)}
+          style={{
+            padding: "8px 14px",
+            borderRadius: "20px",
+            background: "rgba(255, 255, 255, 0.08)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            border: "1px solid rgba(255, 255, 255, 0.18)",
+            boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
+            color: "white",
+            fontSize: "0.85rem",
+            fontWeight: "700",
+            cursor: "pointer",
+            outline: "none",
+            letterSpacing: "0.03em"
+          }}
+        >
+          <option value="en" style={{ background: "#111", color: "white" }}>🇬🇧  English</option>
+          <option value="fa" style={{ background: "#111", color: "white" }}>🇮🇷  فارسی</option>
+          <option value="de" style={{ background: "#111", color: "white" }}>🇩🇪  Deutsch</option>
+          <option value="ms" style={{ background: "#111", color: "white" }}>🇲🇾  Melayu</option>
+        </select>
       </div>
 
       {/* Dynamic Theme Colors Injection */}
