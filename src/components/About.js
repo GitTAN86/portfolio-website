@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-export default function About({ data }) {
+export default function About({ data, locale }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [displayedIndex, setDisplayedIndex] = useState(0);
     const [isTransitioningText, setIsTransitioningText] = useState(false);
@@ -8,23 +8,66 @@ export default function About({ data }) {
     const dragStartX = useRef(0);
     const hasDragged = useRef(false);
 
-    const slides = data?.aboutSlides && data.aboutSlides.length > 0 ? data.aboutSlides : [
+    const rawSlides = data?.aboutSlides && data.aboutSlides.length > 0 ? data.aboutSlides : [
         {
             image: data?.gallery?.[0] || "/images/pic1.jpg",
-            title: "Technology Leadership",
-            text: data?.aboutText || "<p>I am an experienced Technology Leader and Senior Frontend Engineer with a proven track record of designing scalable cloud-native architectures and leading cross-functional engineering squads.</p>"
+            title: {
+                en: "Technology Leadership",
+                fa: "رهبری فنی و فناوری",
+                de: "Technologieführung",
+                ms: "Kepimpinan Teknologi"
+            },
+            text: data?.aboutText || {
+                en: "<p>I am an experienced Technology Leader and Senior Frontend Engineer with a proven track record of designing scalable cloud-native architectures and leading cross-functional engineering squads.</p>",
+                fa: "<p>من یک رهبر با تجربه فناوری و مهندس ارشد فرانت‌اند با سابقه اثبات‌شده در طراحی معماری‌های مقیاس‌پذیر ابری و هدایت تیم‌های مهندسی چندوظیفه‌ای هستم.</p>",
+                de: "<p>Ich bin ein erfahrener Technologieführer und Senior Frontend Engineer mit einer nachgewiesenen Erfolgsbilanz bei der Entwicklung skalierbarer Cloud-native Architekturen und der Leitung funktionsübergreifender Engineering-Teams.</p>",
+                ms: "<p>Saya merupakan seorang Pemimpin Teknologi dan Jurutera Kanan Frontend yang berpengalaman dengan rekod prestasi terbukti dalam merancang seni bina awan berskala besar serta memimpin pasukan kejuruteraan pelbagai fungsi.</p>"
+            }
         },
         {
             image: data?.gallery?.[1] || "/images/pic2.jpg",
-            title: "Frontend Engineering Excellence",
-            text: "<p>I specialize in building high-fidelity, interactive, and beautifully animated web interfaces using modern frameworks. Performance, accessibility under WCAG guidelines, and fluid responsiveness are at the core of my development philosophy.</p>"
+            title: {
+                en: "Frontend Engineering Excellence",
+                fa: "سرآمدی مهندسی فرانت‌اند",
+                de: "Frontend-Engineering-Exzellenz",
+                ms: "Kecemerlangan Kejuruteraan Frontend"
+            },
+            text: {
+                en: "<p>I specialize in building high-fidelity, interactive, and beautifully animated web interfaces using modern frameworks. Performance, accessibility under WCAG guidelines, and fluid responsiveness are at the core of my development philosophy.</p>",
+                fa: "<p>من در ساخت واسط‌های کاربری بسیار تعاملی، با وفاداری بالا و انیمیشن‌های زیبا با استفاده از فریم‌ورک‌های مدرن تخصص دارم. عملکرد، دسترسی‌پذیری تحت استانداردهای WCAG و پاسخ‌گویی روان در هسته فلسفه توسعه من قرار دارند.</p>",
+                de: "<p>Ich bin spezialisiert auf die Erstellung hochpräziser, interaktiver und ansprechend animierter Web-Schnittstellen mit modernen Frameworks. Leistung, Barrierefreiheit nach WCAG-Richtlinien und flüssige Reaktionsfähigkeit stehen im Mittelpunkt meiner Entwicklungsphilosophie.</p>",
+                ms: "<p>Saya pakar dalam membina antara muka web yang berkejituan tinggi, interaktif dan beranimasi indah menggunakan rangka kerja moden. Prestasi, kebolehcapaian di bawah garis panduan WCAG, dan tindak balas lancar adalah teras falsafah pembangunan saya.</p>"
+            }
         },
         {
             image: data?.gallery?.[2] || "/images/pic3.jpg",
-            title: "Scalable Architecture & Integration",
-            text: "<p>Bridging the gap between operational excellence and solid backend foundations. Designing secure, auto-scaling cloud deployments, CI/CD automated release pipelines, and robust real-time system integrations that grow with your business.</p>"
+            title: {
+                en: "Scalable Architecture & Integration",
+                fa: "معماری مقیاس‌پذیر و یکپارچه‌سازی",
+                de: "Skalierbare Architektur & Integration",
+                ms: "Seni Bina & Integrasi Berskala"
+            },
+            text: {
+                en: "<p>Bridging the gap between operational excellence and solid backend foundations. Designing secure, auto-scaling cloud deployments, CI/CD automated release pipelines, and robust real-time system integrations that grow with your business.</p>",
+                fa: "<p>ایجاد پل میان تعالی عملیاتی و پایه‌های محکم بک‌اند. طراحی استقرارهای ابری امن با مقیاس‌پذیری خودکار، پایپ‌لاین‌های انتشار خودکار CI/CD و یکپارچه‌سازی‌های مستحکم بلادرنگ سیستم‌ها متناسب با رشد کسب‌وکار شما.</p>",
+                de: "<p>Die Lücke zwischen operativer Exzellenz und soliden Backend-Fundamenten schließen. Entwurf sicherer, automatisch skalierbarer Cloud-Bereitstellungen, automatisierter CI/CD-Release-Pipelines und robuster Echtzeit-Systemintegrationen, die mit Ihrem Unternehmen wachsen.</p>",
+                ms: "<p>Merapatkan jurang antara kecemerlangan operasi dan asas backend yang kukuh. Merancang penyebaran awan yang selamat dengan skala automatik, talian paip pelepasan automatik CI/CD, dan integrasi sistem masa nyata yang mantap yang berkembang bersama perniagaan anda.</p>"
+            }
         }
     ];
+
+    const slides = rawSlides.map(slide => {
+        const resolve = (val) => {
+            if (!val) return "";
+            if (typeof val === "string") return val;
+            return val[locale] || val["en"] || "";
+        };
+        return {
+            image: slide.image,
+            title: resolve(slide.title),
+            text: resolve(slide.text)
+        };
+    });
 
     // Synced Text panel fade-out then fade-in transition
     useEffect(() => {
@@ -77,7 +120,7 @@ export default function About({ data }) {
 
     return (
         <section id="about" className="about section-padding scroll-section">
-            <h2 className="section-title">About Me</h2>
+            <h2 className="section-title">{locale === "fa" ? "درباره من" : locale === "de" ? "Über mich" : locale === "ms" ? "Tentang Saya" : "About Me"}</h2>
             <div
                 className="about-grid"
                 style={{

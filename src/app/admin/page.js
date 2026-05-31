@@ -250,9 +250,9 @@ export default function AdminPage() {
 
     // CMS State
     const [heroName, setHeroName] = useState("");
-    const [heroTagline, setHeroTagline] = useState("");
-    const [heroHeadline, setHeroHeadline] = useState("");
-    const [aboutText, setAboutText] = useState("");
+    const [heroTagline, setHeroTagline] = useState({ en: "", fa: "", de: "", ms: "" });
+    const [heroHeadline, setHeroHeadline] = useState({ en: "", fa: "", de: "", ms: "" });
+    const [aboutText, setAboutText] = useState({ en: "", fa: "", de: "", ms: "" });
     const [linkedin, setLinkedin] = useState("");
     const [emailLink, setEmailLink] = useState("");
     const [whatsapp, setWhatsapp] = useState("");
@@ -264,6 +264,264 @@ export default function AdminPage() {
     const [experience, setExperience] = useState([]);
     const [aboutSlides, setAboutSlides] = useState([]);
     const [nationality, setNationality] = useState("ir");
+
+    // Multilingual & AI State
+    const [adminLocale, setAdminLocale] = useState("en");
+    const [geminiApiKey, setGeminiApiKey] = useState("");
+    const [translatingField, setTranslatingField] = useState(null);
+    const [copilotOpen, setCopilotOpen] = useState(false);
+    const [copilotField, setCopilotField] = useState(null);
+    const [copilotPrompt, setCopilotPrompt] = useState("");
+    const [copilotLoading, setCopilotLoading] = useState(false);
+    const [copilotResult, setCopilotResult] = useState("");
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setGeminiApiKey(localStorage.getItem("gemini_api_key") || "");
+        }
+    }, []);
+
+    // Helper functions for localized map validation and backwards compatibility
+    const parseLocalized = (field, defaultObj) => {
+        if (!field) return defaultObj;
+        if (typeof field === "string") {
+            return {
+                en: field,
+                fa: field,
+                de: field,
+                ms: field
+            };
+        }
+        return {
+            en: field.en || defaultObj.en || "",
+            fa: field.fa || field.en || defaultObj.fa || "",
+            de: field.de || field.en || defaultObj.de || "",
+            ms: field.ms || field.en || defaultObj.ms || ""
+        };
+    };
+
+    const parseSkills = (arr, defaultSkills = []) => {
+        if (!arr || !Array.isArray(arr)) return [];
+        return arr.map((item, idx) => {
+            const defItem = defaultSkills[idx] || {};
+            return {
+                title: parseLocalized(item.title, defItem.title || { en: "" }),
+                description: parseLocalized(item.description, defItem.description || { en: "" }),
+                icon: item.icon || defItem.icon || "fa-solid fa-star"
+            };
+        });
+    };
+
+    const parseExperience = (arr, defaultExp = []) => {
+        if (!arr || !Array.isArray(arr)) return [];
+        return arr.map((item, idx) => {
+            const defItem = defaultExp[idx] || {};
+            return {
+                title: parseLocalized(item.title, defItem.title || { en: "" }),
+                company: parseLocalized(item.company, defItem.company || { en: "" }),
+                date: item.date || defItem.date || "",
+                bullets: Array.isArray(item.bullets)
+                    ? item.bullets.map(b => parseLocalized(b, { en: "" }))
+                    : (defItem.bullets || [])
+            };
+        });
+    };
+
+    const parseAboutSlides = (arr) => {
+        if (!arr || !Array.isArray(arr)) return [];
+        return arr.map(slide => ({
+            image: slide.image || "",
+            title: parseLocalized(slide.title, { en: "" }),
+            text: parseLocalized(slide.text, { en: "" })
+        }));
+    };
+
+    // Client-side Gemini content generation engine
+    const callGemini = async (prompt) => {
+        const apiKey = geminiApiKey || (typeof window !== "undefined" ? localStorage.getItem("gemini_api_key") : null);
+        if (!apiKey) {
+            showToast("Gemini API Key is missing. Please add it under the Settings tab first!", "error");
+            throw new Error("Missing Gemini API Key");
+        }
+        
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            parts: [
+                                {
+                                    text: prompt
+                                }
+                            ]
+                        }
+                    ]
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Gemini API error data:", errorData);
+                throw new Error(errorData.error?.message || "Failed to contact Gemini API");
+            }
+            
+            const data = await response.json();
+            const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!replyText) {
+                throw new Error("No response content generated from Gemini model.");
+            }
+            return replyText;
+        } catch (error) {
+            console.error("Gemini call error:", error);
+            showToast("Gemini error: " + error.message, "error");
+            throw error;
+        }
+    };
+
+    const handleAutoTranslate = async (fieldName, englishText, setFieldState) => {
+        if (!englishText || englishText.trim() === "") {
+            showToast("Please enter the English version of the text first!", "error");
+            return;
+        }
+        setTranslatingField(fieldName);
+        try {
+            const prompt = `You are an expert translator. Translate the following English portfolio text into three languages: Farsi (Persian), German, and Bahasa Melayu (Malay).
+If the text contains HTML tags (like <p>, <strong>, etc.), preserve them exactly in all translations.
+Provide your output ONLY as a valid JSON object matching the format below, with NO markdown formatting, NO backticks, and NO additional text.
+
+Format:
+{
+  "fa": "translated text in Farsi",
+  "de": "translated text in German",
+  "ms": "translated text in Bahasa Melayu"
+}
+
+English text to translate:
+${englishText}`;
+
+            const responseText = await callGemini(prompt);
+            const cleanJsonText = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+            const translations = JSON.parse(cleanJsonText);
+            
+            if (translations.fa && translations.de && translations.ms) {
+                setFieldState(prev => {
+                    const currentObj = typeof prev === 'object' ? prev : { en: prev };
+                    return {
+                        ...currentObj,
+                        en: englishText,
+                        fa: translations.fa,
+                        de: translations.de,
+                        ms: translations.ms
+                    };
+                });
+                showToast("✨ Translated successfully to all languages!", "success");
+            } else {
+                throw new Error("Translation payload did not return all language keys.");
+            }
+        } catch (error) {
+            console.error("Auto translation error:", error);
+            showToast("Translation failed. Make sure your API key is valid and prompt text is clean.", "error");
+        } finally {
+            setTranslatingField(null);
+        }
+    };
+
+    const handleRunCopilot = async (presetType) => {
+        setCopilotLoading(true);
+        setCopilotResult("");
+        try {
+            let promptInstruction = "";
+            let baseText = "";
+            
+            if (copilotField === 'heroTagline') {
+                baseText = heroTagline[adminLocale] || "";
+            } else if (copilotField === 'heroHeadline') {
+                baseText = heroHeadline[adminLocale] || "";
+            } else if (copilotField === 'aboutText') {
+                baseText = aboutText[adminLocale] || "";
+            } else if (copilotField && copilotField.type === 'skill') {
+                const s = skills[copilotField.index];
+                if (s) {
+                    baseText = typeof s[copilotField.field] === 'object' ? (s[copilotField.field][adminLocale] || "") : (s[copilotField.field] || "");
+                }
+            } else if (copilotField && copilotField.type === 'experience') {
+                const exp = experience[copilotField.index];
+                if (exp) {
+                    if (copilotField.field === 'bullets') {
+                        const bList = exp.bullets || [];
+                        baseText = bList.map(b => typeof b === 'object' ? (b[adminLocale] || "") : b).join('\n');
+                    } else {
+                        baseText = typeof exp[copilotField.field] === 'object' ? (exp[copilotField.field][adminLocale] || "") : (exp[copilotField.field] || "");
+                    }
+                }
+            } else if (copilotField && copilotField.type === 'aboutSlide') {
+                const sl = aboutSlides[copilotField.index];
+                if (sl) {
+                    baseText = typeof sl[copilotField.field] === 'object' ? (sl[copilotField.field][adminLocale] || "") : (sl[copilotField.field] || "");
+                }
+            }
+            
+            if (presetType === 'professional') {
+                promptInstruction = `Rewrite the following text to sound highly professional, elegant, and executive. Enhance the readability, correct any grammatical errors, and make it sound like a premium world-class tech leader profile description. Return ONLY the rewritten text with no introductions or conversational replies.
+Original text:
+${baseText}`;
+            } else if (presetType === 'agile') {
+                promptInstruction = `Rewrite the following text to strongly emphasize Agile management, engineering leadership, scalability, high metrics, team empowerment, and cross-functional operational excellence. Keep it action-oriented and results-driven. Return ONLY the rewritten text with no introductions or conversational replies.
+Original text:
+${baseText}`;
+            } else if (presetType === 'shorten') {
+                promptInstruction = `Condense and shorten the following text by about 50%. Keep only the high-impact statements and make it extremely concise for quick executive scanning. Return ONLY the rewritten text with no introductions or conversational replies.
+Original text:
+${baseText}`;
+            } else {
+                promptInstruction = `Context Text to edit:
+${baseText}
+
+Instructions for the edit:
+${copilotPrompt}
+
+Please edit the context text according to the instructions. Ensure you keep the output tone premium, polished, and natural. Return ONLY the revised result text with no introductory phrases or chat explanations.`;
+            }
+            
+            const result = await callGemini(promptInstruction);
+            setCopilotResult(result.trim());
+        } catch (error) {
+            console.error("Copilot error:", error);
+        } finally {
+            setCopilotLoading(false);
+        }
+    };
+
+    const handleApplyCopilotResult = () => {
+        if (!copilotResult) return;
+        
+        if (copilotField === 'heroTagline') {
+            setHeroTagline(prev => ({ ...prev, [adminLocale]: copilotResult }));
+        } else if (copilotField === 'heroHeadline') {
+            setHeroHeadline(prev => ({ ...prev, [adminLocale]: copilotResult }));
+        } else if (copilotField === 'aboutText') {
+            setAboutText(prev => ({ ...prev, [adminLocale]: copilotResult }));
+        } else if (copilotField && copilotField.type === 'skill') {
+            updateSkill(copilotField.index, copilotField.field, copilotResult);
+        } else if (copilotField && copilotField.type === 'experience') {
+            if (copilotField.field === 'bullets') {
+                const escapedBullets = copilotResult.split('\n').join('\\n');
+                updateExperience(copilotField.index, 'bullets', escapedBullets);
+            } else {
+                updateExperience(copilotField.index, copilotField.field, copilotResult);
+            }
+        } else if (copilotField && copilotField.type === 'aboutSlide') {
+            updateAboutSlide(copilotField.index, copilotField.field, copilotResult);
+        }
+        
+        showToast("✨ Applied AI revisions successfully!", "success");
+        setCopilotOpen(false);
+    };
 
     const [cmsStatus, setCmsStatus] = useState("");
 
@@ -727,15 +985,15 @@ export default function AdminPage() {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 setHeroName(data.heroName || "");
-                setHeroTagline(data.heroTagline || "");
-                setHeroHeadline(data.heroHeadline || "");
-                setAboutText(data.aboutText || "");
+                setHeroTagline(parseLocalized(data.heroTagline, { en: "", fa: "", de: "", ms: "" }));
+                setHeroHeadline(parseLocalized(data.heroHeadline, { en: "", fa: "", de: "", ms: "" }));
+                setAboutText(parseLocalized(data.aboutText, { en: "", fa: "", de: "", ms: "" }));
                 setLinkedin(data.linkedin || "");
                 setEmailLink(data.email || "");
                 setWhatsapp(data.whatsapp || "");
-                setSkills(data.skills || []);
-                setExperience(data.experience || []);
-                setAboutSlides(data.aboutSlides || []);
+                setSkills(parseSkills(data.skills));
+                setExperience(parseExperience(data.experience));
+                setAboutSlides(parseAboutSlides(data.aboutSlides));
                 setProfileImage(data.profileImage || "");
                 setGallery(data.gallery || []);
                 setCvUrl(data.cvUrl || "");
@@ -1105,15 +1363,15 @@ export default function AdminPage() {
 
             // 2. Load the restored data into local React state
             setHeroName(snapshot.heroName || "");
-            setHeroTagline(snapshot.heroTagline || "");
-            setHeroHeadline(snapshot.heroHeadline || "");
-            setAboutText(snapshot.aboutText || "");
+            setHeroTagline(parseLocalized(snapshot.heroTagline, { en: "", fa: "", de: "", ms: "" }));
+            setHeroHeadline(parseLocalized(snapshot.heroHeadline, { en: "", fa: "", de: "", ms: "" }));
+            setAboutText(parseLocalized(snapshot.aboutText, { en: "", fa: "", de: "", ms: "" }));
             setLinkedin(snapshot.linkedin || "");
             setEmailLink(snapshot.email || "");
             setWhatsapp(snapshot.whatsapp || "");
-            setSkills(snapshot.skills || []);
-            setExperience(snapshot.experience || []);
-            setAboutSlides(snapshot.aboutSlides || []);
+            setSkills(parseSkills(snapshot.skills));
+            setExperience(parseExperience(snapshot.experience));
+            setAboutSlides(parseAboutSlides(snapshot.aboutSlides));
             setProfileImage(snapshot.profileImage || "");
             setGallery(snapshot.gallery || []);
             setCvUrl(snapshot.cvUrl || "");
@@ -1350,14 +1608,37 @@ export default function AdminPage() {
 
     const updateSkill = (index, field, value) => {
         const newSkills = [...skills];
-        newSkills[index][field] = value;
+        if (field === 'title' || field === 'description') {
+            const currentLocalized = newSkills[index][field] || { en: "", fa: "", de: "", ms: "" };
+            newSkills[index][field] = {
+                ...currentLocalized,
+                [adminLocale]: value
+            };
+        } else {
+            newSkills[index][field] = value;
+        }
         setSkills(newSkills);
     };
 
     const updateExperience = (index, field, value) => {
         const newExp = [...experience];
-        if (field === 'bullets') {
-            newExp[index][field] = value.split('\\n');
+        if (field === 'title' || field === 'company') {
+            const currentLocalized = newExp[index][field] || { en: "", fa: "", de: "", ms: "" };
+            newExp[index][field] = {
+                ...currentLocalized,
+                [adminLocale]: value
+            };
+        } else if (field === 'bullets') {
+            const lines = value.split('\\n');
+            const currentBullets = newExp[index].bullets || [];
+            const newBullets = lines.map((line, lIdx) => {
+                const currentBulletLocalized = parseLocalized(currentBullets[lIdx], { en: "", fa: "", de: "", ms: "" });
+                return {
+                    ...currentBulletLocalized,
+                    [adminLocale]: line
+                };
+            });
+            newExp[index].bullets = newBullets;
         } else {
             newExp[index][field] = value;
         }
@@ -1366,7 +1647,15 @@ export default function AdminPage() {
 
     const updateAboutSlide = (index, field, value) => {
         const newSlides = [...aboutSlides];
-        newSlides[index][field] = value;
+        if (field === 'title' || field === 'text') {
+            const currentLocalized = newSlides[index][field] || { en: "", fa: "", de: "", ms: "" };
+            newSlides[index][field] = {
+                ...currentLocalized,
+                [adminLocale]: value
+            };
+        } else {
+            newSlides[index][field] = value;
+        }
         setAboutSlides(newSlides);
     };
 
@@ -1566,6 +1855,54 @@ export default function AdminPage() {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Language Selection Bar for Admin Editor */}
+                        <div style={{
+                            display: 'flex',
+                            background: 'rgba(255, 255, 255, 0.03)',
+                            borderRadius: '16px',
+                            padding: '6px',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            backdropFilter: 'blur(10px)',
+                            gap: '8px',
+                            justifyContent: 'space-around',
+                            alignItems: 'center',
+                            marginBottom: '10px'
+                        }}>
+                            {[
+                                { code: "en", label: "English", flag: "🇬🇧" },
+                                { code: "fa", label: "Farsi / فارسی", flag: "🇮🇷" },
+                                { code: "de", label: "German", flag: "🇩🇪" },
+                                { code: "ms", label: "Malay / Melayu", flag: "🇲🇾" }
+                            ].map((lang) => (
+                                <button
+                                    key={lang.code}
+                                    type="button"
+                                    onClick={() => setAdminLocale(lang.code)}
+                                    style={{
+                                        flex: 1,
+                                        padding: '10px 16px',
+                                        borderRadius: '12px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '0.9rem',
+                                        fontWeight: '600',
+                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '8px',
+                                        background: adminLocale === lang.code ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
+                                        color: adminLocale === lang.code ? 'white' : '#a0a0a0',
+                                        boxShadow: adminLocale === lang.code ? '0 4px 15px rgba(0,0,0,0.2)' : 'none',
+                                        border: adminLocale === lang.code ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent'
+                                    }}
+                                >
+                                    <span style={{ fontSize: '1.2rem' }}>{lang.flag}</span>
+                                    <span>{lang.label}</span>
+                                </button>
+                            ))}
+                        </div>
                         {/* Hero Section Card */}
                         {(userRole === 'super_admin' || userPermissions.contentHero !== false) && (
                             <div className="glass-card" style={{ padding: '30px' }}>
@@ -1589,12 +1926,32 @@ export default function AdminPage() {
                                             </div>
                                         </div>
                                         <div>
-                                            <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Tagline</label>
-                                            <input type="text" value={heroTagline} onChange={e => setHeroTagline(e.target.value)} placeholder="e.g. Tech Leader" style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                <label style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>Tagline</label>
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <button type="button" onClick={() => handleAutoTranslate('heroTagline', heroTagline.en, setHeroTagline)} disabled={translatingField === 'heroTagline'} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(0, 255, 136, 0.12)', border: '1px solid rgba(0, 255, 136, 0.25)', color: '#00ff88' }}>
+                                                        {translatingField === 'heroTagline' ? 'Translating...' : '✨ Translate to All'}
+                                                    </button>
+                                                    <button type="button" onClick={() => { setCopilotField('heroTagline'); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
+                                                        ✨ AI Copilot
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <input type="text" value={heroTagline[adminLocale] || ""} onChange={e => setHeroTagline({ ...heroTagline, [adminLocale]: e.target.value })} placeholder="e.g. Tech Leader" style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                         </div>
                                         <div>
-                                            <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Headline</label>
-                                            <input type="text" value={heroHeadline} onChange={e => setHeroHeadline(e.target.value)} placeholder="e.g. Bridging the Gap..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                <label style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>Headline</label>
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <button type="button" onClick={() => handleAutoTranslate('heroHeadline', heroHeadline.en, setHeroHeadline)} disabled={translatingField === 'heroHeadline'} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(0, 255, 136, 0.12)', border: '1px solid rgba(0, 255, 136, 0.25)', color: '#00ff88' }}>
+                                                        {translatingField === 'heroHeadline' ? 'Translating...' : '✨ Translate to All'}
+                                                    </button>
+                                                    <button type="button" onClick={() => { setCopilotField('heroHeadline'); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
+                                                        ✨ AI Copilot
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <input type="text" value={heroHeadline[adminLocale] || ""} onChange={e => setHeroHeadline({ ...heroHeadline, [adminLocale]: e.target.value })} placeholder="e.g. Bridging the Gap..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                         </div>
                                         <div style={{ gridColumn: 'span 2', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '10px' }}>
                                             <div>
@@ -1660,8 +2017,18 @@ export default function AdminPage() {
                                 </div>
                                 {!collapsedSections.aboutCard && (
                                     <>
-                                        <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>About Biography (HTML Support)</label>
-                                        <textarea value={aboutText} onChange={e => setAboutText(e.target.value)} rows="8" placeholder="Tell your story..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit', marginBottom: '20px' }} />
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                            <label style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>About Biography (HTML Support)</label>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button type="button" onClick={() => handleAutoTranslate('aboutText', aboutText.en, setAboutText)} disabled={translatingField === 'aboutText'} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(0, 255, 136, 0.12)', border: '1px solid rgba(0, 255, 136, 0.25)', color: '#00ff88' }}>
+                                                    {translatingField === 'aboutText' ? 'Translating...' : '✨ Translate to All'}
+                                                </button>
+                                                <button type="button" onClick={() => { setCopilotField('aboutText'); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
+                                                    ✨ AI Copilot
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <textarea value={aboutText[adminLocale] || ""} onChange={e => setAboutText({ ...aboutText, [adminLocale]: e.target.value })} rows="8" placeholder="Tell your story..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit', marginBottom: '20px' }} />
                                         
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                             <div>
@@ -1743,7 +2110,7 @@ export default function AdminPage() {
                                                     <div style={{ flexGrow: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                                         <div>
                                                             <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Title</label>
-                                                            <input type="text" value={slide.title || ""} onChange={e => updateAboutSlide(index, 'title', e.target.value)} placeholder="Slide Title (e.g. Technology Leadership)" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                            <input type="text" value={typeof slide.title === 'object' ? (slide.title[adminLocale] || "") : (slide.title || "")} onChange={e => updateAboutSlide(index, 'title', e.target.value)} placeholder="Slide Title (e.g. Technology Leadership)" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                         </div>
                                                         <div>
                                                             <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Image</label>
@@ -1757,8 +2124,13 @@ export default function AdminPage() {
                                                             </div>
                                                         </div>
                                                         <div style={{ gridColumn: 'span 2' }}>
-                                                            <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Description (HTML supported)</label>
-                                                            <textarea value={slide.text || ""} onChange={e => updateAboutSlide(index, 'text', e.target.value)} placeholder="HTML content here (e.g. <p>Description...</p>)" rows="3" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                                                                <label style={{ color: '#a0a0a0', fontSize: '0.8rem', margin: 0 }}>Slide Description (HTML supported)</label>
+                                                                <button type="button" onClick={() => { setCopilotField({ type: 'aboutSlide', index, field: 'text' }); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
+                                                                    ✨ AI Copilot
+                                                                </button>
+                                                            </div>
+                                                            <textarea value={typeof slide.text === 'object' ? (slide.text[adminLocale] || "") : (slide.text || "")} onChange={e => updateAboutSlide(index, 'text', e.target.value)} placeholder="HTML content here (e.g. <p>Description...</p>)" rows="3" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1865,9 +2237,23 @@ export default function AdminPage() {
                                         {skills.map((skill, index) => (
                                             <div key={index} style={{ display: 'flex', gap: '15px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                                 <div style={{ flexGrow: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                                                    <input type="text" value={skill.title} onChange={e => updateSkill(index, 'title', e.target.value)} placeholder="Skill Title" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
-                                                    <input type="text" value={skill.icon} onChange={e => updateSkill(index, 'icon', e.target.value)} placeholder="Icon (e.g. fa-solid fa-code)" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
-                                                    <textarea value={skill.description} onChange={e => updateSkill(index, 'description', e.target.value)} placeholder="Description..." rows="2" style={{ gridColumn: 'span 2', width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                    <div>
+                                                        <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Skill Title</label>
+                                                        <input type="text" value={typeof skill.title === 'object' ? (skill.title[adminLocale] || "") : (skill.title || "")} onChange={e => updateSkill(index, 'title', e.target.value)} placeholder="Skill Title" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Icon CSS Class</label>
+                                                        <input type="text" value={skill.icon || ""} onChange={e => updateSkill(index, 'icon', e.target.value)} placeholder="Icon (e.g. fa-solid fa-code)" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                    </div>
+                                                    <div style={{ gridColumn: 'span 2' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                                                            <label style={{ color: '#a0a0a0', fontSize: '0.8rem', margin: 0 }}>Description</label>
+                                                            <button type="button" onClick={() => { setCopilotField({ type: 'skill', index, field: 'description' }); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
+                                                                ✨ AI Copilot
+                                                            </button>
+                                                        </div>
+                                                        <textarea value={typeof skill.description === 'object' ? (skill.description[adminLocale] || "") : (skill.description || "")} onChange={e => updateSkill(index, 'description', e.target.value)} placeholder="Description..." rows="2" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                    </div>
                                                 </div>
                                                 <button type="button" onClick={() => setSkills(skills.filter((_, i) => i !== index))} style={{ alignSelf: 'flex-start', background: 'rgba(234, 67, 53, 0.1)', color: '#EA4335', border: '1px solid rgba(234, 67, 53, 0.2)', padding: '10px', borderRadius: '8px', cursor: 'pointer' }}>
                                                     <i className="fa-solid fa-trash"></i>
@@ -1952,19 +2338,24 @@ export default function AdminPage() {
                                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '15px' }}>
                                                     <div>
                                                         <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Job Title</label>
-                                                        <input type="text" value={exp.title} onChange={e => updateExperience(index, 'title', e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                        <input type="text" value={typeof exp.title === 'object' ? (exp.title[adminLocale] || "") : (exp.title || "")} onChange={e => updateExperience(index, 'title', e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
                                                     <div>
                                                         <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Company</label>
-                                                        <input type="text" value={exp.company} onChange={e => updateExperience(index, 'company', e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                        <input type="text" value={typeof exp.company === 'object' ? (exp.company[adminLocale] || "") : (exp.company || "")} onChange={e => updateExperience(index, 'company', e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
                                                     <div style={{ gridColumn: 'span 2' }}>
                                                         <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Date Range</label>
-                                                        <input type="text" value={exp.date} onChange={e => updateExperience(index, 'date', e.target.value)} placeholder="e.g. 2022 - Present" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                        <input type="text" value={exp.date || ""} onChange={e => updateExperience(index, 'date', e.target.value)} placeholder="e.g. 2022 - Present" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
                                                     <div style={{ gridColumn: 'span 2' }}>
-                                                        <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Key Responsibilities (One per line)</label>
-                                                        <textarea value={exp.bullets ? exp.bullets.join('\\n') : ''} onChange={e => updateExperience(index, 'bullets', e.target.value)} rows="5" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                                                            <label style={{ color: '#a0a0a0', fontSize: '0.8rem', margin: 0 }}>Key Responsibilities (One per line)</label>
+                                                            <button type="button" onClick={() => { setCopilotField({ type: 'experience', index, field: 'bullets' }); setCopilotOpen(true); }} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(66, 133, 244, 0.12)', border: '1px solid rgba(66, 133, 244, 0.25)', color: '#4285F4' }}>
+                                                                ✨ AI Copilot
+                                                            </button>
+                                                        </div>
+                                                        <textarea value={exp.bullets ? exp.bullets.map(b => (typeof b === 'object' ? (b[adminLocale] || "") : (b || ""))).join('\\n') : ''} onChange={e => updateExperience(index, 'bullets', e.target.value)} rows="5" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -2401,6 +2792,50 @@ export default function AdminPage() {
                                                 </option>
                                             ))}
                                         </select>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* AI Configuration Card */}
+                        <div className="glass-card" style={{ padding: '30px' }}>
+                            <div onClick={() => toggleSection('aiConfigCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.aiConfigCard ? 0 : '20px' }}>
+                                <h3 style={{ color: 'var(--color-primary, #4285F4)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-wand-magic-sparkles"></i> AI Writing Assistant & Translation Config
+                                </h3>
+                                <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.aiConfigCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                            </div>
+                            {!collapsedSections.aiConfigCard && (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                    <p style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>
+                                        To enable the client-side Gemini AI features (such as ✨ Auto-Translate and the ✨ AI Copilot writing helper), paste your personal **Gemini Developer API Key** below. This key is saved 100% securely inside your local browser's storage and never sent to any third-party server.
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                        <input
+                                            type="password"
+                                            value={geminiApiKey}
+                                            onChange={e => {
+                                                setGeminiApiKey(e.target.value);
+                                                localStorage.setItem("gemini_api_key", e.target.value);
+                                            }}
+                                            placeholder="AIzaSy..."
+                                            style={{ flexGrow: 1, padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'monospace' }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setGeminiApiKey("");
+                                                localStorage.removeItem("gemini_api_key");
+                                                showToast("API Key removed.", "success");
+                                            }}
+                                            className="submit-btn"
+                                            style={{ background: '#EA4335', padding: '12px', borderRadius: '8px' }}
+                                        >
+                                            Clear Key
+                                        </button>
+                                    </div>
+                                    <div style={{ fontSize: '0.78rem', color: '#888' }}>
+                                        Get a free Gemini API Key from <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>Google AI Studio</a>.
                                     </div>
                                 </div>
                             )}
@@ -3208,6 +3643,183 @@ export default function AdminPage() {
                     </div>
                 </div>
             )}
+
+            {/* Slide-in Premium AI Copilot Drawer */}
+            {copilotOpen && (
+                <div 
+                    onClick={() => setCopilotOpen(false)}
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100vw",
+                        height: "100vh",
+                        background: "rgba(0, 0, 0, 0.4)",
+                        backdropFilter: "blur(4px)",
+                        zIndex: 99999,
+                        opacity: 1,
+                        transition: "all 0.3s ease"
+                    }}
+                />
+            )}
+            <div
+                style={{
+                    position: "fixed",
+                    top: 0,
+                    right: 0,
+                    width: "100%",
+                    maxWidth: "460px",
+                    height: "100vh",
+                    background: "rgba(10, 10, 18, 0.95)",
+                    backdropFilter: "blur(20px)",
+                    borderLeft: "1px solid rgba(255, 255, 255, 0.08)",
+                    zIndex: 100000,
+                    boxShadow: "-10px 0 40px rgba(0,0,0,0.8)",
+                    transform: copilotOpen ? "translateX(0)" : "translateX(100%)",
+                    transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: "30px",
+                    color: "white"
+                }}
+            >
+                {/* Header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "15px" }}>
+                    <h3 style={{ margin: 0, fontSize: "1.3rem", display: "flex", alignItems: "center", gap: "10px", color: "var(--color-primary)" }}>
+                        <i className="fa-solid fa-wand-magic-sparkles"></i> AI Writing Copilot
+                    </h3>
+                    <button 
+                        type="button"
+                        onClick={() => setCopilotOpen(false)}
+                        style={{ background: "rgba(255,255,255,0.05)", border: "none", color: "#a0a0a0", cursor: "pointer", padding: "8px", borderRadius: "50%", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center" }}
+                    >
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                {/* Body Content */}
+                <div style={{ flexGrow: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "20px", paddingRight: "5px" }}>
+                    <div>
+                        <span style={{ fontSize: "0.8rem", color: "#888", textTransform: "uppercase", letterSpacing: "0.05em" }}>Active Target Locale</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px", fontSize: "0.9rem", fontWeight: "600" }}>
+                            {adminLocale === "en" && "🇬🇧 English (EN)"}
+                            {adminLocale === "fa" && "🇮🇷 Farsi / فارسی (FA)"}
+                            {adminLocale === "de" && "🇩🇪 German (DE)"}
+                            {adminLocale === "ms" && "🇲🇾 Malay / Melayu (MS)"}
+                        </div>
+                    </div>
+
+                    {/* Presets Cards */}
+                    <div>
+                        <span style={{ fontSize: "0.8rem", color: "#888", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "10px" }}>Quick Rephrase Presets</span>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                            <button
+                                type="button"
+                                onClick={() => handleRunCopilot("professional")}
+                                disabled={copilotLoading}
+                                className="submit-btn"
+                                style={{ padding: "12px", borderRadius: "10px", fontSize: "0.8rem", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}
+                            >
+                                <i className="fa-solid fa-briefcase" style={{ color: "#4285F4", fontSize: "1.1rem" }}></i>
+                                <span>Executive Corporate</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleRunCopilot("agile")}
+                                disabled={copilotLoading}
+                                className="submit-btn"
+                                style={{ padding: "12px", borderRadius: "10px", fontSize: "0.8rem", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}
+                            >
+                                <i className="fa-solid fa-people-group" style={{ color: "#FBBC05", fontSize: "1.1rem" }}></i>
+                                <span>Agile Tech Leader</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleRunCopilot("shorten")}
+                                disabled={copilotLoading}
+                                className="submit-btn"
+                                style={{ padding: "12px", borderRadius: "10px", fontSize: "0.8rem", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", gridColumn: "span 2" }}
+                            >
+                                <i className="fa-solid fa-compress" style={{ color: "#EA4335", fontSize: "1.1rem" }}></i>
+                                <span>Condense & Shorten (50% Length Reduction)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Custom Prompt Text Area */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <span style={{ fontSize: "0.8rem", color: "#888", textTransform: "uppercase", letterSpacing: "0.05em" }}>Custom AI Prompt Instruction</span>
+                        <textarea
+                            value={copilotPrompt}
+                            onChange={e => setCopilotPrompt(e.target.value)}
+                            placeholder="e.g. Expand this description to mention 5 years of scaling high-availability microservices in Kubernetes and Golang..."
+                            rows="3"
+                            style={{ width: "100%", padding: "12px", borderRadius: "8px", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", color: "white", fontSize: "0.85rem", fontFamily: "inherit" }}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => handleRunCopilot("custom")}
+                            disabled={copilotLoading || !copilotPrompt.trim()}
+                            className="submit-btn"
+                            style={{ background: "var(--color-primary)", padding: "10px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "600" }}
+                        >
+                            {copilotLoading ? "Generating AI magic..." : "Run Prompt"}
+                        </button>
+                    </div>
+
+                    {/* Generation Results View */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", flexGrow: 1 }}>
+                        <span style={{ fontSize: "0.8rem", color: "#888", textTransform: "uppercase", letterSpacing: "0.05em" }}>AI Generated Output</span>
+                        <div 
+                            style={{ 
+                                flexGrow: 1, 
+                                background: "rgba(0,0,0,0.4)", 
+                                border: "1px solid rgba(255,255,255,0.06)", 
+                                borderRadius: "8px", 
+                                padding: "15px", 
+                                fontSize: "0.9rem", 
+                                lineHeight: "1.6",
+                                overflowY: "auto",
+                                minHeight: "150px",
+                                color: copilotResult ? "#fff" : "#666",
+                                display: "flex",
+                                alignItems: copilotLoading ? "center" : "flex-start",
+                                justifyContent: copilotLoading ? "center" : "flex-start"
+                            }}
+                        >
+                            {copilotLoading ? (
+                                <div style={{ textAlign: "center" }}>
+                                    <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: "1.8rem", color: "var(--color-primary)", marginBottom: "10px" }}></i>
+                                    <div style={{ color: "#a0a0a0", fontSize: "0.8rem" }}>AI Copilot is streaming responses...</div>
+                                </div>
+                            ) : (
+                                copilotResult || "Output will stream here once prompt completes..."
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Apply / Cancel footer actions */}
+                <div style={{ display: "flex", gap: "10px", marginTop: "20px", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "20px" }}>
+                    <button
+                        type="button"
+                        onClick={handleApplyCopilotResult}
+                        disabled={!copilotResult || copilotLoading}
+                        className="submit-btn"
+                        style={{ flex: 1, background: "#00c97f", color: "white", padding: "12px", borderRadius: "8px", fontWeight: "600", fontSize: "0.9rem", display: "flex", justifyItems: "center", justifyContent: "center", alignItems: "center", gap: "6px" }}
+                    >
+                        <i className="fa-solid fa-check"></i> Apply to Active Editor
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setCopilotOpen(false)}
+                        className="submit-btn"
+                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", padding: "12px 18px", borderRadius: "8px", fontSize: "0.9rem" }}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
 
             {/* Slide-in Premium Toast Notification */}
             <div

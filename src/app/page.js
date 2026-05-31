@@ -81,36 +81,156 @@ const DEFAULT_PROFILE_IMAGE = "/images/pic6.jpeg";
 
 const DEFAULT_CMS_DATA = {
   heroName: "Bahman Noushabadi",
-  heroTagline: "Tech Leader & Senior Developer",
-  heroHeadline:
-    "Bridging the gap between operational excellence and technical innovation.",
-  aboutText:
-    "<p>I am an experienced Technology Leader and Senior Frontend Engineer with a proven track record of designing scalable cloud-native architectures and leading cross-functional engineering squads.</p>",
+  heroTagline: {
+    en: "Tech Leader & Senior Developer",
+    fa: "رهبر فنی و توسعه‌دهنده ارشد",
+    de: "Tech Leader & Senior Entwickler",
+    ms: "Pemimpin Teknologi & Pembangun Kanan"
+  },
+  heroHeadline: {
+    en: "Bridging the gap between operational excellence and technical innovation.",
+    fa: "پل زدن میان تعالی عملیاتی و نوآوری‌های فنی.",
+    de: "Die Lücke zwischen operativer Exzellenz und technischer Innovation schließen.",
+    ms: "Merapatkan jurang antara kecemerlangan operasi dan inovasi teknikal."
+  },
+  aboutText: {
+    en: "<p>I am an experienced Technology Leader and Senior Frontend Engineer with a proven track record of designing scalable cloud-native architectures and leading cross-functional engineering squads.</p>",
+    fa: "<p>من یک رهبر با تجربه فناوری و مهندس ارشد فرانت‌اند با سابقه اثبات‌شده در طراحی معماری‌های مقیاس‌پذیر ابری و هدایت تیم‌های مهندسی چندوظیفه‌ای هستم.</p>",
+    de: "<p>Ich bin ein erfahrener Technologieführer und Senior Frontend Engineer mit einer nachgewiesenen Erfolgsbilanz bei der Entwicklung skalierbarer Cloud-native Architekturen und der Leitung funktionsübergreifender Engineering-Teams.</p>",
+    ms: "<p>Saya merupakan seorang Pemimpin Teknologi dan Jurutera Kanan Frontend yang berpengalaman dengan rekod prestasi terbukti dalam merancang seni bina awan berskala besar serta memimpin pasukan kejuruteraan pelbagai fungsi.</p>"
+  },
   skills: [
-    { title: "Frontend Engineering", description: "React 19, Next.js, and robust state management.", icon: "fa-solid fa-code" },
-    { title: "Cloud Architecture", description: "Secure, auto-scaling cloud deployments and CI/CD.", icon: "fa-solid fa-cloud" },
-    { title: "Team Leadership", description: "Agile methodologies and cross-functional execution.", icon: "fa-solid fa-people-group" },
-    { title: "System Integration", description: "Real-time data syncs across microservice architectures.", icon: "fa-solid fa-network-wired" },
+    { 
+      title: {
+        en: "Frontend Engineering",
+        fa: "مهندسی فرانت‌اند",
+        de: "Frontend-Engineering",
+        ms: "Kejuruteraan Frontend"
+      }, 
+      description: {
+        en: "React 19, Next.js, and robust state management.",
+        fa: "ری‌اکت ۱۹، نکست‌جی‌اس و مدیریت وضعیت قدرتمند.",
+        de: "React 19, Next.js und robustes Zustandsmanagement.",
+        ms: "React 19, Next.js, dan pengurusan keadaan yang mantap."
+      }, 
+      icon: "fa-solid fa-code" 
+    },
+    { 
+      title: {
+        en: "Cloud Architecture",
+        fa: "معماری ابری",
+        de: "Cloud-Architektur",
+        ms: "Seni Bina Awan"
+      }, 
+      description: {
+        en: "Secure, auto-scaling cloud deployments and CI/CD.",
+        fa: "استقرار ابری ایمن و خودکار در کنار پایپ‌لاین‌های CI/CD.",
+        de: "Sichere, automatisch skalierende Cloud-Bereitstellungen und CI/CD.",
+        ms: "Penyebaran awan yang selamat, skala automatik dan CI/CD."
+      }, 
+      icon: "fa-solid fa-cloud" 
+    },
+    { 
+      title: {
+        en: "Team Leadership",
+        fa: "رهبری تیم",
+        de: "Teamleitung",
+        ms: "Kepimpinan Pasukan"
+      }, 
+      description: {
+        en: "Agile methodologies and cross-functional execution.",
+        fa: "متدولوژی‌های چابک و اجرای هماهنگ چندوظیفه‌ای.",
+        de: "Agile Methoden und funktionsübergreifende Ausführung.",
+        ms: "Metodologi Agile dan pelaksanaan rentas fungsi."
+      }, 
+      icon: "fa-solid fa-people-group" 
+    },
+    { 
+      title: {
+        en: "System Integration",
+        fa: "یکپارچه‌سازی سیستم",
+        de: "یکپارچه‌سازی سیستم",
+        de: "Systemintegration",
+        ms: "Integrasi Sistem"
+      }, 
+      description: {
+        en: "Real-time data syncs across microservice architectures.",
+        fa: "همگام‌سازی بلادرنگ داده‌ها در میان معماری‌های میکروسرویس.",
+        de: "Echtzeit-Datensynchronisierung über Microservice-Architekturen hinweg.",
+        ms: "Penyegerakan data masa nyata merentasi seni bina mikroperkhidmatan."
+      }, 
+      icon: "fa-solid fa-network-wired" 
+    },
   ],
   experience: [
     {
-      title: "Senior Engineering Manager / Tech Lead",
-      company: "Innovate Digital Solutions",
+      title: {
+        en: "Senior Engineering Manager / Tech Lead",
+        fa: "مدیر ارشد مهندسی / لید فنی",
+        de: "Senior Engineering Manager / Tech Lead",
+        ms: "Pengurus Kejuruteraan Kanan / Ketua Teknikal"
+      },
+      company: {
+        en: "Innovate Digital Solutions",
+        fa: "راهکارهای دیجیتال اینوویت",
+        de: "Innovate Digital Solutions",
+        ms: "Innovate Digital Solutions"
+      },
       date: "2023 - Present",
       bullets: [
-        "Led teams of 12+ developers building high-scale React applications.",
-        "Migrated to Next.js App Router, improving initial loads by 40%.",
-        "Designed real-time event logging with serverless cloud functions.",
+        {
+          en: "Led teams of 12+ developers building high-scale React applications.",
+          fa: "رهبری تیم‌های متشکل از بیش از ۱۲ توسعه‌دهنده در ساخت برنامه‌های بزرگ ری‌اکت.",
+          de: "Leitung von Teams mit mehr als 12 Entwicklern beim Aufbau hochskalierbarer React-Anwendungen.",
+          ms: "Memimpin pasukan yang terdiri daripada 12+ pembangun membina aplikasi React berskala tinggi."
+        },
+        {
+          en: "Migrated to Next.js App Router, improving initial loads by 40%.",
+          fa: "مهاجرت به Next.js App Router و بهبود بارگذاری اولیه تا ۴۰ درصد.",
+          de: "Migration zum Next.js App Router, wodurch die anfänglichen Ladezeiten um 40 % verbessert wurden.",
+          ms: "Berhijrah ke Next.js App Router, meningkatkan bebanan permulaan sebanyak 40%."
+        },
+        {
+          en: "Designed real-time event logging with serverless cloud functions.",
+          fa: "طراحی ثبت لاگ‌های بلادرنگ رویدادها با استفاده از توابع بدون سرور ابری.",
+          de: "Entwurf einer Echtzeit-Ereignisprotokollierung mit serverlosen Cloud-Funktionen.",
+          ms: "Merancang pengelogan acara masa nyata dengan fungsi awan tanpa pelayan."
+        }
       ],
     },
     {
-      title: "Lead Frontend Developer",
-      company: "CoreTech Systems",
+      title: {
+        en: "Lead Frontend Developer",
+        fa: "توسعه‌دهنده ارشد فرانت‌اند",
+        de: "Lead Frontend Developer",
+        ms: "Ketua Pembangun Frontend"
+      },
+      company: {
+        en: "CoreTech Systems",
+        fa: "سیستم‌های کورتک",
+        de: "CoreTech Systems",
+        ms: "CoreTech Systems"
+      },
       date: "2020 - 2023",
       bullets: [
-        "Authored accessible UI component library under WCAG guidelines.",
-        "Integrated analytics pipelines, reducing load failures to <0.1%.",
-        "Streamlined onboarding by 50% with maintainable documentation.",
+        {
+          en: "Authored accessible UI component library under WCAG guidelines.",
+          fa: "نگارش کتابخانه اختصاصی کامپوننت‌های دسترسی‌پذیر UI منطبق بر WCAG.",
+          de: "Erstellung einer barrierefreien UI-Komponentenbibliothek gemäß WCAG-Richtlinien.",
+          ms: "Menghasilkan perpustakaan komponen UI yang boleh diakses di bawah garis panduan WCAG."
+        },
+        {
+          en: "Integrated analytics pipelines, reducing load failures to <0.1%.",
+          fa: "یکپارچه‌سازی پایپ‌لاین‌های تحلیلی و کاهش نرخ خطاهای بارگذاری به کمتر از ۰.۱ درصد.",
+          de: "Integration von Analyse-Pipelines, wodurch Ladefehler auf < 0,1 % reduziert wurden.",
+          ms: "Mengintegrasikan talian paip analitis, mengurangkan kegagalan beban kepada <0.1%."
+        },
+        {
+          en: "Streamlined onboarding by 50% with maintainable documentation.",
+          fa: "ساده‌سازی و تسریع جذب نیروهای جدید تا ۵۰ درصد با مستندسازی نگهداری‌پذیر.",
+          de: "Optimierung des Onboardings um 50 % durch wartbare Dokumentation.",
+          ms: "Mempermudah kemasukan pekerja baru sebanyak 50% dengan dokumentasi yang boleh diselenggara."
+        }
       ],
     },
   ],
@@ -150,9 +270,77 @@ function WordSplit({ text }) {
   );
 }
 
+const parseLocalized = (field, defaultObj) => {
+  if (!field) return defaultObj;
+  if (typeof field === "string") {
+    return {
+      en: field,
+      fa: field,
+      de: field,
+      ms: field
+    };
+  }
+  return {
+    en: field.en || defaultObj.en || "",
+    fa: field.fa || field.en || defaultObj.fa || "",
+    de: field.de || field.en || defaultObj.de || "",
+    ms: field.ms || field.en || defaultObj.ms || ""
+  };
+};
+
+const parseSkills = (arr, defaultSkills) => {
+  if (!arr || !Array.isArray(arr)) return defaultSkills;
+  return arr.map((item, idx) => {
+    const defItem = defaultSkills[idx] || {};
+    return {
+      title: parseLocalized(item.title, defItem.title || { en: "" }),
+      description: parseLocalized(item.description, defItem.description || { en: "" }),
+      icon: item.icon || defItem.icon || "fa-solid fa-star"
+    };
+  });
+};
+
+const parseExperience = (arr, defaultExp) => {
+  if (!arr || !Array.isArray(arr)) return defaultExp;
+  return arr.map((item, idx) => {
+    const defItem = defaultExp[idx] || {};
+    return {
+      title: parseLocalized(item.title, defItem.title || { en: "" }),
+      company: parseLocalized(item.company, defItem.company || { en: "" }),
+      date: item.date || defItem.date || "",
+      bullets: Array.isArray(item.bullets)
+        ? item.bullets.map(b => parseLocalized(b, { en: "" }))
+        : (defItem.bullets || [])
+    };
+  });
+};
+
+const parseAboutSlides = (arr) => {
+  if (!arr || !Array.isArray(arr)) return [];
+  return arr.map(slide => ({
+    image: slide.image || "",
+    title: parseLocalized(slide.title, { en: "" }),
+    text: parseLocalized(slide.text, { en: "" })
+  }));
+};
+
 export default function Home() {
   const [data, setData] = useState(DEFAULT_CMS_DATA);
   const [isMobile, setIsMobile] = useState(false);
+  const [locale, setLocale] = useState("en");
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    if (locale === "fa") {
+      document.documentElement.dir = "rtl";
+      document.documentElement.lang = "fa";
+      document.body.style.fontFamily = "'Vazirmatn', 'Space Grotesk', sans-serif";
+    } else {
+      document.documentElement.dir = "ltr";
+      document.documentElement.lang = locale;
+      document.body.style.fontFamily = "";
+    }
+  }, [locale]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -209,20 +397,27 @@ export default function Home() {
           }
           return null;
         };
+        const parsedHeroTagline = parseLocalized(ex(f.heroTagline), DEFAULT_CMS_DATA.heroTagline);
+        const parsedHeroHeadline = parseLocalized(ex(f.heroHeadline), DEFAULT_CMS_DATA.heroHeadline);
+        const parsedAboutText = parseLocalized(ex(f.aboutText), DEFAULT_CMS_DATA.aboutText);
+        const parsedSkills = parseSkills(ex(f.skills), DEFAULT_CMS_DATA.skills);
+        const parsedExperience = parseExperience(ex(f.experience), DEFAULT_CMS_DATA.experience);
+        const parsedAboutSlides = parseAboutSlides(ex(f.aboutSlides));
+
         setData({
           heroName: ex(f.heroName) || DEFAULT_CMS_DATA.heroName,
-          heroTagline: ex(f.heroTagline) || DEFAULT_CMS_DATA.heroTagline,
-          heroHeadline: ex(f.heroHeadline) || DEFAULT_CMS_DATA.heroHeadline,
-          aboutText: ex(f.aboutText) || DEFAULT_CMS_DATA.aboutText,
-          skills: ex(f.skills) || DEFAULT_CMS_DATA.skills,
-          experience: ex(f.experience) || DEFAULT_CMS_DATA.experience,
+          heroTagline: parsedHeroTagline,
+          heroHeadline: parsedHeroHeadline,
+          aboutText: parsedAboutText,
+          skills: parsedSkills,
+          experience: parsedExperience,
           profileImage: ex(f.profileImage) || DEFAULT_CMS_DATA.profileImage,
           gallery: ex(f.gallery) || DEFAULT_CMS_DATA.gallery,
           linkedin: ex(f.linkedin) || DEFAULT_CMS_DATA.linkedin,
           email: ex(f.email) || DEFAULT_CMS_DATA.email,
           whatsapp: ex(f.whatsapp) || DEFAULT_CMS_DATA.whatsapp,
           cvUrl: ex(f.cvUrl) || DEFAULT_CMS_DATA.cvUrl,
-          aboutSlides: ex(f.aboutSlides) || DEFAULT_CMS_DATA.aboutSlides,
+          aboutSlides: parsedAboutSlides,
           sectionVisibility: ex(f.sectionVisibility) || {},
           themes: ex(f.themes) || {},
           nationality: ex(f.nationality) || DEFAULT_CMS_DATA.nationality,
@@ -622,6 +817,55 @@ export default function Home() {
       <ScrollThemeManager overrideTheme={data.overrideTheme} />
       {<ParticleBackground />}
 
+      {/* Floating Premium Language Switcher */}
+      <div
+        style={{
+          position: "fixed",
+          top: "24px",
+          right: "24px",
+          zIndex: 100,
+          display: "flex",
+          gap: "8px",
+          background: "rgba(255, 255, 255, 0.08)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          border: "1px solid rgba(255, 255, 255, 0.15)",
+          padding: "6px",
+          borderRadius: "30px",
+          boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
+          direction: "ltr"
+        }}
+      >
+        {[
+          { code: "en", flag: "🇬🇧", label: "EN" },
+          { code: "fa", flag: "🇮🇷", label: "FA" },
+          { code: "de", flag: "🇩🇪", label: "DE" },
+          { code: "ms", flag: "🇲🇾", label: "MS" }
+        ].map((lang) => (
+          <button
+            key={lang.code}
+            onClick={() => setLocale(lang.code)}
+            style={{
+              background: locale === lang.code ? "var(--color-primary, #4285F4)" : "transparent",
+              color: "white",
+              border: "none",
+              padding: "6px 12px",
+              borderRadius: "20px",
+              fontSize: "0.8rem",
+              fontWeight: "600",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              transition: "all 0.3s ease"
+            }}
+          >
+            <span>{lang.flag}</span>
+            <span>{lang.label}</span>
+          </button>
+        ))}
+      </div>
+
       {/* Dynamic Theme Colors Injection */}
       <style>{`
         body.theme-1 {
@@ -786,11 +1030,11 @@ export default function Home() {
               }}
             >
               <span className="greeting" style={{ display: "block" }}>
-                <WordSplit text="Hello, I am" />
+                <WordSplit text={locale === "fa" ? "سلام، من" : locale === "de" ? "Hallo, ich bin" : locale === "ms" ? "Helo, saya" : "Hello, I am"} />
               </span>
               <h1 className="name"><WordSplit text={data.heroName} /></h1>
-              <h3 className="tagline"><WordSplit text={data.heroTagline} /></h3>
-              <p className="headline"><WordSplit text={data.heroHeadline} /></p>
+              <h3 className="tagline"><WordSplit text={data.heroTagline?.[locale] || data.heroTagline?.["en"] || ""} /></h3>
+              <p className="headline"><WordSplit text={data.heroHeadline?.[locale] || data.heroHeadline?.["en"] || ""} /></p>
             </div>
 
             {/* ── Scroll Indicator (Hidden) ── */}
@@ -805,7 +1049,7 @@ export default function Home() {
       {/* ── ABOUT ME ── */}
       {data.sectionVisibility?.about !== false && (
         <div className="content-wrapper">
-          <About data={data} />
+          <About data={data} locale={locale} />
         </div>
       )}
 
@@ -851,7 +1095,7 @@ export default function Home() {
                 fontFamily: data?.skillsFontFamily || "inherit"
               }}
             >
-              Core Competencies
+              {locale === "fa" ? "شایستگی‌های کلیدی" : locale === "de" ? "Kernkompetenzen" : locale === "ms" ? "Kecekapan Teras" : "Core Competencies"}
             </h2>
             {data.sectionVisibility?.skillsGrid !== false && (
               <div className="skills-grid" style={{ width: "100%", maxWidth: "1200px" }}>
@@ -866,14 +1110,14 @@ export default function Home() {
                     }}
                   >
                     <i className={`${skill.icon || "fa-solid fa-star"} skill-icon`}></i>
-                    <h3 style={{ fontFamily: data?.skillsFontFamily || "inherit" }}>{skill.title}</h3>
+                    <h3 style={{ fontFamily: data?.skillsFontFamily || "inherit" }}>{skill.title?.[locale] || skill.title?.["en"] || ""}</h3>
                     <p
                       style={{
                         fontFamily: data?.skillsFontFamily || "inherit",
                         textAlign: data?.skillsTextAlign || "left"
                       }}
                     >
-                      {skill.description}
+                      {skill.description?.[locale] || skill.description?.["en"] || ""}
                     </p>
                   </div>
                 ))}
@@ -885,7 +1129,7 @@ export default function Home() {
 
       {/* ── DOWNSTREAM CONTENT ── */}
       <main ref={expWrapperRef} className="content-wrapper">
-        {data.sectionVisibility?.experience !== false && <Experience data={data} />}
+        {data.sectionVisibility?.experience !== false && <Experience data={data} locale={locale} />}
         <div style={{ height: "2rem" }} />
         <Footer data={data} />
       </main>
