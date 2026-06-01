@@ -275,12 +275,20 @@ export default function AdminPage() {
     const [copilotLoading, setCopilotLoading] = useState(false);
     const [copilotResult, setCopilotResult] = useState("");
     const [geminiTestStatus, setGeminiTestStatus] = useState(null); // { loading, ok, msg }
+    const [enabledLanguages, setEnabledLanguages] = useState(["en", "fa", "de", "ms"]);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
             setGeminiApiKey(localStorage.getItem("gemini_api_key") || "");
         }
     }, []);
+
+    // Keep active admin editing locale safe if its language gets disabled
+    useEffect(() => {
+        if (enabledLanguages && !enabledLanguages.includes(adminLocale)) {
+            setAdminLocale("en");
+        }
+    }, [enabledLanguages, adminLocale]);
 
     // Helper functions for localized map validation and backwards compatibility
     const parseLocalized = (field, defaultObj) => {
@@ -432,15 +440,24 @@ export default function AdminPage() {
         }
         setTranslatingField(fieldName);
         try {
-            const prompt = `You are an expert translator. Translate the following English portfolio text into three languages: Farsi (Persian), German, and Bahasa Melayu (Malay).
-If the text contains HTML tags (like <p>, <strong>, etc.), preserve them exactly in all translations.
-Provide your output ONLY as a valid JSON object matching the format below, with NO markdown formatting, NO backticks, and NO additional text.
+            const prompt = `You are an Industry-Expert Technical Localization Specialist and a Senior Software Executive native translator.
+Translate the following English tech portfolio text into three languages: Farsi (Persian), German, and Bahasa Melayu (Malay).
+
+Your mission is to perform a high-quality, professional, and natural localization that is standard in the software/tech industry, NOT a word-for-word translation.
+
+Follow these strict rules:
+1. DO NOT translate technical acronyms, engineering methodologies, tools, and popular frameworks literally when they are universally used in English in those countries (e.g., keep "React", "Next.js", "CI/CD", "cloud-native", "squads", "agile", "frontend", "backend" as they are or adapt them professionally to what a Senior Engineering Manager or Tech Director in those regions would naturally use).
+2. For German (DE): Use highly polished, professional German with perfect grammar, declensions, and professional tone.
+3. For Farsi/Persian (FA): Use professional technical Persian suitable for high-level technical directors and elite software companies in Iran.
+4. For Bahasa Melayu (MS): Use professional technical Malay that is modern, precise, and standard for enterprise tech organizations in Malaysia/Singapore.
+5. If the text contains HTML tags (like <p>, <strong>, etc.), preserve them exactly in all translations.
+6. Provide your output ONLY as a valid JSON object matching the format below, with NO markdown formatting, NO backticks, and NO additional text.
 
 Format:
 {
-  "fa": "translated text in Farsi",
-  "de": "translated text in German",
-  "ms": "translated text in Bahasa Melayu"
+  "fa": "highly professional localized technical text in Farsi",
+  "de": "highly professional localized technical text in German",
+  "ms": "highly professional localized technical text in Bahasa Melayu"
 }
 
 English text to translate:
@@ -1029,6 +1046,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                 setHeroTagline(parseLocalized(data.heroTagline, { en: "", fa: "", de: "", ms: "" }));
                 setHeroHeadline(parseLocalized(data.heroHeadline, { en: "", fa: "", de: "", ms: "" }));
                 setAboutText(parseLocalized(data.aboutText, { en: "", fa: "", de: "", ms: "" }));
+                setEnabledLanguages(data.enabledLanguages || ["en", "fa", "de", "ms"]);
                 setLinkedin(data.linkedin || "");
                 setEmailLink(data.email || "");
                 setWhatsapp(data.whatsapp || "");
@@ -1506,7 +1524,8 @@ Please edit the context text according to the instructions. Ensure you keep the 
                 skillsFontFamily,
                 skillsTextAlign,
                 experienceFontFamily,
-                experienceTextAlign
+                experienceTextAlign,
+                enabledLanguages
             };
             await setDoc(doc(db, "content", "main_draft"), dataPayload);
             setCmsStatus("Draft saved successfully! (Not yet live)");
@@ -1540,7 +1559,8 @@ Please edit the context text according to the instructions. Ensure you keep the 
                 skillsFontFamily,
                 skillsTextAlign,
                 experienceFontFamily,
-                experienceTextAlign
+                experienceTextAlign,
+                enabledLanguages
             };
             // Save to active live document
             await setDoc(doc(db, "content", "main"), dataPayload);
@@ -1949,10 +1969,10 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                     minWidth: '200px'
                                 }}
                             >
-                                <option value="en" style={{ background: '#1a1a2e', color: 'white' }}>🇬🇧  English (EN)</option>
-                                <option value="fa" style={{ background: '#1a1a2e', color: 'white' }}>🇮🇷  Farsi / فارسی (FA)</option>
-                                <option value="de" style={{ background: '#1a1a2e', color: 'white' }}>🇩🇪  German (DE)</option>
-                                <option value="ms" style={{ background: '#1a1a2e', color: 'white' }}>🇲🇾  Malay / Melayu (MS)</option>
+                                {(!enabledLanguages || enabledLanguages.includes("en")) && <option value="en" style={{ background: '#1a1a2e', color: 'white' }}>🇬🇧  English (EN)</option>}
+                                {(!enabledLanguages || enabledLanguages.includes("fa")) && <option value="fa" style={{ background: '#1a1a2e', color: 'white' }}>🇮🇷  Farsi / فارسی (FA)</option>}
+                                {(!enabledLanguages || enabledLanguages.includes("de")) && <option value="de" style={{ background: '#1a1a2e', color: 'white' }}>🇩🇪  German (DE)</option>}
+                                {(!enabledLanguages || enabledLanguages.includes("ms")) && <option value="ms" style={{ background: '#1a1a2e', color: 'white' }}>🇲🇾  Malay / Melayu (MS)</option>}
                             </select>
                         </div>
                         {/* Hero Section Card */}
@@ -2882,6 +2902,101 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                 </option>
                                             ))}
                                         </select>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Localization & Active Languages Card */}
+                        <div className="glass-card" style={{ padding: '30px' }}>
+                            <div onClick={() => toggleSection('localizationSettingsCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.localizationSettingsCard ? 0 : '20px' }}>
+                                <h3 style={{ color: 'var(--color-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-language"></i> Localization & Active Languages
+                                </h3>
+                                <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.localizationSettingsCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
+                            </div>
+                            {!collapsedSections.localizationSettingsCard && (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                    <p style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>
+                                        Toggle which languages are enabled on your public website. If you disable a language, it will be hidden from the website's language switcher dropdown.
+                                    </p>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '10px' }}>
+                                        {/* English (🇬🇧 EN) - ALWAYS enabled */}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div className="switch">
+                                                <input type="checkbox" checked disabled id="lang-en-toggle" />
+                                                <span className="slider" style={{ opacity: 0.5, cursor: 'not-allowed' }}></span>
+                                            </div>
+                                            <label htmlFor="lang-en-toggle" style={{ color: 'white', fontSize: '0.9rem', cursor: 'not-allowed' }}>
+                                                🇬🇧  <strong>English (EN)</strong> — Always Enabled (Default)
+                                            </label>
+                                        </div>
+
+                                        {/* Farsi (🇮🇷 FA) */}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div className="switch">
+                                                <input 
+                                                    type="checkbox" 
+                                                    id="lang-fa-toggle" 
+                                                    checked={enabledLanguages.includes("fa")}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setEnabledLanguages([...enabledLanguages, "fa"]);
+                                                        } else {
+                                                            setEnabledLanguages(enabledLanguages.filter(l => l !== "fa"));
+                                                        }
+                                                    }}
+                                                />
+                                                <span className="slider"></span>
+                                            </div>
+                                            <label htmlFor="lang-fa-toggle" style={{ color: 'white', fontSize: '0.9rem', cursor: 'pointer' }}>
+                                                🇮🇷  <strong>Persian / فارسی (FA)</strong>
+                                            </label>
+                                        </div>
+
+                                        {/* German (🇩🇪 DE) */}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div className="switch">
+                                                <input 
+                                                    type="checkbox" 
+                                                    id="lang-de-toggle" 
+                                                    checked={enabledLanguages.includes("de")}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setEnabledLanguages([...enabledLanguages, "de"]);
+                                                        } else {
+                                                            setEnabledLanguages(enabledLanguages.filter(l => l !== "de"));
+                                                        }
+                                                    }}
+                                                />
+                                                <span className="slider"></span>
+                                            </div>
+                                            <label htmlFor="lang-de-toggle" style={{ color: 'white', fontSize: '0.9rem', cursor: 'pointer' }}>
+                                                🇩🇪  <strong>German / Deutsch (DE)</strong>
+                                            </label>
+                                        </div>
+
+                                        {/* Malay (🇲🇾 MS) */}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div className="switch">
+                                                <input 
+                                                    type="checkbox" 
+                                                    id="lang-ms-toggle" 
+                                                    checked={enabledLanguages.includes("ms")}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setEnabledLanguages([...enabledLanguages, "ms"]);
+                                                        } else {
+                                                            setEnabledLanguages(enabledLanguages.filter(l => l !== "ms"));
+                                                        }
+                                                    }}
+                                                />
+                                                <span className="slider"></span>
+                                            </div>
+                                            <label htmlFor="lang-ms-toggle" style={{ color: 'white', fontSize: '0.9rem', cursor: 'pointer' }}>
+                                                🇲🇾  <strong>Malay / Melayu (MS)</strong>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             )}

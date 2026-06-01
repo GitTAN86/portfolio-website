@@ -818,26 +818,28 @@ export default function Home() {
       {<ParticleBackground />}
 
       {/* Floating Language Switcher Dropdown */}
-      <div
-        style={{
-          position: "fixed",
-          top: "24px",
-          right: "24px",
-          zIndex: 100,
-          direction: "ltr"
-        }}
-      >
-        <select
-          value={locale}
-          onChange={e => setLocale(e.target.value)}
-          className="lang-switcher-select"
+      {(!data.enabledLanguages || data.enabledLanguages.length > 1) && (
+        <div
+          style={{
+            position: "fixed",
+            top: "24px",
+            right: "24px",
+            zIndex: 100,
+            direction: "ltr"
+          }}
         >
-          <option value="en">🇬🇧  English</option>
-          <option value="fa">🇮🇷  فارسی</option>
-          <option value="de">🇩🇪  Deutsch</option>
-          <option value="ms">🇲🇾  Melayu</option>
-        </select>
-      </div>
+          <select
+            value={locale}
+            onChange={e => setLocale(e.target.value)}
+            className="lang-switcher-select"
+          >
+            {(!data.enabledLanguages || data.enabledLanguages.includes("en")) && <option value="en">🇬🇧  English</option>}
+            {(!data.enabledLanguages || data.enabledLanguages.includes("fa")) && <option value="fa">🇮🇷  فارسی</option>}
+            {(!data.enabledLanguages || data.enabledLanguages.includes("de")) && <option value="de">🇩🇪  Deutsch</option>}
+            {(!data.enabledLanguages || data.enabledLanguages.includes("ms")) && <option value="ms">🇲🇾  Melayu</option>}
+          </select>
+        </div>
+      )}
 
       {/* Dynamic Theme Colors Injection */}
       <style>{`
