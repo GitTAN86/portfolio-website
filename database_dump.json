@@ -1,0 +1,727 @@
+{
+    "content_main": {
+        "experience": [
+            {
+                "company": {
+                    "de": "Concentrix Malaysia",
+                    "ms": "Concentrix Malaysia",
+                    "en": "Concentrix Malaysia",
+                    "fa": "کانسنتريکس مالزی"
+                },
+                "bullets": [
+                    {
+                        "en": "Cross-Functional Leadership: Direct and mentor 4 specialized teams comprising 40+ agents across APJ and EMEA regions.",
+                        "fa": "رهبری بین‌واحدی: هدایت و راهنمایی ۴ تیم تخصصی متشکل از بیش از ۴۰ نماینده در مناطق APJ و EMEA.",
+                        "de": "Funktionsübergreifende Führung: Direktion und Mentoring von 4 spezialisierten Teams mit über 40 Mitarbeitern in den Regionen APJ und EMEA.",
+                        "ms": "Kepimpinan Merentas Fungsi: Mengarahkan dan membimbing 4 pasukan khusus yang terdiri daripada 40+ ejen di seluruh wilayah APJ dan EMEA."
+                    },
+                    {
+                        "de": "Prozessautomatisierung: Federführung bei der Entwicklung von 20 kundenspezifischen Automatisierungs-Workflows mit SAP iRPA und Power Automate; Reduzierung des Aufwands für repetitive Aufgaben um 50%.",
+                        "ms": "Automasi Proses: Menerajui pembangunan 20 aliran kerja automasi tersuai menggunakan SAP iRPA dan Power Automate; mengurangkan usaha tugas berulang sebanyak 50%.",
+                        "en": "Process Automation: Spearheaded the development of 20 custom automation workflows using SAP iRPA and Power Automate; reduced repetitive task efforts by 50%.",
+                        "fa": "اتوماسیون فرآیند: پیشگام در توسعه ۲۰ گردش کار اتوماسیون سفارشی با استفاده از SAP iRPA و Power Automate؛ کاهش ۵۰ درصدی تلاش‌های مربوط به وظایف تکراری."
+                    },
+                    {
+                        "ms": "Kualiti Perkhidmatan: Meningkatkan ketepatan proses dengan menghapuskan kesilapan manusia melalui automasi, membawa kepada peningkatan purata 20% dalam skor CSAT.",
+                        "de": "Servicequalität: Verbesserung der Prozessgenauigkeit durch Eliminierung menschlicher Fehler mittels Automatisierung, was zu einer durchschnittlichen Steigerung der CSAT-Werte um 20% führte.",
+                        "fa": "کیفیت خدمات: افزایش دقت فرآیند با حذف خطای انسانی از طریق اتوماسیون، که منجر به افزایش متوسط ۲۰ درصدی در نمرات CSAT شد.",
+                        "en": "Service Quality: Enhanced process accuracy by eliminating human error through automation, leading to an average 20% increase in CSAT scores."
+                    },
+                    {
+                        "en": "Team Incubation: Launched the Digital Automation and Digital Design teams from inception.",
+                        "fa": "راه‌اندازی تیم: راه‌اندازی تیم‌های اتوماسیون دیجیتال و طراحی دیجیتال از ابتدا.",
+                        "de": "Teamaufbau: Aufbau der Teams für digitale Automatisierung und digitales Design von Grund auf.",
+                        "ms": "Pembentukan Pasukan: Melancarkan pasukan Automasi Digital dan Reka Bentuk Digital dari awal."
+                    },
+                    {
+                        "fa": "تعالی عملیاتی: حفظ نرخ دستیابی ۱۰۰ درصدی بدون نقص به KPI در هر ۴ تیم برای بیش از ۴ سال متوالی.",
+                        "en": "Operational Excellence: Maintained an unblemished 100% KPI achievement rate across all 4 teams for 4+ consecutive years.",
+                        "ms": "Kecemerlangan Operasi: Mengekalkan kadar pencapaian KPI 100% tanpa cela di kesemua 4 pasukan selama 4+ tahun berturut-turut.",
+                        "de": "Operative Exzellenz: Beibehaltung einer makellosen 100%igen KPI-Erreichungsrate in allen 4 Teams über 4+ aufeinanderfolgende Jahre."
+                    },
+                    {
+                        "de": "Stakeholder-Engagement: Vorbereitung und Präsentation ausgefeilter MBR/QBR an das Concentrix-Management und globale SAP-Kunden.",
+                        "ms": "Penglibatan Pemegang Taruh: Menyediakan dan membentangkan MBR/QBR yang canggih kepada pengurusan eksekutif Concentrix dan pelanggan SAP global.",
+                        "en": "Stakeholder Engagement: Prepare and present sophisticated MBR/QBR to Concentrix executive management and global SAP clients.",
+                        "fa": "تعامل با ذی‌نفعان: تهیه و ارائه گزارش‌های پیچیده MBR/QBR به مدیریت اجرایی Concentrix و مشتریان جهانی SAP."
+                    },
+                    {
+                        "en": "Strategic Migration: Successfully integrated the Web Operations team into the core SAP business unit.",
+                        "fa": "مهاجرت استراتژیک: ادغام موفقیت‌آمیز تیم عملیات وب در واحد تجاری اصلی SAP.",
+                        "de": "Strategische Migration: Erfolgreiche Integration des Web Operations Teams in die zentrale SAP-Geschäftseinheit.",
+                        "ms": "Migrasi Strategik: Berjaya mengintegrasikan pasukan Operasi Web ke dalam unit perniagaan teras SAP."
+                    }
+                ],
+                "title": {
+                    "de": "Stellvertretender Manager (SAP-Projekt)",
+                    "ms": "Pengurus Bersekutu (Projek SAP)",
+                    "en": "Associate Manager (SAP Project)",
+                    "fa": "معاون مدیر (پروژه SAP)"
+                },
+                "date": "2022 – Present"
+            },
+            {
+                "bullets": [
+                    {
+                        "de": "Performance Management: Directed daily operations for the APJ Store Support team.\nKPI Attainment: Led the team to achieve 100% of all quarterly KPIs for 8 consecutive quarters (2 years) without a single missed target.\nTalent Development: Conducted regular coaching and feedback sessions, identifying operational weaknesses and implementing targeted improvement plans.",
+                        "ms": "Performance Management: Directed daily operations for the APJ Store Support team.\nKPI Attainment: Led the team to achieve 100% of all quarterly KPIs for 8 consecutive quarters (2 years) without a single missed target.\nTalent Development: Conducted regular coaching and feedback sessions, identifying operational weaknesses and implementing targeted improvement plans.",
+                        "en": "Performance Management: Directed daily operations for the APJ Store Support team.\nKPI Attainment: Led the team to achieve 100% of all quarterly KPIs for 8 consecutive quarters (2 years) without a single missed target.\nTalent Development: Conducted regular coaching and feedback sessions, identifying operational weaknesses and implementing targeted improvement plans.",
+                        "fa": "Performance Management: Directed daily operations for the APJ Store Support team.\nKPI Attainment: Led the team to achieve 100% of all quarterly KPIs for 8 consecutive quarters (2 years) without a single missed target.\nTalent Development: Conducted regular coaching and feedback sessions, identifying operational weaknesses and implementing targeted improvement plans."
+                    }
+                ],
+                "company": {
+                    "fa": "Concentrix Malaysia",
+                    "en": "Concentrix Malaysia",
+                    "ms": "Concentrix Malaysia",
+                    "de": "Concentrix Malaysia"
+                },
+                "title": {
+                    "en": "Team Lead (SAP Store, APJ)",
+                    "fa": "Team Lead (SAP Store, APJ)",
+                    "de": "Team Lead (SAP Store, APJ)",
+                    "ms": "Team Lead (SAP Store, APJ)"
+                },
+                "date": "2020 – 2022"
+            },
+            {
+                "date": "2016 – 2020",
+                "company": {
+                    "fa": "Concentrix Malaysia",
+                    "en": "Concentrix Malaysia",
+                    "ms": "Concentrix Malaysia",
+                    "de": "Concentrix Malaysia"
+                },
+                "bullets": [
+                    {
+                        "ms": "B2B Client Support: Managed complex pre- and post-order inquiries for SAP Store customers, resolving up to 30 cases daily with high accuracy.\nAI & Chatbot Innovation: Played a critical role in developing and implementing the first-ever Chatbot for the SAP Store in 2018.\nAward & Recognition: Recognized as 'Most Valuable Agent of the Year' globally in 2018 for exceptional performance and innovation.",
+                        "de": "B2B Client Support: Managed complex pre- and post-order inquiries for SAP Store customers, resolving up to 30 cases daily with high accuracy.\nAI & Chatbot Innovation: Played a critical role in developing and implementing the first-ever Chatbot for the SAP Store in 2018.\nAward & Recognition: Recognized as 'Most Valuable Agent of the Year' globally in 2018 for exceptional performance and innovation.",
+                        "fa": "B2B Client Support: Managed complex pre- and post-order inquiries for SAP Store customers, resolving up to 30 cases daily with high accuracy.\nAI & Chatbot Innovation: Played a critical role in developing and implementing the first-ever Chatbot for the SAP Store in 2018.\nAward & Recognition: Recognized as 'Most Valuable Agent of the Year' globally in 2018 for exceptional performance and innovation.",
+                        "en": "B2B Client Support: Managed complex pre- and post-order inquiries for SAP Store customers, resolving up to 30 cases daily with high accuracy.\nAI & Chatbot Innovation: Played a critical role in developing and implementing the first-ever Chatbot for the SAP Store in 2018.\nAward & Recognition: Recognized as 'Most Valuable Agent of the Year' globally in 2018 for exceptional performance and innovation."
+                    }
+                ],
+                "title": {
+                    "de": "Senior E-commerce Specialist (SAP Store)",
+                    "ms": "Senior E-commerce Specialist (SAP Store)",
+                    "en": "Senior E-commerce Specialist (SAP Store)",
+                    "fa": "Senior E-commerce Specialist (SAP Store)"
+                }
+            }
+        ],
+        "heroName": "Bahman Noushabadi",
+        "skillsTextAlign": "center",
+        "heroFontFamily": "'Outfit', sans-serif",
+        "gallery": [
+            "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1780175011704_pic2.jpg?alt=media&token=cb23ead2-c374-46e7-91cb-38d3ce6f9734",
+            "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1780233512157_pic3.jpg?alt=media&token=b107c6a1-a3dc-4a25-974c-ad436200541c",
+            "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1780233523003_pic1.jpg?alt=media&token=4ad11c4d-b864-48e4-988f-f70c03b88e2e"
+        ],
+        "heroTextAlign": "center",
+        "heroTagline": {
+            "ms": "Peneraju Teknologi & Pengurus Transformasi",
+            "de": "Tech-Leiter & transformierender Manager",
+            "fa": "رهبر فناوری و مدیر تحول‌آفرین",
+            "en": "Tech Leader & Transforming Manager"
+        },
+        "heroHeadline": {
+            "en": "Bridging the Gap Between Operational Excellence and Technical Innovation.",
+            "fa": "پل زدن میان تعالی عملیاتی و نوآوری فنی.",
+            "de": "Die Lücke zwischen operativer Exzellenz und technischer Innovation schließen.",
+            "ms": "Merapatkan Jurang Antara Kecemerlangan Operasi dan Inovasi Teknikal."
+        },
+        "themes": {
+            "theme4": {
+                "secondary": "#EA4335",
+                "primary": "#4285F4",
+                "tertiary": "#b100ff",
+                "text": "#ffffff",
+                "textMuted": "#a0a0a0",
+                "bg": "#05050A"
+            },
+            "theme1": {
+                "bg": "#F9F9FB",
+                "textMuted": "#5f6368",
+                "text": "#202124",
+                "primary": "#4285F4",
+                "tertiary": "#b100ff",
+                "secondary": "#EA4335"
+            },
+            "theme3": {
+                "tertiary": "#b100ff",
+                "primary": "#4285F4",
+                "secondary": "#EA4335",
+                "text": "#F9F9FB",
+                "bg": "#2C3E50",
+                "textMuted": "#B0BEC5"
+            },
+            "theme2": {
+                "secondary": "#EA4335",
+                "primary": "#4285F4",
+                "tertiary": "#b100ff",
+                "textMuted": "#5f6368",
+                "bg": "#606060",
+                "text": "#202124"
+            }
+        },
+        "aboutFontFamily": "'Space Grotesk', sans-serif",
+        "cvUrl": "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1778701433807_Bahman%20Noushabadi%20-%20Transformation%20Manager.pdf?alt=media&token=2bd860be-bc0c-4846-918f-ec9ef06b757a",
+        "experienceFontFamily": "'Outfit', sans-serif",
+        "securitySettings": {
+            "captchaEnabled": true
+        },
+        "aboutTextAlign": "justify",
+        "aboutText": {
+            "fa": "",
+            "en": "",
+            "ms": "",
+            "de": ""
+        },
+        "skills": [
+            {
+                "description": {
+                    "ms": "Kepimpinan Merentas Fungsi, Pencapaian KPI/SLA, Pelaporan MBR/QBR.",
+                    "de": "Funktionsübergreifende Führung, KPI/SLA-Erreichung, MBR/QBR-Berichterstattung.",
+                    "fa": "رهبری فرابخشی، دستیابی به KPI/SLA، گزارش‌دهی MBR/QBR.",
+                    "en": "Cross-functional Leadership, KPI/SLA Attainment, MBR/QBR Reporting."
+                },
+                "title": {
+                    "de": "Operationsmanagement",
+                    "ms": "Pengurusan Operasi",
+                    "en": "Operations Management",
+                    "fa": "مدیریت عملیات"
+                },
+                "icon": "fa-solid fa-chart-line"
+            },
+            {
+                "icon": "fa-solid fa-robot",
+                "description": {
+                    "en": "Process Automation, Workflow Optimization, Quality Auditing.",
+                    "fa": "اتوماسیون فرآیند، بهینه‌سازی گردش کار، حسابرسی کیفیت",
+                    "de": "Prozessautomatisierung, Workflow-Optimierung, Qualitätsprüfung",
+                    "ms": "Automasi Proses, Pengoptimuman Aliran Kerja, Audit Kualiti"
+                },
+                "title": {
+                    "ms": "Transformasi Digital",
+                    "de": "Digitale Transformation",
+                    "fa": "تحول دیجیتال",
+                    "en": "Digital Transformation"
+                }
+            },
+            {
+                "description": {
+                    "de": "Globales Stakeholder-Management, B2B-Kundenbetreuung, Exzellenz in der Servicebereitstellung.",
+                    "ms": "Pengurusan Pihak Berkepentingan Global, Sokongan Akaun B2B, Kecemerlangan Penyampaian Perkhidmatan.",
+                    "en": "Global Stakeholder Management, B2B Account Support, Service Delivery Excellence.",
+                    "fa": "مدیریت ذینفعان جهانی، پشتیبانی حساب‌های B2B، تعالی در ارائه خدمات."
+                },
+                "title": {
+                    "fa": "روابط مشتری",
+                    "en": "Client Relations",
+                    "ms": "Hubungan Pelanggan",
+                    "de": "Kundenbeziehungen"
+                },
+                "icon": "fa-solid fa-handshake"
+            },
+            {
+                "icon": "fa-solid fa-microchip",
+                "title": {
+                    "de": "Technische Kompetenz",
+                    "ms": "Kemahiran Teknikal",
+                    "en": "Technical Proficiency",
+                    "fa": "کفایت فنی"
+                },
+                "description": {
+                    "fa": "SAP S/4HANA, SAP ERP, SAP Build, SAP BTP, Power BI, SAP SAC, Adobe AEM, HTML, CSS, JS, Node.js, Java.",
+                    "en": "SAP S/4HANA, SAP ERP, SAP Build, SAP BTP, Power BI, SAP SAC, Adobe AEM, HTML, CSS, JS, Node.js, Java.",
+                    "ms": "SAP S/4HANA, SAP ERP, SAP Build, SAP BTP, Power BI, SAP SAC, Adobe AEM, HTML, CSS, JS, Node.js, Java.",
+                    "de": "SAP S/4HANA, SAP ERP, SAP Build, SAP BTP, Power BI, SAP SAC, Adobe AEM, HTML, CSS, JS, Node.js, Java."
+                }
+            }
+        ],
+        "linkedin": "https://www.linkedin.com/in/bahman-noushabadi/",
+        "experienceTextAlign": "justify",
+        "profileImage": "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1780233534587_pic6.jpeg?alt=media&token=ee7daf38-1876-4076-97a2-ac802570f786",
+        "nationality": "ir",
+        "email": "bahman.noushabadii@gmail.com",
+        "aboutSlides": [
+            {
+                "title": {
+                    "ms": "This is ME!!",
+                    "de": "This is ME!!",
+                    "fa": "This is ME!!",
+                    "en": "This is ME!!"
+                },
+                "text": {
+                    "ms": "<p>Berasal dari Iran dan kini menetap di Kuala Lumpur, saya seorang pemimpin teknologi dan pembangun dengan minat mendalam untuk menyelesaikan cabaran perusahaan yang kompleks. Dengan Ijazah Sarjana Muda dalam Sains Komputer dan Ijazah Sarjana dalam Kejuruteraan Perisian, kerjaya saya telah dibina di persimpangan pembangunan perisian secara langsung dan operasi SaaS B2B strategik ;l.</p>",
+                    "de": "<p>Ursprünglich aus dem Iran und derzeit in Kuala Lumpur ansässig, bin ich ein Tech-Leader und Entwickler mit einer tiefen Leidenschaft für die Lösung komplexer Unternehmensherausforderungen. Mit einem Bachelor in Informatik und einem Master in Software Engineering hat sich meine Karriere an der Schnittstelle von praktischer Softwareentwicklung und strategischen B2B-SaaS-Operationen ;l aufgebaut.</p>",
+                    "fa": "<p>اصالتاً اهل ایران و در حال حاضر مقیم کوالالامپور، من یک رهبر و توسعه‌دهنده فناوری هستم با اشتیاقی عمیق برای حل چالش‌های پیچیده سازمانی. با مدرک کارشناسی در علوم کامپیوتر و کارشناسی ارشد در مهندسی نرم‌افزار، حرفه من در تلاقی توسعه نرم‌افزار عملی و عملیات استراتژیک B2B SaaS شکل گرفته است ;l.</p>",
+                    "en": "<p>Originally from Iran and currently based in Kuala Lumpur, I am a tech leader and developer with a deep passion for solving complex enterprise challenges. With a Bachelor's in Computer Science and a Master's in Software Engineering, my career has been built at the intersection of hands-on software development and strategic B2B SaaS operations ;l.</p>"
+                },
+                "image": "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1779816821943_pic1.jpg?alt=media&token=52ab9edd-755b-4031-bf54-116b85720295"
+            },
+            {
+                "title": {
+                    "de": "Be Productive!!!",
+                    "ms": "Be Productive!!!",
+                    "en": "Be Productive!!!",
+                    "fa": "Be Productive!!!"
+                },
+                "text": {
+                    "ms": "<p><strong>Menskalakan Penyelesaian Perusahaan</strong> Sepanjang dekad yang lalu, saya telah memimpin pasukan rentas fungsi dan memacu transformasi digital dalam ekosistem SAP global. Dengan memanfaatkan alat automasi proses seperti SAP iRPA dan Power Automate, saya mempunyai rekod prestasi yang terbukti dalam menghapuskan aliran kerja manual, mempercepatkan penyelesaian SLA, dan meningkatkan kepuasan pelanggan.</p>",
+                    "de": "<p><strong>Skalierung von Unternehmenslösungen</strong> Im letzten Jahrzehnt habe ich funktionsübergreifende Teams geführt und die digitale Transformation innerhalb des globalen SAP-Ökosystems vorangetrieben. Durch den Einsatz von Prozessautomatisierungstools wie SAP iRPA und Power Automate habe ich eine nachweisliche Erfolgsbilanz bei der Eliminierung manueller Arbeitsabläufe, der Beschleunigung von SLA-Lösungen und der Steigerung der Kundenzufriedenheit.</p>",
+                    "fa": "<p><strong>ایجاد مقیاس‌پذیری برای راهکارهای سازمانی</strong> در طول دهه گذشته، من رهبری تیم‌های چندوظیفه‌ای را بر عهده داشته و تحول دیجیتال را در اکوسیستم جهانی SAP هدایت کرده‌ام. با بهره‌گیری از ابزارهای اتوماسیون فرآیند مانند SAP iRPA و Power Automate، سابقه اثبات‌شده‌ای در حذف جریان‌های کاری دستی، تسریع در حل و فصل SLA و افزایش رضایت مشتری دارم.</p>",
+                    "en": "<p><strong>Scaling Enterprise Solutions</strong> Over the last decade, I have led cross-functional teams and driven digital transformation within the global SAP ecosystem. By leveraging process automation tools like SAP iRPA and Power Automate, I have a proven track record of eliminating manual workflows, accelerating SLA resolutions, and boosting customer satisfaction.</p>"
+                },
+                "image": "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1779816882031_pic2.jpg?alt=media&token=fcc6092c-7560-446e-9ea0-7a63474e56ec"
+            },
+            {
+                "image": "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1779816971331_pic3.jpg?alt=media&token=4864ae24-a342-44c2-9ebf-a974ef42a764",
+                "text": {
+                    "fa": "<p> <strong>ساخت برای وب</strong> فراتر از مدیریت تیم‌های موفقیت مشتری جهانی، من ذاتاً یک سازنده‌ام. من در توسعه وب و مدیریت محتوا تخصص دارم و از یک پشته فنی قوی استفاده می‌کنم که شامل HTML، CSS، JavaScript، Node.js و Java می‌شود. </p>",
+                    "en": "<p> <strong>Building for the Web</strong> Beyond managing global customer success teams, I am a builder at heart. I specialize in web development and content management, utilizing a robust technical stack that includes HTML, CSS, JavaScript, Node.js, and Java. </p>",
+                    "ms": "<p> <strong>Membangun untuk Web</strong> Selain menguruskan pasukan kejayaan pelanggan global, saya seorang pembina sejati. Saya pakar dalam pembangunan web dan pengurusan kandungan, menggunakan tumpukan teknologi yang mantap termasuk HTML, CSS, JavaScript, Node.js, dan Java. </p>",
+                    "de": "<p> <strong>Erstellen fürs Web</strong> Neben der Leitung globaler Kundenerfolgsteams bin ich im Grunde meines Herzens ein Macher. Ich spezialisiere mich auf Webentwicklung und Content-Management und nutze dabei einen robusten technischen Stack, der HTML, CSS, JavaScript, Node.js und Java umfasst. </p>"
+                },
+                "title": {
+                    "en": "I see Beauty!!",
+                    "fa": "I see Beauty!!",
+                    "de": "I see Beauty!!",
+                    "ms": "I see Beauty!!"
+                }
+            }
+        ],
+        "skillsFontFamily": "'Outfit', sans-serif",
+        "overrideTheme": "theme1",
+        "sectionVisibility": {
+            "experience": true,
+            "about": true,
+            "aboutCarousel": true,
+            "skills": true,
+            "hero": true,
+            "skillsGrid": true,
+            "aboutTextPanel": true,
+            "heroWordCloud": true,
+            "experienceTimeline": true,
+            "heroMap": true
+        },
+        "whatsapp": "60194909004"
+    },
+    "content_main_draft": {
+        "aboutFontFamily": "'Space Grotesk', sans-serif",
+        "heroHeadline": {
+            "fa": "پل زدن میان تعالی عملیاتی و نوآوری فنی.",
+            "en": "Bridging the Gap Between Operational Excellence and Technical Innovation.",
+            "ms": "Merapatkan Jurang Antara Kecemerlangan Operasi dan Inovasi Teknikal.",
+            "de": "Die Lücke zwischen operativer Exzellenz und technischer Innovation schließen."
+        },
+        "themes": {
+            "theme1": {
+                "text": "#202124",
+                "bg": "#F9F9FB",
+                "textMuted": "#5f6368",
+                "tertiary": "#b100ff",
+                "primary": "#4285F4",
+                "secondary": "#EA4335"
+            },
+            "theme4": {
+                "secondary": "#EA4335",
+                "tertiary": "#b100ff",
+                "primary": "#4285F4",
+                "text": "#ffffff",
+                "textMuted": "#a0a0a0",
+                "bg": "#05050A"
+            },
+            "theme3": {
+                "primary": "#4285F4",
+                "tertiary": "#b100ff",
+                "secondary": "#EA4335",
+                "text": "#F9F9FB",
+                "bg": "#2C3E50",
+                "textMuted": "#B0BEC5"
+            },
+            "theme2": {
+                "primary": "#4285F4",
+                "tertiary": "#b100ff",
+                "secondary": "#EA4335",
+                "text": "#202124",
+                "bg": "#606060",
+                "textMuted": "#5f6368"
+            }
+        },
+        "heroTextAlign": "center",
+        "heroTagline": {
+            "fa": "رهبر فناوری و مدیر تحول‌آفرین",
+            "en": "Tech Leader & Transforming Manager",
+            "ms": "Peneraju Teknologi & Pengurus Transformasi",
+            "de": "Tech-Leiter & transformierender Manager"
+        },
+        "skillsTextAlign": "center",
+        "heroFontFamily": "'Outfit', sans-serif",
+        "gallery": [
+            "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1780175011704_pic2.jpg?alt=media&token=cb23ead2-c374-46e7-91cb-38d3ce6f9734",
+            "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1780233512157_pic3.jpg?alt=media&token=b107c6a1-a3dc-4a25-974c-ad436200541c",
+            "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1780233523003_pic1.jpg?alt=media&token=4ad11c4d-b864-48e4-988f-f70c03b88e2e"
+        ],
+        "heroName": "Bahman Noushabadi",
+        "experience": [
+            {
+                "title": {
+                    "de": "Stellvertretender Manager (SAP-Projekt)",
+                    "ms": "Pengurus Bersekutu (Projek SAP)",
+                    "en": "Associate Manager (SAP Project)",
+                    "fa": "معاون مدیر (پروژه SAP)"
+                },
+                "company": {
+                    "fa": "کانسنتريکس مالزی",
+                    "en": "Concentrix Malaysia",
+                    "ms": "Concentrix Malaysia",
+                    "de": "Concentrix Malaysia"
+                },
+                "bullets": [
+                    {
+                        "fa": "رهبری بین‌واحدی: هدایت و راهنمایی ۴ تیم تخصصی متشکل از بیش از ۴۰ نماینده در مناطق APJ و EMEA.",
+                        "en": "Cross-Functional Leadership: Direct and mentor 4 specialized teams comprising 40+ agents across APJ and EMEA regions.",
+                        "ms": "Kepimpinan Merentas Fungsi: Mengarahkan dan membimbing 4 pasukan khusus yang terdiri daripada 40+ ejen di seluruh wilayah APJ dan EMEA.",
+                        "de": "Funktionsübergreifende Führung: Direktion und Mentoring von 4 spezialisierten Teams mit über 40 Mitarbeitern in den Regionen APJ und EMEA."
+                    },
+                    {
+                        "de": "Prozessautomatisierung: Federführung bei der Entwicklung von 20 kundenspezifischen Automatisierungs-Workflows mit SAP iRPA und Power Automate; Reduzierung des Aufwands für repetitive Aufgaben um 50%.",
+                        "ms": "Automasi Proses: Menerajui pembangunan 20 aliran kerja automasi tersuai menggunakan SAP iRPA dan Power Automate; mengurangkan usaha tugas berulang sebanyak 50%.",
+                        "en": "Process Automation: Spearheaded the development of 20 custom automation workflows using SAP iRPA and Power Automate; reduced repetitive task efforts by 50%.",
+                        "fa": "اتوماسیون فرآیند: پیشگام در توسعه ۲۰ گردش کار اتوماسیون سفارشی با استفاده از SAP iRPA و Power Automate؛ کاهش ۵۰ درصدی تلاش‌های مربوط به وظایف تکراری."
+                    },
+                    {
+                        "en": "Service Quality: Enhanced process accuracy by eliminating human error through automation, leading to an average 20% increase in CSAT scores.",
+                        "fa": "کیفیت خدمات: افزایش دقت فرآیند با حذف خطای انسانی از طریق اتوماسیون، که منجر به افزایش متوسط ۲۰ درصدی در نمرات CSAT شد.",
+                        "de": "Servicequalität: Verbesserung der Prozessgenauigkeit durch Eliminierung menschlicher Fehler mittels Automatisierung, was zu einer durchschnittlichen Steigerung der CSAT-Werte um 20% führte.",
+                        "ms": "Kualiti Perkhidmatan: Meningkatkan ketepatan proses dengan menghapuskan kesilapan manusia melalui automasi, membawa kepada peningkatan purata 20% dalam skor CSAT."
+                    },
+                    {
+                        "de": "Teamaufbau: Aufbau der Teams für digitale Automatisierung und digitales Design von Grund auf.",
+                        "ms": "Pembentukan Pasukan: Melancarkan pasukan Automasi Digital dan Reka Bentuk Digital dari awal.",
+                        "en": "Team Incubation: Launched the Digital Automation and Digital Design teams from inception.",
+                        "fa": "راه‌اندازی تیم: راه‌اندازی تیم‌های اتوماسیون دیجیتال و طراحی دیجیتال از ابتدا."
+                    },
+                    {
+                        "fa": "تعالی عملیاتی: حفظ نرخ دستیابی ۱۰۰ درصدی بدون نقص به KPI در هر ۴ تیم برای بیش از ۴ سال متوالی.",
+                        "en": "Operational Excellence: Maintained an unblemished 100% KPI achievement rate across all 4 teams for 4+ consecutive years.",
+                        "ms": "Kecemerlangan Operasi: Mengekalkan kadar pencapaian KPI 100% tanpa cela di kesemua 4 pasukan selama 4+ tahun berturut-turut.",
+                        "de": "Operative Exzellenz: Beibehaltung einer makellosen 100%igen KPI-Erreichungsrate in allen 4 Teams über 4+ aufeinanderfolgende Jahre."
+                    },
+                    {
+                        "fa": "تعامل با ذی‌نفعان: تهیه و ارائه گزارش‌های پیچیده MBR/QBR به مدیریت اجرایی Concentrix و مشتریان جهانی SAP.",
+                        "en": "Stakeholder Engagement: Prepare and present sophisticated MBR/QBR to Concentrix executive management and global SAP clients.",
+                        "ms": "Penglibatan Pemegang Taruh: Menyediakan dan membentangkan MBR/QBR yang canggih kepada pengurusan eksekutif Concentrix dan pelanggan SAP global.",
+                        "de": "Stakeholder-Engagement: Vorbereitung und Präsentation ausgefeilter MBR/QBR an das Concentrix-Management und globale SAP-Kunden."
+                    },
+                    {
+                        "de": "Strategische Migration: Erfolgreiche Integration des Web Operations Teams in die zentrale SAP-Geschäftseinheit.",
+                        "ms": "Migrasi Strategik: Berjaya mengintegrasikan pasukan Operasi Web ke dalam unit perniagaan teras SAP.",
+                        "en": "Strategic Migration: Successfully integrated the Web Operations team into the core SAP business unit.",
+                        "fa": "مهاجرت استراتژیک: ادغام موفقیت‌آمیز تیم عملیات وب در واحد تجاری اصلی SAP."
+                    }
+                ],
+                "date": "2022 – Present"
+            },
+            {
+                "date": "2020 – 2022",
+                "company": {
+                    "ms": "Concentrix Malaysia",
+                    "de": "Concentrix Malaysia",
+                    "fa": "Concentrix Malaysia",
+                    "en": "Concentrix Malaysia"
+                },
+                "bullets": [
+                    {
+                        "en": "Performance Management: Directed daily operations for the APJ Store Support team.\nKPI Attainment: Led the team to achieve 100% of all quarterly KPIs for 8 consecutive quarters (2 years) without a single missed target.\nTalent Development: Conducted regular coaching and feedback sessions, identifying operational weaknesses and implementing targeted improvement plans.",
+                        "fa": "Performance Management: Directed daily operations for the APJ Store Support team.\nKPI Attainment: Led the team to achieve 100% of all quarterly KPIs for 8 consecutive quarters (2 years) without a single missed target.\nTalent Development: Conducted regular coaching and feedback sessions, identifying operational weaknesses and implementing targeted improvement plans.",
+                        "de": "Performance Management: Directed daily operations for the APJ Store Support team.\nKPI Attainment: Led the team to achieve 100% of all quarterly KPIs for 8 consecutive quarters (2 years) without a single missed target.\nTalent Development: Conducted regular coaching and feedback sessions, identifying operational weaknesses and implementing targeted improvement plans.",
+                        "ms": "Performance Management: Directed daily operations for the APJ Store Support team.\nKPI Attainment: Led the team to achieve 100% of all quarterly KPIs for 8 consecutive quarters (2 years) without a single missed target.\nTalent Development: Conducted regular coaching and feedback sessions, identifying operational weaknesses and implementing targeted improvement plans."
+                    }
+                ],
+                "title": {
+                    "de": "Team Lead (SAP Store, APJ)",
+                    "ms": "Team Lead (SAP Store, APJ)",
+                    "en": "Team Lead (SAP Store, APJ)",
+                    "fa": "Team Lead (SAP Store, APJ)"
+                }
+            },
+            {
+                "title": {
+                    "en": "Senior E-commerce Specialist (SAP Store)",
+                    "fa": "Senior E-commerce Specialist (SAP Store)",
+                    "de": "Senior E-commerce Specialist (SAP Store)",
+                    "ms": "Senior E-commerce Specialist (SAP Store)"
+                },
+                "company": {
+                    "fa": "Concentrix Malaysia",
+                    "en": "Concentrix Malaysia",
+                    "ms": "Concentrix Malaysia",
+                    "de": "Concentrix Malaysia"
+                },
+                "bullets": [
+                    {
+                        "ms": "B2B Client Support: Managed complex pre- and post-order inquiries for SAP Store customers, resolving up to 30 cases daily with high accuracy.\nAI & Chatbot Innovation: Played a critical role in developing and implementing the first-ever Chatbot for the SAP Store in 2018.\nAward & Recognition: Recognized as 'Most Valuable Agent of the Year' globally in 2018 for exceptional performance and innovation.",
+                        "de": "B2B Client Support: Managed complex pre- and post-order inquiries for SAP Store customers, resolving up to 30 cases daily with high accuracy.\nAI & Chatbot Innovation: Played a critical role in developing and implementing the first-ever Chatbot for the SAP Store in 2018.\nAward & Recognition: Recognized as 'Most Valuable Agent of the Year' globally in 2018 for exceptional performance and innovation.",
+                        "fa": "B2B Client Support: Managed complex pre- and post-order inquiries for SAP Store customers, resolving up to 30 cases daily with high accuracy.\nAI & Chatbot Innovation: Played a critical role in developing and implementing the first-ever Chatbot for the SAP Store in 2018.\nAward & Recognition: Recognized as 'Most Valuable Agent of the Year' globally in 2018 for exceptional performance and innovation.",
+                        "en": "B2B Client Support: Managed complex pre- and post-order inquiries for SAP Store customers, resolving up to 30 cases daily with high accuracy.\nAI & Chatbot Innovation: Played a critical role in developing and implementing the first-ever Chatbot for the SAP Store in 2018.\nAward & Recognition: Recognized as 'Most Valuable Agent of the Year' globally in 2018 for exceptional performance and innovation."
+                    }
+                ],
+                "date": "2016 – 2020"
+            }
+        ],
+        "sectionVisibility": {
+            "hero": true,
+            "skills": true,
+            "aboutCarousel": true,
+            "about": true,
+            "experience": true,
+            "heroMap": true,
+            "experienceTimeline": true,
+            "heroWordCloud": true,
+            "aboutTextPanel": true,
+            "skillsGrid": true
+        },
+        "whatsapp": "60194909004",
+        "aboutSlides": [
+            {
+                "image": "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1779816821943_pic1.jpg?alt=media&token=52ab9edd-755b-4031-bf54-116b85720295",
+                "title": {
+                    "en": "This is ME!!",
+                    "fa": "This is ME!!",
+                    "de": "This is ME!!",
+                    "ms": "This is ME!!"
+                },
+                "text": {
+                    "ms": "<p>Berasal dari Iran dan kini menetap di Kuala Lumpur, saya seorang pemimpin teknologi dan pembangun dengan minat mendalam untuk menyelesaikan cabaran perusahaan yang kompleks. Dengan Ijazah Sarjana Muda dalam Sains Komputer dan Ijazah Sarjana dalam Kejuruteraan Perisian, kerjaya saya telah dibina di persimpangan pembangunan perisian secara langsung dan operasi SaaS B2B strategik ;l.</p>",
+                    "de": "<p>Ursprünglich aus dem Iran und derzeit in Kuala Lumpur ansässig, bin ich ein Tech-Leader und Entwickler mit einer tiefen Leidenschaft für die Lösung komplexer Unternehmensherausforderungen. Mit einem Bachelor in Informatik und einem Master in Software Engineering hat sich meine Karriere an der Schnittstelle von praktischer Softwareentwicklung und strategischen B2B-SaaS-Operationen ;l aufgebaut.</p>",
+                    "fa": "<p>اصالتاً اهل ایران و در حال حاضر مقیم کوالالامپور، من یک رهبر و توسعه‌دهنده فناوری هستم با اشتیاقی عمیق برای حل چالش‌های پیچیده سازمانی. با مدرک کارشناسی در علوم کامپیوتر و کارشناسی ارشد در مهندسی نرم‌افزار، حرفه من در تلاقی توسعه نرم‌افزار عملی و عملیات استراتژیک B2B SaaS شکل گرفته است ;l.</p>",
+                    "en": "<p>Originally from Iran and currently based in Kuala Lumpur, I am a tech leader and developer with a deep passion for solving complex enterprise challenges. With a Bachelor's in Computer Science and a Master's in Software Engineering, my career has been built at the intersection of hands-on software development and strategic B2B SaaS operations ;l.</p>"
+                }
+            },
+            {
+                "title": {
+                    "fa": "Be Productive!!!",
+                    "en": "Be Productive!!!",
+                    "ms": "Be Productive!!!",
+                    "de": "Be Productive!!!"
+                },
+                "text": {
+                    "en": "<p><strong>Scaling Enterprise Solutions</strong> Over the last decade, I have led cross-functional teams and driven digital transformation within the global SAP ecosystem. By leveraging process automation tools like SAP iRPA and Power Automate, I have a proven track record of eliminating manual workflows, accelerating SLA resolutions, and boosting customer satisfaction.</p>",
+                    "fa": "<p><strong>ایجاد مقیاس‌پذیری برای راهکارهای سازمانی</strong> در طول دهه گذشته، من رهبری تیم‌های چندوظیفه‌ای را بر عهده داشته و تحول دیجیتال را در اکوسیستم جهانی SAP هدایت کرده‌ام. با بهره‌گیری از ابزارهای اتوماسیون فرآیند مانند SAP iRPA و Power Automate، سابقه اثبات‌شده‌ای در حذف جریان‌های کاری دستی، تسریع در حل و فصل SLA و افزایش رضایت مشتری دارم.</p>",
+                    "de": "<p><strong>Skalierung von Unternehmenslösungen</strong> Im letzten Jahrzehnt habe ich funktionsübergreifende Teams geführt und die digitale Transformation innerhalb des globalen SAP-Ökosystems vorangetrieben. Durch den Einsatz von Prozessautomatisierungstools wie SAP iRPA und Power Automate habe ich eine nachweisliche Erfolgsbilanz bei der Eliminierung manueller Arbeitsabläufe, der Beschleunigung von SLA-Lösungen und der Steigerung der Kundenzufriedenheit.</p>",
+                    "ms": "<p><strong>Menskalakan Penyelesaian Perusahaan</strong> Sepanjang dekad yang lalu, saya telah memimpin pasukan rentas fungsi dan memacu transformasi digital dalam ekosistem SAP global. Dengan memanfaatkan alat automasi proses seperti SAP iRPA dan Power Automate, saya mempunyai rekod prestasi yang terbukti dalam menghapuskan aliran kerja manual, mempercepatkan penyelesaian SLA, dan meningkatkan kepuasan pelanggan.</p>"
+                },
+                "image": "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1779816882031_pic2.jpg?alt=media&token=fcc6092c-7560-446e-9ea0-7a63474e56ec"
+            },
+            {
+                "title": {
+                    "ms": "I see Beauty!!",
+                    "de": "I see Beauty!!",
+                    "fa": "I see Beauty!!",
+                    "en": "I see Beauty!!"
+                },
+                "text": {
+                    "de": "<p> <strong>Erstellen fürs Web</strong> Neben der Leitung globaler Kundenerfolgsteams bin ich im Grunde meines Herzens ein Macher. Ich spezialisiere mich auf Webentwicklung und Content-Management und nutze dabei einen robusten technischen Stack, der HTML, CSS, JavaScript, Node.js und Java umfasst. </p>",
+                    "ms": "<p> <strong>Membangun untuk Web</strong> Selain menguruskan pasukan kejayaan pelanggan global, saya seorang pembina sejati. Saya pakar dalam pembangunan web dan pengurusan kandungan, menggunakan tumpukan teknologi yang mantap termasuk HTML, CSS, JavaScript, Node.js, dan Java. </p>",
+                    "en": "<p> <strong>Building for the Web</strong> Beyond managing global customer success teams, I am a builder at heart. I specialize in web development and content management, utilizing a robust technical stack that includes HTML, CSS, JavaScript, Node.js, and Java. </p>",
+                    "fa": "<p> <strong>ساخت برای وب</strong> فراتر از مدیریت تیم‌های موفقیت مشتری جهانی، من ذاتاً یک سازنده‌ام. من در توسعه وب و مدیریت محتوا تخصص دارم و از یک پشته فنی قوی استفاده می‌کنم که شامل HTML، CSS، JavaScript، Node.js و Java می‌شود. </p>"
+                },
+                "image": "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1779816971331_pic3.jpg?alt=media&token=4864ae24-a342-44c2-9ebf-a974ef42a764"
+            }
+        ],
+        "overrideTheme": "theme1",
+        "skillsFontFamily": "'Outfit', sans-serif",
+        "profileImage": "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1780233534587_pic6.jpeg?alt=media&token=ee7daf38-1876-4076-97a2-ac802570f786",
+        "nationality": "ir",
+        "experienceTextAlign": "justify",
+        "linkedin": "https://www.linkedin.com/in/bahman-noushabadi/",
+        "email": "bahman.noushabadii@gmail.com",
+        "experienceFontFamily": "'Outfit', sans-serif",
+        "securitySettings": {
+            "captchaEnabled": true
+        },
+        "cvUrl": "https://firebasestorage.googleapis.com/v0/b/portfolio-6c69f.firebasestorage.app/o/media%2F1778701433807_Bahman%20Noushabadi%20-%20Transformation%20Manager.pdf?alt=media&token=2bd860be-bc0c-4846-918f-ec9ef06b757a",
+        "aboutText": {
+            "ms": "",
+            "de": "",
+            "fa": "",
+            "en": ""
+        },
+        "skills": [
+            {
+                "title": {
+                    "de": "Operationsmanagement",
+                    "ms": "Pengurusan Operasi",
+                    "en": "Operations Management",
+                    "fa": "مدیریت عملیات"
+                },
+                "description": {
+                    "fa": "رهبری فرابخشی، دستیابی به KPI/SLA، گزارش‌دهی MBR/QBR.",
+                    "en": "Cross-functional Leadership, KPI/SLA Attainment, MBR/QBR Reporting.",
+                    "ms": "Kepimpinan Merentas Fungsi, Pencapaian KPI/SLA, Pelaporan MBR/QBR.",
+                    "de": "Funktionsübergreifende Führung, KPI/SLA-Erreichung, MBR/QBR-Berichterstattung."
+                },
+                "icon": "fa-solid fa-chart-line"
+            },
+            {
+                "icon": "fa-solid fa-robot",
+                "description": {
+                    "de": "Prozessautomatisierung, Workflow-Optimierung, Qualitätsprüfung",
+                    "ms": "Automasi Proses, Pengoptimuman Aliran Kerja, Audit Kualiti",
+                    "en": "Process Automation, Workflow Optimization, Quality Auditing.",
+                    "fa": "اتوماسیون فرآیند، بهینه‌سازی گردش کار، حسابرسی کیفیت"
+                },
+                "title": {
+                    "fa": "تحول دیجیتال",
+                    "en": "Digital Transformation",
+                    "ms": "Transformasi Digital",
+                    "de": "Digitale Transformation"
+                }
+            },
+            {
+                "icon": "fa-solid fa-handshake",
+                "description": {
+                    "fa": "مدیریت ذینفعان جهانی، پشتیبانی حساب‌های B2B، تعالی در ارائه خدمات.",
+                    "en": "Global Stakeholder Management, B2B Account Support, Service Delivery Excellence.",
+                    "ms": "Pengurusan Pihak Berkepentingan Global, Sokongan Akaun B2B, Kecemerlangan Penyampaian Perkhidmatan.",
+                    "de": "Globales Stakeholder-Management, B2B-Kundenbetreuung, Exzellenz in der Servicebereitstellung."
+                },
+                "title": {
+                    "ms": "Hubungan Pelanggan",
+                    "de": "Kundenbeziehungen",
+                    "fa": "روابط مشتری",
+                    "en": "Client Relations"
+                }
+            },
+            {
+                "title": {
+                    "de": "Technische Kompetenz",
+                    "ms": "Kemahiran Teknikal",
+                    "en": "Technical Proficiency",
+                    "fa": "کفایت فنی"
+                },
+                "description": {
+                    "ms": "SAP S/4HANA, SAP ERP, SAP Build, SAP BTP, Power BI, SAP SAC, Adobe AEM, HTML, CSS, JS, Node.js, Java.",
+                    "de": "SAP S/4HANA, SAP ERP, SAP Build, SAP BTP, Power BI, SAP SAC, Adobe AEM, HTML, CSS, JS, Node.js, Java.",
+                    "fa": "SAP S/4HANA, SAP ERP, SAP Build, SAP BTP, Power BI, SAP SAC, Adobe AEM, HTML, CSS, JS, Node.js, Java.",
+                    "en": "SAP S/4HANA, SAP ERP, SAP Build, SAP BTP, Power BI, SAP SAC, Adobe AEM, HTML, CSS, JS, Node.js, Java."
+                },
+                "icon": "fa-solid fa-microchip"
+            }
+        ],
+        "aboutTextAlign": "justify"
+    },
+    "users": [
+        {
+            "id": "GxvKShmsAdPw9YpOTxznoBXXDZG3",
+            "name": "bahmannoushabadi",
+            "email": "bahmannoushabadi@gmail.com",
+            "role": "super_admin"
+        },
+        {
+            "id": "n7MQZQwKC9gMfIBd8HvH",
+            "createdAt": "2026-05-27T23:41:27.221Z",
+            "fullName": "Fatemeh Tajik",
+            "passwordHash": "522cc7eb35bd7e648c524f0cf0efade76f3d33b0f9d937c230ba62befddc4578",
+            "type": "local",
+            "username": "FatemehCM",
+            "role": "content_manager",
+            "permissions": {
+                "mediaCV": false,
+                "tabMedia": true,
+                "contentExperience": false,
+                "settingVisibility": true,
+                "contentAboutSlides": true,
+                "tabSettings": true,
+                "mediaProfile": true,
+                "contentContact": true,
+                "contentHero": true,
+                "tabContent": true,
+                "settingThemes": true,
+                "contentAbout": false,
+                "mediaGallery": true,
+                "contentSkills": true
+            },
+            "password": "behnam26"
+        }
+    ],
+    "feedback": [
+        {
+            "id": "54e49jbV1zrYsE0QA6P4",
+            "name": "John",
+            "email": "J.Mccmanoman@gmail.com",
+            "message": "this is second test",
+            "timestamp": {
+                "type": "firestore/timestamp/1.0",
+                "seconds": 1777596769,
+                "nanoseconds": 417000000
+            }
+        },
+        {
+            "id": "LxOltPWKqDI5KCPgMLff",
+            "timestamp": {
+                "type": "firestore/timestamp/1.0",
+                "seconds": 1777596139,
+                "nanoseconds": 29000000
+            },
+            "message": "Bahman-Test",
+            "email": "bbimax.66@gmail.com",
+            "name": "Bahman"
+        },
+        {
+            "id": "SJy3RRfZQ77v4kpcQniD",
+            "name": "Amirhossein",
+            "email": "aadsdad@gmail.com",
+            "message": "jkfahfalkhfasjf;alsjf;askjf;alj",
+            "timestamp": {
+                "type": "firestore/timestamp/1.0",
+                "seconds": 1777869091,
+                "nanoseconds": 969000000
+            }
+        },
+        {
+            "id": "YyWq935BN5anIwKj4z0Q",
+            "timestamp": {
+                "type": "firestore/timestamp/1.0",
+                "seconds": 1777755468,
+                "nanoseconds": 179000000
+            },
+            "name": "Segun",
+            "email": "swegun@ymail.com",
+            "message": "this is another another test"
+        },
+        {
+            "id": "bMgsCcltimjzglUwgxUl",
+            "name": "Fatemeh",
+            "message": "خیلی سایت خوشگلی دارین میشه کدشو بدین ماهم کپی کنیم؟؟",
+            "email": "fatemehtajiiik@gmail.com",
+            "timestamp": {
+                "type": "firestore/timestamp/1.0",
+                "seconds": 1779028320,
+                "nanoseconds": 25000000
+            }
+        },
+        {
+            "id": "nO5OZS4RaOAn0ffI9CuI",
+            "name": "Delvin",
+            "message": "This is another trst",
+            "email": "delvin@ymail.com",
+            "timestamp": {
+                "type": "firestore/timestamp/1.0",
+                "seconds": 1777600816,
+                "nanoseconds": 522000000
+            }
+        },
+        {
+            "id": "uiutOJQed9zk7Bu9aGfM",
+            "timestamp": {
+                "type": "firestore/timestamp/1.0",
+                "seconds": 1777663908,
+                "nanoseconds": 352000000
+            },
+            "message": "this is another test",
+            "email": "homa@gmail.com",
+            "name": "Homa"
+        }
+    ]
+}

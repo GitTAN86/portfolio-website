@@ -1325,3 +1325,17 @@ body.theme-4 .world-map-svg-container path {
         transform: translate(-50%, -50%) scale(1);
     }
 }
+
+/* ── Word Cloud Span Interactive Hover Effects ── */
+.hello-word {
+    transition: color 0.25s ease, transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), text-shadow 0.25s ease, opacity 0.25s ease, filter 0.25s ease !important;
+}
+
+.hello-word:hover {
+    color: #ffffff !important;
+    transform: scale(1.35) !important;
+    opacity: 1 !important;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.95), 0 0 30px var(--color-primary, #4285F4) !important;
+    filter: drop-shadow(0 0 10px var(--color-primary, #4285F4)) !important;
+    z-index: 1000 !important;
+}

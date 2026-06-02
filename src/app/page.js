@@ -22,65 +22,77 @@ if (typeof window !== "undefined") {
 // rotate: 0grees — GSAP owns the full transform (centering + rotation + float)
 const HELLO_CLOUD = [
   // ── Centre — black, upright ────────────────────────────────────────────────────
-  { text: "درود", x: 50, y: 50, size: 5.6, font: "'Noto Nastaliq Urdu', sans-serif", color: "#fe0303ff", opacity: 1.00, floatAmt: 11, rotate: 0 }, // 25 Farsi
+  { text: "درود", x: 50, y: 50, size: 5.6, font: "'Noto Nastaliq Urdu', sans-serif", color: "#FF3366", opacity: 1.00, floatAmt: 11, rotate: 0 }, // 25 Farsi
   // ── Inner ring (top 10 spoken) ────────────────────────────────────────────────
-  { text: "Hello", x: 28, y: 34, size: 3.0, font: "'Arial', sans-serif", color: "#1A237E", opacity: 0.92, floatAmt: 7, rotate: 0 }, // 2  English
-  { text: "नमस्ते", x: 68, y: 30, size: 2.8, font: "'Arial', sans-serif", color: "#880E4F", opacity: 0.90, floatAmt: 8, rotate: 0 }, // 3  Hindi
-  { text: "سلام", x: 16, y: 75, size: 3.8, font: "'Georgia', serif", color: "#a80909ff", opacity: 1.00, floatAmt: 6, rotate: 0 }, // 1  center
-  { text: "Hola", x: 63, y: 63, size: 2.7, font: "'Trebuchet MS', sans-serif", color: "#1B5E20", opacity: 0.88, floatAmt: 9, rotate: 0 }, // 4  Spanish
-  { text: "Bonjour", x: 24, y: 65, size: 2.6, font: "'Palatino', serif", color: "#4A148C", opacity: 0.87, floatAmt: 8, rotate: 0 }, // 5  French
-  { text: "مرحبا", x: 47, y: 78, size: 2.4, font: "'Arial', sans-serif", color: "#006064", opacity: 0.85, floatAmt: 10, rotate: 0 }, // 6  Arabic
-  { text: "হ্যালো", x: 79, y: 58, size: 2.3, font: "'Arial', sans-serif", color: "#BF360C", opacity: 0.83, floatAmt: 9, rotate: 0 }, // 7  Bengali
-  { text: "Olá", x: 83, y: 20, size: 2.3, font: "'Times New Roman', serif", color: "#01579B", opacity: 0.82, floatAmt: 10, rotate: 0 }, // 8  Portuguese
-  { text: "Halo", x: 35, y: 20, size: 2.1, font: "'Arial', sans-serif", color: "#33691E", opacity: 0.82, floatAmt: 11, rotate: 0 }, // 9  Indonesian
-  { text: "你好", x: 12, y: 50, size: 2.3, font: "'Arial', sans-serif", color: "#311B92", opacity: 0.82, floatAmt: 9, rotate: 0 }, // 10 Mandarin/Urdu
+  { text: "Hello", x: 28, y: 34, size: 3.0, font: "'Arial', sans-serif", color: "#3B82F6", opacity: 0.92, floatAmt: 7, rotate: 0 }, // 2  English
+  { text: "नमस्ते", x: 68, y: 30, size: 2.8, font: "'Arial', sans-serif", color: "#EC4899", opacity: 0.90, floatAmt: 8, rotate: 0 }, // 3  Hindi
+  { text: "سلام", x: 16, y: 75, size: 3.8, font: "'Georgia', serif", color: "#F43F5E", opacity: 1.00, floatAmt: 6, rotate: 0 }, // 1  center
+  { text: "Hola", x: 63, y: 63, size: 2.7, font: "'Trebuchet MS', sans-serif", color: "#10B981", opacity: 0.88, floatAmt: 9, rotate: 0 }, // 4  Spanish
+  { text: "Bonjour", x: 24, y: 65, size: 2.6, font: "'Palatino', serif", color: "#A855F7", opacity: 0.87, floatAmt: 8, rotate: 0 }, // 5  French
+  { text: "مرحبا", x: 47, y: 78, size: 2.4, font: "'Arial', sans-serif", color: "#06B6D4", opacity: 0.85, floatAmt: 10, rotate: 0 }, // 6  Arabic
+  { text: "হ্যালো", x: 79, y: 58, size: 2.3, font: "'Arial', sans-serif", color: "#FF9100", opacity: 0.83, floatAmt: 9, rotate: 0 }, // 7  Bengali
+  { text: "Olá", x: 83, y: 20, size: 2.3, font: "'Times New Roman', serif", color: "#00E5FF", opacity: 0.82, floatAmt: 10, rotate: 0 }, // 8  Portuguese
+  { text: "Halo", x: 35, y: 20, size: 2.1, font: "'Arial', sans-serif", color: "#00E676", opacity: 0.82, floatAmt: 11, rotate: 0 }, // 9  Indonesian
+  { text: "你好", x: 12, y: 50, size: 2.3, font: "'Arial', sans-serif", color: "#651FFF", opacity: 0.82, floatAmt: 9, rotate: 0 }, // 10 Mandarin/Urdu
   // ── Mid ring ──────────────────────────────────────────────────────────────────
-  { text: "Привет", x: 10, y: 65, size: 2.0, font: "'Georgia', serif", color: "#37474F", opacity: 0.78, floatAmt: 11, rotate: 0 }, // 11 Russian
-  { text: "Hallo", x: 74, y: 75, size: 2.0, font: "'Verdana', sans-serif", color: "#6A1B9A", opacity: 0.78, floatAmt: 10, rotate: 0 }, // 12 German
-  { text: "こんにちは", x: 50, y: 22, size: 1.9, font: "'Arial', sans-serif", color: "#0D47A1", opacity: 0.78, floatAmt: 11, rotate: 0 }, // 13 Japanese
-  { text: "नमस्कार", x: 88, y: 40, size: 1.8, font: "'Arial', sans-serif", color: "#4E342E", opacity: 0.76, floatAmt: 10, rotate: 0 }, // 14 Marathi
-  { text: "Xin chào", x: 32, y: 83, size: 1.8, font: "'Arial', sans-serif", color: "#1B4F72", opacity: 0.76, floatAmt: 12, rotate: 0 }, // 15 Vietnamese
-  { text: "నమస్కారం", x: 65, y: 12, size: 1.7, font: "'Arial', sans-serif", color: "#7B0000", opacity: 0.74, floatAmt: 12, rotate: 0 }, // 16 Telugu
-  { text: "Habari", x: 6, y: 22, size: 1.7, font: "'Verdana', sans-serif", color: "#1A237E", opacity: 0.72, floatAmt: 13, rotate: 0 }, // 17 Swahili
-  { text: "Sannu", x: 92, y: 65, size: 1.7, font: "'Arial', sans-serif", color: "#004D40", opacity: 0.72, floatAmt: 12, rotate: 0 }, // 18 Hausa
-  { text: "Merhaba", x: 58, y: 88, size: 1.7, font: "'Verdana', sans-serif", color: "#880E4F", opacity: 0.72, floatAmt: 10, rotate: 0 }, // 19 Turkish
+  { text: "Привет", x: 10, y: 65, size: 2.0, font: "'Georgia', serif", color: "#60A5FA", opacity: 0.78, floatAmt: 11, rotate: 0 }, // 11 Russian
+  { text: "Hallo", x: 74, y: 75, size: 2.0, font: "'Verdana', sans-serif", color: "#D946EF", opacity: 0.78, floatAmt: 10, rotate: 0 }, // 12 German
+  { text: "こんにちは", x: 50, y: 22, size: 1.9, font: "'Arial', sans-serif", color: "#3B82F6", opacity: 0.78, floatAmt: 11, rotate: 0 }, // 13 Japanese
+  { text: "नमस्कार", x: 88, y: 40, size: 1.8, font: "'Arial', sans-serif", color: "#FACC15", opacity: 0.76, floatAmt: 10, rotate: 0 }, // 14 Marathi
+  { text: "Xin chào", x: 32, y: 83, size: 1.8, font: "'Arial', sans-serif", color: "#00E5FF", opacity: 0.76, floatAmt: 12, rotate: 0 }, // 15 Vietnamese
+  { text: "నమస్కారం", x: 65, y: 12, size: 1.7, font: "'Arial', sans-serif", color: "#FF5252", opacity: 0.74, floatAmt: 12, rotate: 0 }, // 16 Telugu
+  { text: "Habari", x: 6, y: 22, size: 1.7, font: "'Verdana', sans-serif", color: "#6366F1", opacity: 0.72, floatAmt: 13, rotate: 0 }, // 17 Swahili
+  { text: "Sannu", x: 92, y: 65, size: 1.7, font: "'Arial', sans-serif", color: "#14B8A6", opacity: 0.72, floatAmt: 12, rotate: 0 }, // 18 Hausa
+  { text: "Merhaba", x: 58, y: 88, size: 1.7, font: "'Verdana', sans-serif", color: "#EC4899", opacity: 0.72, floatAmt: 10, rotate: 0 }, // 19 Turkish
   // ── Outer ring ────────────────────────────────────────────────────────────────
-  { text: "Kamusta", x: 78, y: 88, size: 1.6, font: "'Arial', sans-serif", color: "#4A148C", opacity: 0.70, floatAmt: 13, rotate: 0 }, // 21 Tagalog
-  { text: "வணக்கம்", x: 38, y: 42, size: 1.6, font: "'Arial', sans-serif", color: "#1B5E20", opacity: 0.68, floatAmt: 11, rotate: 0 }, // 22 Tamil
-  { text: "你好", x: 70, y: 40, size: 1.6, font: "'Arial', sans-serif", color: "#006064", opacity: 0.68, floatAmt: 10, rotate: 0 }, // 23 Cantonese
-  { text: "侬好", x: 33, y: 60, size: 1.6, font: "'Arial', sans-serif", color: "#1A237E", opacity: 0.68, floatAmt: 12, rotate: 0 }, // 24 Wu
-  { text: "안녕하세요", x: 55, y: 15, size: 1.6, font: "'Arial', sans-serif", color: "#7B0000", opacity: 0.68, floatAmt: 13, rotate: 0 }, // 26 Korean
-  { text: "ሰላም", x: 90, y: 78, size: 1.4, font: "'Arial', sans-serif", color: "#0D47A1", opacity: 0.65, floatAmt: 13, rotate: 0 }, // 27 Amharic
-  { text: "สวัสดี", x: 46, y: 93, size: 1.4, font: "'Arial', sans-serif", color: "#4A148C", opacity: 0.65, floatAmt: 14, rotate: 0 }, // 28 Thai
-  { text: "Sugeng", x: 73, y: 48, size: 1.4, font: "'Arial', sans-serif", color: "#004D40", opacity: 0.65, floatAmt: 11, rotate: 0 }, // 29 Javanese
-  { text: "Ciao", x: 22, y: 56, size: 1.6, font: "'Courier New', monospace", color: "#880E4F", opacity: 0.68, floatAmt: 9, rotate: 0 }, // 30 Italian
-  { text: "નમસ્તે", x: 90, y: 10, size: 1.4, font: "'Arial', sans-serif", color: "#33691E", opacity: 0.62, floatAmt: 12, rotate: 0 }, // 31 Gujarati
-  { text: "ನಮಸ್ಕಾರ", x: 5, y: 33, size: 1.4, font: "'Arial', sans-serif", color: "#BF360C", opacity: 0.62, floatAmt: 12, rotate: 0 }, // 32 Kannada
-  { text: "Ẹ káàárọ̀", x: 18, y: 85, size: 1.25, font: "'Arial', sans-serif", color: "#1A237E", opacity: 0.60, floatAmt: 13, rotate: 0 }, // 33 Yoruba
-  { text: "प्रणाम", x: 55, y: 38, size: 1.25, font: "'Arial', sans-serif", color: "#6A1B9A", opacity: 0.60, floatAmt: 10, rotate: 0 }, // 34 Bhojpuri
-  { text: "Привіт", x: 8, y: 78, size: 1.4, font: "'Georgia', serif", color: "#37474F", opacity: 0.62, floatAmt: 12, rotate: 0 }, // 35 Ukrainian
-  { text: "Cześć", x: 90, y: 30, size: 1.4, font: "'Verdana', sans-serif", color: "#01579B", opacity: 0.62, floatAmt: 11, rotate: 0 }, // 36 Polish
-  { text: "Helo", x: 43, y: 70, size: 1.25, font: "'Arial', sans-serif", color: "#1B5E20", opacity: 0.60, floatAmt: 13, rotate: 0 }, // 37 Malay
-  { text: "Akkam", x: 80, y: 6, size: 1.25, font: "'Arial', sans-serif", color: "#311B92", opacity: 0.58, floatAmt: 14, rotate: 0 }, // 38 Oromo
-  { text: "Salut", x: 20, y: 22, size: 1.25, font: "'Trebuchet MS', sans-serif", color: "#7B0000", opacity: 0.58, floatAmt: 11, rotate: 0 }, // 39 Romanian
-  { text: "Salam", x: 68, y: 82, size: 1.25, font: "'Arial', sans-serif", color: "#4E342E", opacity: 0.58, floatAmt: 12, rotate: 0 }, // 40 Azerbaijani
+  { text: "Kamusta", x: 78, y: 88, size: 1.6, font: "'Arial', sans-serif", color: "#A855F7", opacity: 0.70, floatAmt: 13, rotate: 0 }, // 21 Tagalog
+  { text: "வணக்கம்", x: 38, y: 42, size: 1.6, font: "'Arial', sans-serif", color: "#10B981", opacity: 0.68, floatAmt: 11, rotate: 0 }, // 22 Tamil
+  { text: "你好", x: 70, y: 40, size: 1.6, font: "'Arial', sans-serif", color: "#06B6D4", opacity: 0.68, floatAmt: 10, rotate: 0 }, // 23 Cantonese
+  { text: "侬好", x: 33, y: 60, size: 1.6, font: "'Arial', sans-serif", color: "#6366F1", opacity: 0.68, floatAmt: 12, rotate: 0 }, // 24 Wu
+  { text: "안녕하세요", x: 55, y: 15, size: 1.6, font: "'Arial', sans-serif", color: "#FF5252", opacity: 0.68, floatAmt: 13, rotate: 0 }, // 26 Korean
+  { text: "ሰላም", x: 90, y: 78, size: 1.4, font: "'Arial', sans-serif", color: "#3B82F6", opacity: 0.65, floatAmt: 13, rotate: 0 }, // 27 Amharic
+  { text: "สวัสดี", x: 46, y: 93, size: 1.4, font: "'Arial', sans-serif", color: "#A855F7", opacity: 0.65, floatAmt: 14, rotate: 0 }, // 28 Thai
+  { text: "Sugeng", x: 73, y: 48, size: 1.4, font: "'Arial', sans-serif", color: "#14B8A6", opacity: 0.65, floatAmt: 11, rotate: 0 }, // 29 Javanese
+  { text: "Ciao", x: 22, y: 56, size: 1.6, font: "'Courier New', monospace", color: "#EC4899", opacity: 0.68, floatAmt: 9, rotate: 0 }, // 30 Italian
+  { text: "નમસ્તે", x: 90, y: 10, size: 1.4, font: "'Arial', sans-serif", color: "#00E676", opacity: 0.62, floatAmt: 12, rotate: 0 }, // 31 Gujarati
+  { text: "ನಮસ્ಕಾರ", x: 5, y: 33, size: 1.4, font: "'Arial', sans-serif", color: "#FF9100", opacity: 0.62, floatAmt: 12, rotate: 0 }, // 32 Kannada
+  { text: "Ẹ káàárọ̀", x: 18, y: 85, size: 1.25, font: "'Arial', sans-serif", color: "#6366F1", opacity: 0.60, floatAmt: 13, rotate: 0 }, // 33 Yoruba
+  { text: "प्रणाम", x: 55, y: 38, size: 1.25, font: "'Arial', sans-serif", color: "#D946EF", opacity: 0.60, floatAmt: 10, rotate: 0 }, // 34 Bhojpuri
+  { text: "Привіт", x: 8, y: 78, size: 1.4, font: "'Georgia', serif", color: "#60A5FA", opacity: 0.62, floatAmt: 12, rotate: 0 }, // 35 Ukrainian
+  { text: "Cześć", x: 90, y: 30, size: 1.4, font: "'Verdana', sans-serif", color: "#00E5FF", opacity: 0.62, floatAmt: 11, rotate: 0 }, // 36 Polish
+  { text: "Helo", x: 43, y: 70, size: 1.25, font: "'Arial', sans-serif", color: "#10B981", opacity: 0.60, floatAmt: 13, rotate: 0 }, // 37 Malay
+  { text: "Akkam", x: 80, y: 6, size: 1.25, font: "'Arial', sans-serif", color: "#651FFF", opacity: 0.58, floatAmt: 14, rotate: 0 }, // 38 Oromo
+  { text: "Salut", x: 20, y: 22, size: 1.25, font: "'Trebuchet MS', sans-serif", color: "#FF5252", opacity: 0.58, floatAmt: 11, rotate: 0 }, // 39 Romanian
+  { text: "Salam", x: 68, y: 82, size: 1.25, font: "'Arial', sans-serif", color: "#FACC15", opacity: 0.58, floatAmt: 12, rotate: 0 }, // 40 Azerbaijani
   // ── Wide periphery ────────────────────────────────────────────────────────────
-  { text: "नमस्ते", x: 40, y: 25, size: 1.25, font: "'Arial', sans-serif", color: "#0D47A1", opacity: 0.56, floatAmt: 12, rotate: 0 }, // 41 Maithili
-  { text: "നമസ്കാരം", x: 90, y: 88, size: 1.0, font: "'Arial', sans-serif", color: "#004D40", opacity: 0.48, floatAmt: 14, rotate: 0 }, // 53 Malayalam
-  { text: "ନମସ୍କାର", x: 42, y: 88, size: 1.0, font: "'Arial', sans-serif", color: "#0D47A1", opacity: 0.48, floatAmt: 15, rotate: 0 }, // 54 Odia
-  { text: "Hallo", x: 8, y: 15, size: 1.1, font: "'Arial', sans-serif", color: "#37474F", opacity: 0.52, floatAmt: 14, rotate: 0 }, // 58 Dutch
-  { text: "ආයුබෝවන්", x: 70, y: 20, size: 1.0, font: "'Arial', sans-serif", color: "#004D40", opacity: 0.50, floatAmt: 12, rotate: 0 }, // 62 Sinhala
-  { text: "Silav", x: 26, y: 77, size: 1.0, font: "'Arial', sans-serif", color: "#0D47A1", opacity: 0.48, floatAmt: 14, rotate: 0 }, // 64 Kurdish
-  { text: "Сәлем", x: 87, y: 72, size: 1.0, font: "'Georgia', serif", color: "#1B5E20", opacity: 0.48, floatAmt: 13, rotate: 0 }, // 65 Kazakh
-  { text: "Szia", x: 62, y: 25, size: 1.0, font: "'Arial', sans-serif", color: "#37474F", opacity: 0.50, floatAmt: 12, rotate: 0 }, // 68 Hungarian
-  { text: "Hej", x: 5, y: 6, size: 1.0, font: "'Arial', sans-serif", color: "#4E342E", opacity: 0.44, floatAmt: 14, rotate: 0 }, // 69 Swedish
-  { text: "Բարև", x: 95, y: 6, size: 1.0, font: "'Arial', sans-serif", color: "#1A237E", opacity: 0.44, floatAmt: 13, rotate: 0 }, // 70 Armenian
+  { text: "नमस्ते", x: 40, y: 25, size: 1.25, font: "'Arial', sans-serif", color: "#3B82F6", opacity: 0.56, floatAmt: 12, rotate: 0 }, // 41 Maithili
+  { text: "നമസ്കാരം", x: 90, y: 88, size: 1.0, font: "'Arial', sans-serif", color: "#14B8A6", opacity: 0.48, floatAmt: 14, rotate: 0 }, // 53 Malayalam
+  { text: "ନମସ୍କାର", x: 42, y: 88, size: 1.0, font: "'Arial', sans-serif", color: "#3B82F6", opacity: 0.48, floatAmt: 15, rotate: 0 }, // 54 Odia
+  { text: "Hallo", x: 8, y: 15, size: 1.1, font: "'Arial', sans-serif", color: "#60A5FA", opacity: 0.52, floatAmt: 14, rotate: 0 }, // 58 Dutch
+  { text: "ආයුබෝවන්", x: 70, y: 20, size: 1.0, font: "'Arial', sans-serif", color: "#14B8A6", opacity: 0.50, floatAmt: 12, rotate: 0 }, // 62 Sinhala
+  { text: "Silav", x: 26, y: 77, size: 1.0, font: "'Arial', sans-serif", color: "#3B82F6", opacity: 0.48, floatAmt: 14, rotate: 0 }, // 64 Kurdish
+  { text: "Сәлем", x: 87, y: 72, size: 1.0, font: "'Georgia', serif", color: "#10B981", opacity: 0.48, floatAmt: 13, rotate: 0 }, // 65 Kazakh
+  { text: "Szia", x: 62, y: 25, size: 1.0, font: "'Arial', sans-serif", color: "#60A5FA", opacity: 0.50, floatAmt: 12, rotate: 0 }, // 68 Hungarian
+  { text: "Hej", x: 5, y: 6, size: 1.0, font: "'Arial', sans-serif", color: "#FACC15", opacity: 0.44, floatAmt: 14, rotate: 0 }, // 69 Swedish
+  { text: "Բարև", x: 95, y: 6, size: 1.0, font: "'Arial', sans-serif", color: "#6366F1", opacity: 0.44, floatAmt: 13, rotate: 0 }, // 70 Armenian
 ];
 
 const DEFAULT_PROFILE_IMAGE = "/images/pic6.jpeg";
 
 const DEFAULT_CMS_DATA = {
-  heroName: "Bahman Noushabadi",
+  heroName: {
+    en: "Bahman Noushabadi",
+    fa: "بهمن نوش آبادی",
+    de: "Bahman Noushabadi",
+    ms: "Bahman Noushabadi"
+  },
+  supportedLanguages: [
+    { code: "en", name: "English", flag: "🇬🇧" },
+    { code: "fa", name: "فارسی", flag: "🇮🇷", dir: "rtl" },
+    { code: "de", name: "Deutsch", flag: "🇩🇪" },
+    { code: "ms", name: "Melayu", flag: "🇲🇾" }
+  ],
+  enabledLanguages: ["en", "fa", "de", "ms"],
   heroTagline: {
     en: "Tech Leader & Senior Developer",
     fa: "رهبر فنی و توسعه‌دهنده ارشد",
@@ -270,57 +282,72 @@ function WordSplit({ text }) {
   );
 }
 
-const parseLocalized = (field, defaultObj) => {
-  if (!field) return defaultObj;
+const parseLocalized = (field, defaultObj, customLangs = null) => {
+  const defaultLangs = [
+    { code: "en", name: "English", flag: "🇬🇧" },
+    { code: "fa", name: "فارسی", flag: "🇮🇷", dir: "rtl" },
+    { code: "de", name: "Deutsch", flag: "🇩🇪" },
+    { code: "ms", name: "Melayu", flag: "🇲🇾" }
+  ];
+  const langs = customLangs || defaultLangs;
+  
+  const obj = {};
+  langs.forEach(l => {
+    obj[l.code] = (defaultObj && defaultObj[l.code]) || "";
+  });
+
+  if (!field) return obj;
+
   if (typeof field === "string") {
-    return {
-      en: field,
-      fa: field,
-      de: field,
-      ms: field
-    };
+    langs.forEach(l => {
+      if (l.code === "fa" && field === "Bahman Noushabadi") {
+        obj[l.code] = "بهمن نوش آبادی";
+      } else {
+        obj[l.code] = field;
+      }
+    });
+    return obj;
   }
-  return {
-    en: field.en || defaultObj.en || "",
-    fa: field.fa || field.en || defaultObj.fa || "",
-    de: field.de || field.en || defaultObj.de || "",
-    ms: field.ms || field.en || defaultObj.ms || ""
-  };
+
+  langs.forEach(l => {
+    obj[l.code] = field[l.code] || field.en || (defaultObj && defaultObj[l.code]) || "";
+  });
+  return obj;
 };
 
-const parseSkills = (arr, defaultSkills) => {
+const parseSkills = (arr, defaultSkills = [], customLangs = null) => {
   if (!arr || !Array.isArray(arr)) return defaultSkills;
   return arr.map((item, idx) => {
     const defItem = defaultSkills[idx] || {};
     return {
-      title: parseLocalized(item.title, defItem.title || { en: "" }),
-      description: parseLocalized(item.description, defItem.description || { en: "" }),
+      title: parseLocalized(item.title, defItem.title || { en: "" }, customLangs),
+      description: parseLocalized(item.description, defItem.description || { en: "" }, customLangs),
       icon: item.icon || defItem.icon || "fa-solid fa-star"
     };
   });
 };
 
-const parseExperience = (arr, defaultExp) => {
+const parseExperience = (arr, defaultExp = [], customLangs = null) => {
   if (!arr || !Array.isArray(arr)) return defaultExp;
   return arr.map((item, idx) => {
     const defItem = defaultExp[idx] || {};
     return {
-      title: parseLocalized(item.title, defItem.title || { en: "" }),
-      company: parseLocalized(item.company, defItem.company || { en: "" }),
+      title: parseLocalized(item.title, defItem.title || { en: "" }, customLangs),
+      company: parseLocalized(item.company, defItem.company || { en: "" }, customLangs),
       date: item.date || defItem.date || "",
       bullets: Array.isArray(item.bullets)
-        ? item.bullets.map(b => parseLocalized(b, { en: "" }))
+        ? item.bullets.map(b => parseLocalized(b, { en: "" }, customLangs))
         : (defItem.bullets || [])
     };
   });
 };
 
-const parseAboutSlides = (arr) => {
+const parseAboutSlides = (arr, customLangs = null) => {
   if (!arr || !Array.isArray(arr)) return [];
   return arr.map(slide => ({
     image: slide.image || "",
-    title: parseLocalized(slide.title, { en: "" }),
-    text: parseLocalized(slide.text, { en: "" })
+    title: parseLocalized(slide.title, { en: "" }, customLangs),
+    text: parseLocalized(slide.text, { en: "" }, customLangs)
   }));
 };
 
@@ -331,16 +358,25 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (locale === "fa") {
+    const supportedLanguages = data.supportedLanguages || [
+      { code: "en", name: "English", flag: "🇬🇧" },
+      { code: "fa", name: "فارسی", flag: "🇮🇷", dir: "rtl" },
+      { code: "de", name: "Deutsch", flag: "🇩🇪" },
+      { code: "ms", name: "Melayu", flag: "🇲🇾" }
+    ];
+    const activeLang = supportedLanguages.find(l => l.code === locale) || { code: "en" };
+    const isRtl = activeLang.dir === "rtl";
+
+    if (isRtl) {
       document.documentElement.dir = "rtl";
-      document.documentElement.lang = "fa";
-      document.body.style.fontFamily = "'Vazirmatn', 'Space Grotesk', sans-serif";
+      document.documentElement.lang = locale;
+      document.body.style.fontFamily = locale === "fa" ? "'Vazirmatn', 'Space Grotesk', sans-serif" : "";
     } else {
       document.documentElement.dir = "ltr";
       document.documentElement.lang = locale;
       document.body.style.fontFamily = "";
     }
-  }, [locale]);
+  }, [locale, data.supportedLanguages]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -397,15 +433,24 @@ export default function Home() {
           }
           return null;
         };
-        const parsedHeroTagline = parseLocalized(ex(f.heroTagline), DEFAULT_CMS_DATA.heroTagline);
-        const parsedHeroHeadline = parseLocalized(ex(f.heroHeadline), DEFAULT_CMS_DATA.heroHeadline);
-        const parsedAboutText = parseLocalized(ex(f.aboutText), DEFAULT_CMS_DATA.aboutText);
-        const parsedSkills = parseSkills(ex(f.skills), DEFAULT_CMS_DATA.skills);
-        const parsedExperience = parseExperience(ex(f.experience), DEFAULT_CMS_DATA.experience);
-        const parsedAboutSlides = parseAboutSlides(ex(f.aboutSlides));
+        const loadedLangs = ex(f.supportedLanguages) || [
+          { code: "en", name: "English", flag: "🇬🇧" },
+          { code: "fa", name: "فارسی", flag: "🇮🇷", dir: "rtl" },
+          { code: "de", name: "Deutsch", flag: "🇩🇪" },
+          { code: "ms", name: "Melayu", flag: "🇲🇾" }
+        ];
+        const loadedEnabled = ex(f.enabledLanguages) || ["en", "fa", "de", "ms"];
+
+        const parsedHeroName = parseLocalized(ex(f.heroName), DEFAULT_CMS_DATA.heroName, loadedLangs);
+        const parsedHeroTagline = parseLocalized(ex(f.heroTagline), DEFAULT_CMS_DATA.heroTagline, loadedLangs);
+        const parsedHeroHeadline = parseLocalized(ex(f.heroHeadline), DEFAULT_CMS_DATA.heroHeadline, loadedLangs);
+        const parsedAboutText = parseLocalized(ex(f.aboutText), DEFAULT_CMS_DATA.aboutText, loadedLangs);
+        const parsedSkills = parseSkills(ex(f.skills), DEFAULT_CMS_DATA.skills, loadedLangs);
+        const parsedExperience = parseExperience(ex(f.experience), DEFAULT_CMS_DATA.experience, loadedLangs);
+        const parsedAboutSlides = parseAboutSlides(ex(f.aboutSlides), loadedLangs);
 
         setData({
-          heroName: ex(f.heroName) || DEFAULT_CMS_DATA.heroName,
+          heroName: parsedHeroName,
           heroTagline: parsedHeroTagline,
           heroHeadline: parsedHeroHeadline,
           aboutText: parsedAboutText,
@@ -430,6 +475,8 @@ export default function Home() {
           skillsTextAlign: ex(f.skillsTextAlign) || DEFAULT_CMS_DATA.skillsTextAlign,
           experienceFontFamily: ex(f.experienceFontFamily) || DEFAULT_CMS_DATA.experienceFontFamily,
           experienceTextAlign: ex(f.experienceTextAlign) || DEFAULT_CMS_DATA.experienceTextAlign,
+          supportedLanguages: loadedLangs,
+          enabledLanguages: loadedEnabled
         });
       } catch (e) {
         console.warn("CMS fetch failed, using defaults:", e);
@@ -833,10 +880,21 @@ export default function Home() {
             onChange={e => setLocale(e.target.value)}
             className="lang-switcher-select"
           >
-            {(!data.enabledLanguages || data.enabledLanguages.includes("en")) && <option value="en">🇬🇧  English</option>}
-            {(!data.enabledLanguages || data.enabledLanguages.includes("fa")) && <option value="fa">🇮🇷  فارسی</option>}
-            {(!data.enabledLanguages || data.enabledLanguages.includes("de")) && <option value="de">🇩🇪  Deutsch</option>}
-            {(!data.enabledLanguages || data.enabledLanguages.includes("ms")) && <option value="ms">🇲🇾  Melayu</option>}
+            {(data.supportedLanguages || [
+              { code: "en", name: "English", flag: "🇬🇧" },
+              { code: "fa", name: "فارسی", flag: "🇮🇷", dir: "rtl" },
+              { code: "de", name: "Deutsch", flag: "🇩🇪" },
+              { code: "ms", name: "Melayu", flag: "🇲🇾" }
+            ]).map(l => {
+              if (l.code === "en" || !data.enabledLanguages || data.enabledLanguages.includes(l.code)) {
+                return (
+                  <option key={l.code} value={l.code} style={{ background: '#1a1a2e', color: 'white' }}>
+                    {l.flag}  {l.name}
+                  </option>
+                );
+              }
+              return null;
+            })}
           </select>
         </div>
       )}
@@ -953,6 +1011,8 @@ export default function Home() {
                       whiteSpace: "nowrap",
                       userSelect: "none",
                       willChange: "transform, opacity",
+                      pointerEvents: "auto",
+                      cursor: "pointer",
                       // Removed textShadow for performance (70 spans with drop-shadow kills GPU)
                     }}
                   >
@@ -977,7 +1037,7 @@ export default function Home() {
             >
               <img
                 src={data.profileImage}
-                alt={data.heroName}
+                alt={typeof data.heroName === 'object' ? (data.heroName[locale] || data.heroName.en || "") : data.heroName}
                 className="profile-img"
                 draggable={false}
                 fetchPriority="high"
@@ -1007,7 +1067,7 @@ export default function Home() {
               <span className="greeting" style={{ display: "block" }}>
                 <WordSplit text={locale === "fa" ? "سلام، من" : locale === "de" ? "Hallo, ich bin" : locale === "ms" ? "Helo, saya" : "Hello, I am"} />
               </span>
-              <h1 className="name"><WordSplit text={data.heroName} /></h1>
+              <h1 className="name"><WordSplit text={typeof data.heroName === 'object' ? (data.heroName[locale] || data.heroName.en || "") : data.heroName} /></h1>
               <h3 className="tagline"><WordSplit text={data.heroTagline?.[locale] || data.heroTagline?.["en"] || ""} /></h3>
               <p className="headline"><WordSplit text={data.heroHeadline?.[locale] || data.heroHeadline?.["en"] || ""} /></p>
             </div>
@@ -1106,7 +1166,7 @@ export default function Home() {
       <main ref={expWrapperRef} className="content-wrapper">
         {data.sectionVisibility?.experience !== false && <Experience data={data} locale={locale} />}
         <div style={{ height: "2rem" }} />
-        <Footer data={data} />
+        <Footer data={data} locale={locale} />
       </main>
 
       <FeedbackModal />

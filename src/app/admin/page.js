@@ -249,7 +249,12 @@ export default function AdminPage() {
     const [activeTab, setActiveTab] = useState("content");
 
     // CMS State
-    const [heroName, setHeroName] = useState("");
+    const [heroName, setHeroName] = useState({
+        en: "Bahman Noushabadi",
+        fa: "بهمن نوش آبادی",
+        de: "Bahman Noushabadi",
+        ms: "Bahman Noushabadi"
+    });
     const [heroTagline, setHeroTagline] = useState({ en: "", fa: "", de: "", ms: "" });
     const [heroHeadline, setHeroHeadline] = useState({ en: "", fa: "", de: "", ms: "" });
     const [aboutText, setAboutText] = useState({ en: "", fa: "", de: "", ms: "" });
@@ -276,10 +281,27 @@ export default function AdminPage() {
     const [copilotResult, setCopilotResult] = useState("");
     const [geminiTestStatus, setGeminiTestStatus] = useState(null); // { loading, ok, msg }
     const [enabledLanguages, setEnabledLanguages] = useState(["en", "fa", "de", "ms"]);
+    const [supportedLanguages, setSupportedLanguages] = useState([
+        { code: "en", name: "English", flag: "🇬🇧" },
+        { code: "fa", name: "فارسی", flag: "🇮🇷", dir: "rtl" },
+        { code: "de", name: "Deutsch", flag: "🇩🇪" },
+        { code: "ms", name: "Melayu", flag: "🇲🇾" }
+    ]);
+    
+    // Add custom language form state
+    const [customLangCode, setCustomLangCode] = useState("");
+    const [customLangName, setCustomLangName] = useState("");
+    const [customLangFlag, setCustomLangFlag] = useState("");
+    const [customLangDir, setCustomLangDir] = useState("ltr");
 
     useEffect(() => {
         if (typeof window !== "undefined") {
             setGeminiApiKey(localStorage.getItem("gemini_api_key") || "");
+        }
+        if (typeof document !== "undefined") {
+            document.documentElement.dir = "ltr";
+            document.documentElement.lang = "en";
+            document.body.style.fontFamily = "";
         }
     }, []);
 
@@ -291,57 +313,83 @@ export default function AdminPage() {
     }, [enabledLanguages, adminLocale]);
 
     // Helper functions for localized map validation and backwards compatibility
-    const parseLocalized = (field, defaultObj) => {
-        if (!field) return defaultObj;
-        if (typeof field === "string") {
-            return {
-                en: field,
-                fa: field,
-                de: field,
-                ms: field
-            };
+    const parseLocalized = (field, defaultObj, customLangs = null) => {
+        const langs = customLangs || supportedLanguages;
+        const obj = {};
+        if (langs && Array.isArray(langs)) {
+            langs.forEach(l => {
+                obj[l.code] = (defaultObj && defaultObj[l.code]) || "";
+            });
+        } else {
+            obj.en = ""; obj.fa = ""; obj.de = ""; obj.ms = "";
         }
-        return {
-            en: field.en || defaultObj.en || "",
-            fa: field.fa || field.en || defaultObj.fa || "",
-            de: field.de || field.en || defaultObj.de || "",
-            ms: field.ms || field.en || defaultObj.ms || ""
-        };
+
+        if (!field) return obj;
+
+        if (typeof field === "string") {
+            if (langs && Array.isArray(langs)) {
+                langs.forEach(l => {
+                    if (l.code === "fa" && field === "Bahman Noushabadi") {
+                        obj[l.code] = "بهمن نوش آبادی";
+                    } else {
+                        obj[l.code] = field;
+                    }
+                });
+            } else {
+                obj.en = field;
+                obj.fa = field === "Bahman Noushabadi" ? "بهمن نوش آبادی" : field;
+                obj.de = field;
+                obj.ms = field;
+            }
+            return obj;
+        }
+
+        if (langs && Array.isArray(langs)) {
+            langs.forEach(l => {
+                obj[l.code] = field[l.code] || field.en || (defaultObj && defaultObj[l.code]) || "";
+            });
+        } else {
+            obj.en = field.en || "";
+            obj.fa = field.fa || field.en || "";
+            obj.de = field.de || field.en || "";
+            obj.ms = field.ms || field.en || "";
+        }
+        return obj;
     };
 
-    const parseSkills = (arr, defaultSkills = []) => {
+    const parseSkills = (arr, defaultSkills = [], customLangs = null) => {
         if (!arr || !Array.isArray(arr)) return [];
         return arr.map((item, idx) => {
             const defItem = defaultSkills[idx] || {};
             return {
-                title: parseLocalized(item.title, defItem.title || { en: "" }),
-                description: parseLocalized(item.description, defItem.description || { en: "" }),
+                title: parseLocalized(item.title, defItem.title || { en: "" }, customLangs),
+                description: parseLocalized(item.description, defItem.description || { en: "" }, customLangs),
                 icon: item.icon || defItem.icon || "fa-solid fa-star"
             };
         });
     };
 
-    const parseExperience = (arr, defaultExp = []) => {
+    const parseExperience = (arr, defaultExp = [], customLangs = null) => {
         if (!arr || !Array.isArray(arr)) return [];
         return arr.map((item, idx) => {
             const defItem = defaultExp[idx] || {};
             return {
-                title: parseLocalized(item.title, defItem.title || { en: "" }),
-                company: parseLocalized(item.company, defItem.company || { en: "" }),
+                title: parseLocalized(item.title, defItem.title || { en: "" }, customLangs),
+                company: parseLocalized(item.company, defItem.company || { en: "" }, customLangs),
                 date: item.date || defItem.date || "",
                 bullets: Array.isArray(item.bullets)
-                    ? item.bullets.map(b => parseLocalized(b, { en: "" }))
+                    ? item.bullets.map(b => parseLocalized(b, { en: "" }, customLangs))
                     : (defItem.bullets || [])
             };
         });
     };
 
-    const parseAboutSlides = (arr) => {
+    const parseAboutSlides = (arr, customLangs = null) => {
         if (!arr || !Array.isArray(arr)) return [];
         return arr.map(slide => ({
             image: slide.image || "",
-            title: parseLocalized(slide.title, { en: "" }),
-            text: parseLocalized(slide.text, { en: "" })
+            title: parseLocalized(slide.title, { en: "" }, customLangs),
+            text: parseLocalized(slide.text, { en: "" }, customLangs)
         }));
     };
 
@@ -438,26 +486,32 @@ export default function AdminPage() {
             showToast("Please enter the English version of the text first!", "error");
             return;
         }
+
+        const otherLangs = supportedLanguages.filter(l => l.code !== "en" && enabledLanguages.includes(l.code));
+        if (otherLangs.length === 0) {
+            showToast("No other active languages enabled to translate to!", "info");
+            return;
+        }
+
         setTranslatingField(fieldName);
         try {
+            const langsDescription = otherLangs.map(l => `${l.name} (${l.code})`).join(", ");
+            const jsonFormat = otherLangs.map(l => `  "${l.code}": "highly professional localized technical text in ${l.name}"`).join(",\n");
+
             const prompt = `You are an Industry-Expert Technical Localization Specialist and a Senior Software Executive native translator.
-Translate the following English tech portfolio text into three languages: Farsi (Persian), German, and Bahasa Melayu (Malay).
+Translate the following English tech portfolio text into these active target languages: ${langsDescription}.
 
 Your mission is to perform a high-quality, professional, and natural localization that is standard in the software/tech industry, NOT a word-for-word translation.
 
 Follow these strict rules:
 1. DO NOT translate technical acronyms, engineering methodologies, tools, and popular frameworks literally when they are universally used in English in those countries (e.g., keep "React", "Next.js", "CI/CD", "cloud-native", "squads", "agile", "frontend", "backend" as they are or adapt them professionally to what a Senior Engineering Manager or Tech Director in those regions would naturally use).
-2. For German (DE): Use highly polished, professional German with perfect grammar, declensions, and professional tone.
-3. For Farsi/Persian (FA): Use professional technical Persian suitable for high-level technical directors and elite software companies in Iran.
-4. For Bahasa Melayu (MS): Use professional technical Malay that is modern, precise, and standard for enterprise tech organizations in Malaysia/Singapore.
-5. If the text contains HTML tags (like <p>, <strong>, etc.), preserve them exactly in all translations.
-6. Provide your output ONLY as a valid JSON object matching the format below, with NO markdown formatting, NO backticks, and NO additional text.
+2. Use highly polished, professional vocabulary and correct grammar, declensions, and professional tone standard for elite tech companies and technical directors in each target country.
+3. If the text contains HTML tags (like <p>, <strong>, etc.), preserve them exactly in all translations.
+4. Provide your output ONLY as a valid JSON object matching the format below, with NO markdown formatting, NO backticks, and NO additional text.
 
 Format:
 {
-  "fa": "highly professional localized technical text in Farsi",
-  "de": "highly professional localized technical text in German",
-  "ms": "highly professional localized technical text in Bahasa Melayu"
+${jsonFormat}
 }
 
 English text to translate:
@@ -467,20 +521,26 @@ ${englishText}`;
             const cleanJsonText = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
             const translations = JSON.parse(cleanJsonText);
             
-            if (translations.fa && translations.de && translations.ms) {
-                const translationsMap = {
-                    en: englishText,
-                    fa: translations.fa,
-                    de: translations.de,
-                    ms: translations.ms
-                };
-                if (typeof setFieldState === 'function') {
-                    setFieldState(translationsMap);
+            const translationsMap = {
+                en: englishText
+            };
+            
+            otherLangs.forEach(l => {
+                if (translations[l.code]) {
+                    translationsMap[l.code] = translations[l.code];
                 }
-                showToast("✨ Translated successfully to all languages!", "success");
-            } else {
-                throw new Error("Translation payload did not return all language keys.");
+            });
+
+            if (typeof setFieldState === 'function') {
+                setFieldState(prev => {
+                    const prevObj = typeof prev === 'object' ? prev : { en: prev || "" };
+                    return {
+                        ...prevObj,
+                        ...translationsMap
+                    };
+                });
             }
+            showToast("✨ Translated successfully to all active languages!", "success");
         } catch (error) {
             console.error("Auto translation error:", error);
             showToast("Translation failed. Make sure your API key is valid and prompt text is clean.", "error");
@@ -591,6 +651,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
 
     // Captcha & Password state
     const [captchaEnabled, setCaptchaEnabled] = useState(true);
+    const [sessionTimeout, setSessionTimeout] = useState(30); // Inactivity timeout in minutes (default 30 mins)
     const [captchaText, setCaptchaText] = useState("");
     const [captchaInput, setCaptchaInput] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -625,6 +686,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
     // Collapsible sections — key: sectionId, value: true = collapsed
     const [collapsedSections, setCollapsedSections] = useState({});
     const toggleSection = (key) => setCollapsedSections(p => ({ ...p, [key]: !p[key] }));
+    const isRtlLocale = adminLocale === 'fa' || (supportedLanguages && supportedLanguages.find(l => l.code === adminLocale)?.dir === 'rtl');
 
     // Section visibility state
     const [sectionVisibility, setSectionVisibility] = useState({
@@ -853,6 +915,63 @@ Please edit the context text according to the instructions. Ensure you keep the 
         return () => unsubscribe();
     }, []);
 
+    // Admin Session Inactivity Timeout Engine
+    useEffect(() => {
+        if (loading || !user || sessionTimeout <= 0) return;
+
+        const timeoutMs = sessionTimeout * 60 * 1000;
+        const now = Date.now();
+
+        // Check if there was an existing session activity timestamp in localStorage
+        const lastActivity = localStorage.getItem("admin_last_activity");
+        if (lastActivity) {
+            const elapsedMs = now - parseInt(lastActivity, 10);
+            if (elapsedMs > timeoutMs) {
+                // Session expired while tab was closed or refreshed
+                localStorage.removeItem("admin_last_activity");
+                handleLogout();
+                showToast("🔒 Session expired due to inactivity. Please log in again.", "warning");
+                return;
+            }
+        } else {
+            // No previous activity recorded (fresh login), initialize it
+            localStorage.setItem("admin_last_activity", now.toString());
+        }
+
+        // Throttled activity listener (resets inactivity timer)
+        let lastUpdateTime = 0;
+        const handleUserActivity = () => {
+            const current = Date.now();
+            // Throttle to update at most once every 2 seconds for high performance
+            if (current - lastUpdateTime > 2000) {
+                localStorage.setItem("admin_last_activity", current.toString());
+                lastUpdateTime = current;
+            }
+        };
+
+        const events = ["mousemove", "mousedown", "keydown", "scroll", "click"];
+        events.forEach(e => window.addEventListener(e, handleUserActivity, { passive: true }));
+
+        // Check for inactivity every 5 seconds
+        const checkInterval = setInterval(() => {
+            const currentLastActivity = localStorage.getItem("admin_last_activity");
+            if (currentLastActivity) {
+                const elapsedMs = Date.now() - parseInt(currentLastActivity, 10);
+                if (elapsedMs > timeoutMs) {
+                    clearInterval(checkInterval);
+                    localStorage.removeItem("admin_last_activity");
+                    handleLogout();
+                    showToast("🔒 Session expired due to inactivity. Please log in again.", "warning");
+                }
+            }
+        }, 5000);
+
+        return () => {
+            events.forEach(e => window.removeEventListener(e, handleUserActivity));
+            clearInterval(checkInterval);
+        };
+    }, [user, sessionTimeout, loading]);
+
     // --- Utility: SHA-256 hash a string using Web Crypto API ---
     const hashPassword = async (plaintext) => {
         const encoder = new TextEncoder();
@@ -1042,17 +1161,27 @@ Please edit the context text according to the instructions. Ensure you keep the 
             }
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                setHeroName(data.heroName || "");
-                setHeroTagline(parseLocalized(data.heroTagline, { en: "", fa: "", de: "", ms: "" }));
-                setHeroHeadline(parseLocalized(data.heroHeadline, { en: "", fa: "", de: "", ms: "" }));
-                setAboutText(parseLocalized(data.aboutText, { en: "", fa: "", de: "", ms: "" }));
-                setEnabledLanguages(data.enabledLanguages || ["en", "fa", "de", "ms"]);
+                const loadedLangs = data.supportedLanguages || [
+                    { code: "en", name: "English", flag: "🇬🇧" },
+                    { code: "fa", name: "فارسی", flag: "🇮🇷", dir: "rtl" },
+                    { code: "de", name: "Deutsch", flag: "🇩🇪" },
+                    { code: "ms", name: "Melayu", flag: "🇲🇾" }
+                ];
+                const loadedEnabled = data.enabledLanguages || ["en", "fa", "de", "ms"];
+                setSupportedLanguages(loadedLangs);
+                setEnabledLanguages(loadedEnabled);
+
+                setHeroName(parseLocalized(data.heroName, { en: "Bahman Noushabadi", fa: "بهمن نوش آبادی", de: "Bahman Noushabadi", ms: "Bahman Noushabadi" }, loadedLangs));
+                setHeroTagline(parseLocalized(data.heroTagline, { en: "", fa: "", de: "", ms: "" }, loadedLangs));
+                setHeroHeadline(parseLocalized(data.heroHeadline, { en: "", fa: "", de: "", ms: "" }, loadedLangs));
+                setAboutText(parseLocalized(data.aboutText, { en: "", fa: "", de: "", ms: "" }, loadedLangs));
+                
                 setLinkedin(data.linkedin || "");
                 setEmailLink(data.email || "");
                 setWhatsapp(data.whatsapp || "");
-                setSkills(parseSkills(data.skills));
-                setExperience(parseExperience(data.experience));
-                setAboutSlides(parseAboutSlides(data.aboutSlides));
+                setSkills(parseSkills(data.skills, [], loadedLangs));
+                setExperience(parseExperience(data.experience, [], loadedLangs));
+                setAboutSlides(parseAboutSlides(data.aboutSlides, loadedLangs));
                 setProfileImage(data.profileImage || "");
                 setGallery(data.gallery || []);
                 setCvUrl(data.cvUrl || "");
@@ -1086,6 +1215,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                 // Fetch security configs
                 if (data.securitySettings) {
                     setCaptchaEnabled(data.securitySettings.captchaEnabled !== false);
+                    setSessionTimeout(data.securitySettings.sessionTimeout !== undefined ? data.securitySettings.sessionTimeout : 30);
                 }
 
                 // Fetch dynamically customized theme colors
@@ -1462,6 +1592,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
 
             if (snapshot.securitySettings) {
                 setCaptchaEnabled(snapshot.securitySettings.captchaEnabled !== false);
+                setSessionTimeout(snapshot.securitySettings.sessionTimeout !== undefined ? snapshot.securitySettings.sessionTimeout : 30);
             }
 
             if (snapshot.themes) {
@@ -1514,7 +1645,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                 profileImage, gallery, cvUrl,
                 nationality,
                 sectionVisibility,
-                securitySettings: { captchaEnabled },
+                securitySettings: { captchaEnabled, sessionTimeout },
                 themes,
                 overrideTheme,
                 aboutFontFamily,
@@ -1525,7 +1656,8 @@ Please edit the context text according to the instructions. Ensure you keep the 
                 skillsTextAlign,
                 experienceFontFamily,
                 experienceTextAlign,
-                enabledLanguages
+                enabledLanguages,
+                supportedLanguages
             };
             await setDoc(doc(db, "content", "main_draft"), dataPayload);
             setCmsStatus("Draft saved successfully! (Not yet live)");
@@ -1549,7 +1681,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                 profileImage, gallery, cvUrl,
                 nationality,
                 sectionVisibility,
-                securitySettings: { captchaEnabled },
+                securitySettings: { captchaEnabled, sessionTimeout },
                 themes,
                 overrideTheme,
                 aboutFontFamily,
@@ -1560,7 +1692,8 @@ Please edit the context text according to the instructions. Ensure you keep the 
                 skillsTextAlign,
                 experienceFontFamily,
                 experienceTextAlign,
-                enabledLanguages
+                enabledLanguages,
+                supportedLanguages
             };
             // Save to active live document
             await setDoc(doc(db, "content", "main"), dataPayload);
@@ -1969,10 +2102,16 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                     minWidth: '200px'
                                 }}
                             >
-                                {(!enabledLanguages || enabledLanguages.includes("en")) && <option value="en" style={{ background: '#1a1a2e', color: 'white' }}>🇬🇧  English (EN)</option>}
-                                {(!enabledLanguages || enabledLanguages.includes("fa")) && <option value="fa" style={{ background: '#1a1a2e', color: 'white' }}>🇮🇷  Farsi / فارسی (FA)</option>}
-                                {(!enabledLanguages || enabledLanguages.includes("de")) && <option value="de" style={{ background: '#1a1a2e', color: 'white' }}>🇩🇪  German (DE)</option>}
-                                {(!enabledLanguages || enabledLanguages.includes("ms")) && <option value="ms" style={{ background: '#1a1a2e', color: 'white' }}>🇲🇾  Malay / Melayu (MS)</option>}
+                                {supportedLanguages.map(l => {
+                                    if (l.code === "en" || !enabledLanguages || enabledLanguages.includes(l.code)) {
+                                        return (
+                                            <option key={l.code} value={l.code} style={{ background: '#1a1a2e', color: 'white' }}>
+                                                {l.flag}  {l.name} ({l.code.toUpperCase()})
+                                            </option>
+                                        );
+                                    }
+                                    return null;
+                                })}
                             </select>
                         </div>
                         {/* Hero Section Card */}
@@ -1987,8 +2126,25 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                 {!collapsedSections.heroCard && (
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                         <div style={{ gridColumn: 'span 2' }}>
-                                            <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Full Name</label>
-                                            <input type="text" value={heroName} onChange={e => setHeroName(e.target.value)} placeholder="e.g. Bahman Noushabadi" style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                <label style={{ color: '#a0a0a0', fontSize: '0.85rem', margin: 0 }}>Full Name</label>
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <button type="button" onClick={() => handleAutoTranslate('heroName', typeof heroName === 'object' ? heroName.en : heroName, setHeroName)} disabled={translatingField === 'heroName'} className="submit-btn" style={{ padding: '2px 8px', fontSize: '0.72rem', borderRadius: '4px', background: 'rgba(0, 255, 136, 0.12)', border: '1px solid rgba(0, 255, 136, 0.25)', color: '#00ff88' }}>
+                                                        {translatingField === 'heroName' ? 'Translating...' : '✨ Translate to All'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                value={typeof heroName === 'object' ? (heroName[adminLocale] || "") : heroName} 
+                                                onChange={e => {
+                                                    const currentName = typeof heroName === 'object' ? heroName : { en: heroName || "" };
+                                                    setHeroName({ ...currentName, [adminLocale]: e.target.value });
+                                                }}
+                                                dir={isRtlLocale ? "rtl" : "ltr"}
+                                                placeholder="e.g. Bahman Noushabadi" 
+                                                style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} 
+                                            />
                                         </div>
                                         <div style={{ gridColumn: 'span 2' }}>
                                             <label style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Profile Picture URL (Use Media tab to upload)</label>
@@ -2009,7 +2165,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                     </button>
                                                 </div>
                                             </div>
-                                            <input type="text" value={heroTagline[adminLocale] || ""} onChange={e => setHeroTagline({ ...heroTagline, [adminLocale]: e.target.value })} placeholder="e.g. Tech Leader" style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                            <input type="text" value={heroTagline[adminLocale] || ""} onChange={e => setHeroTagline({ ...heroTagline, [adminLocale]: e.target.value })} dir={isRtlLocale ? "rtl" : "ltr"} placeholder="e.g. Tech Leader" style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                         </div>
                                         <div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -2023,7 +2179,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                     </button>
                                                 </div>
                                             </div>
-                                            <input type="text" value={heroHeadline[adminLocale] || ""} onChange={e => setHeroHeadline({ ...heroHeadline, [adminLocale]: e.target.value })} placeholder="e.g. Bridging the Gap..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                            <input type="text" value={heroHeadline[adminLocale] || ""} onChange={e => setHeroHeadline({ ...heroHeadline, [adminLocale]: e.target.value })} dir={isRtlLocale ? "rtl" : "ltr"} placeholder="e.g. Bridging the Gap..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                         </div>
                                         <div style={{ gridColumn: 'span 2', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '10px' }}>
                                             <div>
@@ -2100,7 +2256,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                 </button>
                                             </div>
                                         </div>
-                                        <textarea value={aboutText[adminLocale] || ""} onChange={e => setAboutText({ ...aboutText, [adminLocale]: e.target.value })} rows="8" placeholder="Tell your story..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit', marginBottom: '20px' }} />
+                                        <textarea value={aboutText[adminLocale] || ""} onChange={e => setAboutText({ ...aboutText, [adminLocale]: e.target.value })} dir={isRtlLocale ? "rtl" : "ltr"} rows="8" placeholder="Tell your story..." style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit', marginBottom: '20px' }} />
                                         
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                             <div>
@@ -2187,7 +2343,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                                     {translatingField === `slide_title_${index}` ? '...' : '✨ Translate'}
                                                                 </button>
                                                             </div>
-                                                            <input type="text" value={typeof slide.title === 'object' ? (slide.title[adminLocale] || "") : (slide.title || "")} onChange={e => updateAboutSlide(index, 'title', e.target.value)} placeholder="Slide Title (e.g. Technology Leadership)" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                            <input type="text" value={typeof slide.title === 'object' ? (slide.title[adminLocale] || "") : (slide.title || "")} onChange={e => updateAboutSlide(index, 'title', e.target.value)} dir={isRtlLocale ? "rtl" : "ltr"} placeholder="Slide Title (e.g. Technology Leadership)" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                         </div>
                                                         <div>
                                                             <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Slide Image</label>
@@ -2212,7 +2368,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                            <textarea value={typeof slide.text === 'object' ? (slide.text[adminLocale] || "") : (slide.text || "")} onChange={e => updateAboutSlide(index, 'text', e.target.value)} placeholder="HTML content here (e.g. <p>Description...</p>)" rows="3" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
+                                                            <textarea value={typeof slide.text === 'object' ? (slide.text[adminLocale] || "") : (slide.text || "")} onChange={e => updateAboutSlide(index, 'text', e.target.value)} dir={isRtlLocale ? "rtl" : "ltr"} placeholder="HTML content here (e.g. <p>Description...</p>)" rows="3" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2326,7 +2482,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                                 {translatingField === `skill_title_${index}` ? '...' : '✨ Translate'}
                                                             </button>
                                                         </div>
-                                                        <input type="text" value={typeof skill.title === 'object' ? (skill.title[adminLocale] || "") : (skill.title || "")} onChange={e => updateSkill(index, 'title', e.target.value)} placeholder="Skill Title" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                        <input type="text" value={typeof skill.title === 'object' ? (skill.title[adminLocale] || "") : (skill.title || "")} onChange={e => updateSkill(index, 'title', e.target.value)} dir={isRtlLocale ? "rtl" : "ltr"} placeholder="Skill Title" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
                                                     <div>
                                                         <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Icon CSS Class</label>
@@ -2344,7 +2500,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                                 </button>
                                                             </div>
                                                         </div>
-                                                        <textarea value={typeof skill.description === 'object' ? (skill.description[adminLocale] || "") : (skill.description || "")} onChange={e => updateSkill(index, 'description', e.target.value)} placeholder="Description..." rows="2" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                        <textarea value={typeof skill.description === 'object' ? (skill.description[adminLocale] || "") : (skill.description || "")} onChange={e => updateSkill(index, 'description', e.target.value)} dir={isRtlLocale ? "rtl" : "ltr"} placeholder="Description..." rows="2" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
                                                 </div>
                                                 <button type="button" onClick={() => setSkills(skills.filter((_, i) => i !== index))} style={{ alignSelf: 'flex-start', background: 'rgba(234, 67, 53, 0.1)', color: '#EA4335', border: '1px solid rgba(234, 67, 53, 0.2)', padding: '10px', borderRadius: '8px', cursor: 'pointer' }}>
@@ -2435,7 +2591,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                                 {translatingField === `exp_title_${index}` ? '...' : '✨ Translate'}
                                                             </button>
                                                         </div>
-                                                        <input type="text" value={typeof exp.title === 'object' ? (exp.title[adminLocale] || "") : (exp.title || "")} onChange={e => updateExperience(index, 'title', e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                        <input type="text" value={typeof exp.title === 'object' ? (exp.title[adminLocale] || "") : (exp.title || "")} onChange={e => updateExperience(index, 'title', e.target.value)} dir={isRtlLocale ? "rtl" : "ltr"} style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
                                                     <div>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
@@ -2444,7 +2600,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                                 {translatingField === `exp_company_${index}` ? '...' : '✨ Translate'}
                                                             </button>
                                                         </div>
-                                                        <input type="text" value={typeof exp.company === 'object' ? (exp.company[adminLocale] || "") : (exp.company || "")} onChange={e => updateExperience(index, 'company', e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
+                                                        <input type="text" value={typeof exp.company === 'object' ? (exp.company[adminLocale] || "") : (exp.company || "")} onChange={e => updateExperience(index, 'company', e.target.value)} dir={isRtlLocale ? "rtl" : "ltr"} style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} />
                                                     </div>
                                                     <div style={{ gridColumn: 'span 2' }}>
                                                         <label style={{ color: '#a0a0a0', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Date Range</label>
@@ -2465,7 +2621,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                                                 </button>
                                                             </div>
                                                         </div>
-                                                        <textarea value={exp.bullets ? exp.bullets.map(b => (typeof b === 'object' ? (b[adminLocale] || "") : (b || ""))).join('\\n') : ''} onChange={e => updateExperience(index, 'bullets', e.target.value)} rows="5" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
+                                                        <textarea value={exp.bullets ? exp.bullets.map(b => (typeof b === 'object' ? (b[adminLocale] || "") : (b || ""))).join('\n') : ''} onChange={e => updateExperience(index, 'bullets', e.target.value)} dir={isRtlLocale ? "rtl" : "ltr"} rows="5" style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'inherit' }} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -2923,86 +3079,128 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '10px' }}>
                                         {/* English (🇬🇧 EN) - ALWAYS enabled */}
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <div className="switch">
+                                            <label className="switch">
                                                 <input type="checkbox" checked disabled id="lang-en-toggle" />
                                                 <span className="slider" style={{ opacity: 0.5, cursor: 'not-allowed' }}></span>
-                                            </div>
-                                            <label htmlFor="lang-en-toggle" style={{ color: 'white', fontSize: '0.9rem', cursor: 'not-allowed' }}>
+                                            </label>
+                                            <span style={{ color: 'white', fontSize: '0.9rem' }}>
                                                 🇬🇧  <strong>English (EN)</strong> — Always Enabled (Default)
-                                            </label>
+                                            </span>
                                         </div>
 
-                                        {/* Farsi (🇮🇷 FA) */}
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <div className="switch">
-                                                <input 
-                                                    type="checkbox" 
-                                                    id="lang-fa-toggle" 
-                                                    checked={enabledLanguages.includes("fa")}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setEnabledLanguages([...enabledLanguages, "fa"]);
-                                                        } else {
-                                                            setEnabledLanguages(enabledLanguages.filter(l => l !== "fa"));
-                                                        }
-                                                    }}
-                                                />
-                                                <span className="slider"></span>
+                                        {/* Dynamically render all supported languages switches */}
+                                        {supportedLanguages.filter(l => l.code !== "en").map(l => (
+                                            <div key={l.code} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <label className="switch">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        id={`lang-${l.code}-toggle`}
+                                                        checked={enabledLanguages.includes(l.code)}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setEnabledLanguages([...enabledLanguages, l.code]);
+                                                            } else {
+                                                                setEnabledLanguages(enabledLanguages.filter(code => code !== l.code));
+                                                            }
+                                                        }}
+                                                    />
+                                                    <span className="slider"></span>
+                                                </label>
+                                                <label htmlFor={`lang-${l.code}-toggle`} style={{ color: 'white', fontSize: '0.9rem', cursor: 'pointer' }}>
+                                                    {l.flag}  <strong>{l.name} ({l.code.toUpperCase()}){l.dir === 'rtl' ? ' [RTL]' : ''}</strong>
+                                                </label>
                                             </div>
-                                            <label htmlFor="lang-fa-toggle" style={{ color: 'white', fontSize: '0.9rem', cursor: 'pointer' }}>
-                                                🇮🇷  <strong>Persian / فارسی (FA)</strong>
-                                            </label>
-                                        </div>
+                                        ))}
+                                    </div>
 
-                                        {/* German (🇩🇪 DE) */}
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <div className="switch">
+                                    {/* Add Custom Language Form */}
+                                    <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                                        <h4 style={{ color: 'white', fontSize: '0.95rem', margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <i className="fa-solid fa-plus" style={{ color: '#00ff88' }}></i> Add Custom Language for Future
+                                        </h4>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px', alignItems: 'flex-end' }}>
+                                            <div>
+                                                <label style={{ color: '#a0a0a0', fontSize: '0.78rem', marginBottom: '5px', display: 'block' }}>Lang Code (e.g. es)</label>
                                                 <input 
-                                                    type="checkbox" 
-                                                    id="lang-de-toggle" 
-                                                    checked={enabledLanguages.includes("de")}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setEnabledLanguages([...enabledLanguages, "de"]);
-                                                        } else {
-                                                            setEnabledLanguages(enabledLanguages.filter(l => l !== "de"));
-                                                        }
-                                                    }}
+                                                    type="text" 
+                                                    value={customLangCode} 
+                                                    onChange={e => setCustomLangCode(e.target.value.toLowerCase().trim().slice(0, 5))}
+                                                    placeholder="es" 
+                                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} 
                                                 />
-                                                <span className="slider"></span>
                                             </div>
-                                            <label htmlFor="lang-de-toggle" style={{ color: 'white', fontSize: '0.9rem', cursor: 'pointer' }}>
-                                                🇩🇪  <strong>German / Deutsch (DE)</strong>
-                                            </label>
-                                        </div>
-
-                                        {/* Malay (🇲🇾 MS) */}
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <div className="switch">
+                                            <div>
+                                                <label style={{ color: '#a0a0a0', fontSize: '0.78rem', marginBottom: '5px', display: 'block' }}>Native Name (e.g. Español)</label>
                                                 <input 
-                                                    type="checkbox" 
-                                                    id="lang-ms-toggle" 
-                                                    checked={enabledLanguages.includes("ms")}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setEnabledLanguages([...enabledLanguages, "ms"]);
-                                                        } else {
-                                                            setEnabledLanguages(enabledLanguages.filter(l => l !== "ms"));
-                                                        }
-                                                    }}
+                                                    type="text" 
+                                                    value={customLangName} 
+                                                    onChange={e => setCustomLangName(e.target.value)}
+                                                    placeholder="Español" 
+                                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} 
                                                 />
-                                                <span className="slider"></span>
                                             </div>
-                                            <label htmlFor="lang-ms-toggle" style={{ color: 'white', fontSize: '0.9rem', cursor: 'pointer' }}>
-                                                🇲🇾  <strong>Malay / Melayu (MS)</strong>
-                                            </label>
+                                            <div>
+                                                <label style={{ color: '#a0a0a0', fontSize: '0.78rem', marginBottom: '5px', display: 'block' }}>Flag Emoji (e.g. 🇪🇸)</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={customLangFlag} 
+                                                    onChange={e => setCustomLangFlag(e.target.value.trim())}
+                                                    placeholder="🇪🇸" 
+                                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} 
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={{ color: '#a0a0a0', fontSize: '0.78rem', marginBottom: '5px', display: 'block' }}>Direction</label>
+                                                <select 
+                                                    value={customLangDir} 
+                                                    onChange={e => setCustomLangDir(e.target.value)}
+                                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', cursor: 'pointer' }}
+                                                >
+                                                    <option value="ltr" style={{ background: '#111' }}>Left-to-Right (LTR)</option>
+                                                    <option value="rtl" style={{ background: '#111' }}>Right-to-Left (RTL)</option>
+                                                </select>
+                                            </div>
                                         </div>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => {
+                                                if (!customLangCode || !customLangName) {
+                                                    showToast("Please fill in Language Code and Name!", "error");
+                                                    return;
+                                                }
+                                                if (supportedLanguages.some(l => l.code === customLangCode)) {
+                                                    showToast("This language code already exists!", "error");
+                                                    return;
+                                                }
+                                                const newLang = {
+                                                    code: customLangCode,
+                                                    name: customLangName,
+                                                    flag: customLangFlag || "🌐",
+                                                    dir: customLangDir
+                                                };
+                                                setSupportedLanguages([...supportedLanguages, newLang]);
+                                                setEnabledLanguages([...enabledLanguages, customLangCode]);
+                                                
+                                                // Clear form
+                                                setCustomLangCode("");
+                                                setCustomLangName("");
+                                                setCustomLangFlag("");
+                                                setCustomLangDir("ltr");
+                                                
+                                                showToast(`🎉 Added ${customLangName} successfully! Save changes to store in database.`, "success");
+                                            }}
+                                            className="submit-btn" 
+                                            style={{ marginTop: '15px', background: 'var(--color-primary, #4285F4)', padding: '10px 20px', borderRadius: '8px', fontSize: '0.85rem' }}
+                                        >
+                                            + Add New Language
+                                        </button>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        {/* AI Configuration Card */}
+                        {/* AI Configuration Card - Super Admin Only */}
+                        {userRole === 'super_admin' && (
                         <div className="glass-card" style={{ padding: '30px' }}>
                             <div onClick={() => toggleSection('aiConfigCard')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: collapsedSections.aiConfigCard ? 0 : '20px' }}>
                                 <h3 style={{ color: 'var(--color-primary, #4285F4)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -3079,6 +3277,7 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                 </div>
                             )}
                         </div>
+                        )}
 
                         {/* Section Visibility toggles - permission guarded */}
                         {(userRole === 'super_admin' || userPermissions.settingVisibility !== false) && (
@@ -3323,19 +3522,47 @@ Please edit the context text according to the instructions. Ensure you keep the 
                                     <i className="fa-solid fa-chevron-down" style={{ color: '#888', fontSize: '0.85rem', transition: 'transform 0.25s ease', transform: collapsedSections.securityCard ? 'rotate(-90deg)' : 'rotate(0deg)' }}></i>
                                 </div>
                                 {!collapsedSections.securityCard && (
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', padding: '15px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                            <span style={{ fontSize: '0.95rem', color: 'white' }}>Enforce Login Captcha Verification</span>
-                                            <span style={{ fontSize: '0.78rem', color: '#a0a0a0' }}>Protects your administrator dashboard by enforcing visual alphanumeric checks against simple bot crawls.</span>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                        {/* Captcha Verification */}
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', padding: '15px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                <span style={{ fontSize: '0.95rem', color: 'white' }}>Enforce Login Captcha Verification</span>
+                                                <span style={{ fontSize: '0.78rem', color: '#a0a0a0' }}>Protects your administrator dashboard by enforcing visual alphanumeric checks against simple bot crawls.</span>
+                                            </div>
+                                            <label className="switch">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={captchaEnabled}
+                                                    onChange={(e) => setCaptchaEnabled(e.target.checked)}
+                                                />
+                                                <span className="slider"></span>
+                                            </label>
                                         </div>
-                                        <label className="switch">
-                                            <input
-                                                type="checkbox"
-                                                checked={captchaEnabled}
-                                                onChange={(e) => setCaptchaEnabled(e.target.checked)}
-                                            />
-                                            <span className="slider"></span>
-                                        </label>
+
+                                        {/* Inactivity Session Timeout */}
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', padding: '15px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                <span style={{ fontSize: '0.95rem', color: 'white' }}>Inactivity Session Timeout</span>
+                                                <span style={{ fontSize: '0.78rem', color: '#a0a0a0' }}>Automatically log out administrators after a period of user inactivity to prevent unauthorized dashboard access.</span>
+                                            </div>
+                                            <select
+                                                value={sessionTimeout}
+                                                onChange={(e) => {
+                                                    const val = parseInt(e.target.value, 10);
+                                                    setSessionTimeout(val);
+                                                    showToast(`Session inactivity timeout updated to ${val === 0 ? "Never" : val + " minutes"}. Save or publish to apply.`, "info");
+                                                }}
+                                                style={{ padding: '8px 12px', borderRadius: '6px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', cursor: 'pointer', outline: 'none' }}
+                                            >
+                                                <option value={15} style={{ background: '#111' }}>15 Minutes</option>
+                                                <option value={30} style={{ background: '#111' }}>30 Minutes</option>
+                                                <option value={60} style={{ background: '#111' }}>1 Hour</option>
+                                                <option value={120} style={{ background: '#111' }}>2 Hours</option>
+                                                <option value={240} style={{ background: '#111' }}>4 Hours</option>
+                                                <option value={480} style={{ background: '#111' }}>8 Hours</option>
+                                                <option value={0} style={{ background: '#111' }}>Never</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 )}
                             </div>
